@@ -1,0 +1,4 @@
+# Netlify publishes only the site/ folder.
+# The Sanity Studio in studio/ is never part of the public website.
+[build]
+  publish = "site"

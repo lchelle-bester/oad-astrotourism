@@ -17,9 +17,13 @@ The full plan is the "Astrotourism Site Plan" Google Doc (shared with Ram and Jo
 - Writing style: no em dashes (or en dashes), and nothing that reads as AI-written. This applies to the site copy, comments in code, commit messages and anything I might send to Ram or Joy.
 - I'm on Windows, using VS Code, PowerShell, Live Server and Git.
 
-## CURRENT
+## People and timeline
 
-- **Ram (Ramasamy Venugopal) and Joy (Joyful Mdhluli)** run OAD's comms and website. They are the content owners and sign off on structure, design and what content stays.
+- **Ram (Ramasamy Venugopal) and Joy (Joyful Mdhluli)** run OAD's comms and website. They are the content owners and sign off on structure, design and what content stays. Joy is the astrotourism contact. Their comments on the site plan doc are the record of what they have agreed.
+- I owe them sign-off on the sitemap and mood board before building starts. Nothing structural gets built that they haven't seen.
+- Exams end mid-November. Target: finished by the end of the year, live by January.
+- OAD's office is closed about 21 December to 4 January, so anything needing their input or review must be done before then.
+- OAD's big event is 15 February at NEX.
 - Current OAD site: self-hosted WordPress, updated by hand by Ram and Joy. Domain from Network Solutions, DNS/hosting through IntelyHost.
 
 ## Tech setup
@@ -27,14 +31,15 @@ The full plan is the "Astrotourism Site Plan" Google Doc (shared with Ram and Jo
 **Stack: plain HTML, CSS and JavaScript.** No front-end framework. A small Node script for build tasks is allowed if it is needed to pull content from Sanity (see below), but I must agree to it first and have it explained. What is already decided:
 
 - A custom-built static site, not WordPress. No plugins, no database on the public server.
-- **Sanity is a hard requirement.** It is the CMS, so Ram and Joy can edit content without touching code. Every piece of content that OAD staff may need to change must live in Sanity, never be hard-coded into the HTML. Reviews before publishing by the other person are wanted. I have never used sanity before.
+- **Sanity is a hard requirement.** It is the CMS, so Ram and Joy can edit content without touching code. Every piece of content that OAD staff may need to change must live in Sanity, never be hard-coded into the HTML. Reviews before publishing by the other person are wanted.
 - **MapLibre GL JS** with **OpenFreeMap** tiles for the map (open source, no account, no API key, no usage cap). Do not use Mapbox or Google Maps.
+- The concept homepage (plain HTML/CSS/JS, deployed on Netlify at oad-iau.netlify.app, code on GitHub) is the starting point for look and feel.
 - Hosting and deploy: Netlify via GitHub is the expected route. Confirm with OAD how the subdomain will point to it.
 
 ### Sanity rules
 
-- **Account timing.** Create the Sanity account and project in Phase 0, before any hero code is written, so that the hero's text and image are designed as Sanity fields from the start instead of being hard-coded and moved later. Creating a project needs a free account (I'll sign up myself, with my own login, and then invite Ram and Joy as editors).
-- **Free plan limits** : 20 seats, 2 datasets (public only), 250k API requests a month, 1 million CDN requests a month, 100 GB asset storage, 100 GB bandwidth a month, and no way to buy extra on Free.
+- **Account timing.** Create the Sanity account and project in Phase 0, before any hero code is written, so that the hero's text and image are designed as Sanity fields from the start instead of being hard-coded and moved later. Creating a project needs a free account (I'll sign up myself, with my own login, and then invite Ram and Joy as editors). Node.js must be installed on my machine for the Sanity tooling, so check with `node -v` first.
+- **Free plan limits** (read from sanity.io/pricing on 10 Oct 2026, recheck before relying on them): 20 seats, 2 datasets (public only), 250k API requests a month, 1 million CDN requests a month, 100 GB asset storage, 100 GB bandwidth a month, and no way to buy extra on Free.
 - **Public dataset.** Because free datasets are public, treat everything in Sanity as readable by anyone. Never store private data there (for example personal details of survey respondents).
 - **Content model first.** Before building a section, agree its Sanity schema with me (which fields, which are required, what the editor sees). Typical types: hero, project or initiative (with location, country, year, category), resource card (with who it is for), news post, impact figure, case study, partner logo, site settings (contact details, social links).
 - **Digital assets.** Everything an editor may swap goes through Sanity: photos, resource downloads (PDFs), partner logos. Use the Sanity image type with a **required alt text field**, and load images through Sanity's image CDN URLs with width and format parameters so pages stay light. Fixed brand and design files live in the repo instead: the OAD logo files, decorative SVG motifs and icons. The hero video location is an open decision (see below).
@@ -44,7 +49,26 @@ The full plan is the "Astrotourism Site Plan" Google Doc (shared with Ram and Jo
 ### Repo and GitHub
 
 - Code lives in a GitHub repository, with Netlify deploying from it. Keep `.gitignore` for `node_modules`, `.env`, and the full-size originals folder.
-- Public repo
+- Commit small, one change per commit, with a message that says what changed and why.
+- The repo is public, so nothing secret is ever committed, not even briefly.
+
+### Folder structure
+
+The website and the Sanity Studio are kept apart. Netlify publishes only `site/`, so the Studio is never part of the public site (set in `netlify.toml`).
+
+```
+oad-astrotourism/
+├── CLAUDE.md
+├── .gitignore
+├── netlify.toml          publish = "site"
+├── credits.md            source and licence of every image, video and font
+├── studio/               Sanity Studio (JavaScript)
+└── site/                 the public website
+    ├── index.html
+    ├── css/styles.css    design tokens at the top, sections numbered in comments
+    ├── js/main.js
+    └── assets/           images/, video/, fonts/ (fixed brand files only)
+```
 
 Keep `credits.md` listing the source and licence of every image, video and font. Full-size originals live outside the site folder and out of git. Resize photos to about 1200px wide and under 250 KB before use.
 
@@ -65,6 +89,8 @@ Keep `credits.md` listing the source and licence of every image, video and font.
 - Navy text on sand is 6.4:1 and on yellow 7.7:1, so those work for buttons.
 - The site plan says white text on terracotta, sage and teal blocks. Sage fails for normal text, so that needs a decision (see Open decisions).
 - Re-check contrast whenever a new colour pairing is introduced. Minimum 4.5:1 for normal text, 3:1 for large text and UI components.
+
+**Typography.** The official brand font is DIN 2014, which I don't have access to. The plan names three free fonts: Barlow (closest to DIN), Space Grotesk and Outfit (from the concept homepage). Only load weights that are used.
 
 **Look and feel.** Same sky-and-awe spirit as the concept homepage (spacex.com style simplicity, charity: water's real people), with night-sky video in the hero. Restraint: one idea per screen, minimal text, lots of space. Motion only when it helps tell the story. At most one video.
 
@@ -88,9 +114,10 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 - The site holds only relevant, current content. It is not a Drive for everything OAD has ever done. When in doubt, ask Ram and Joy whether something stays.
 - Every project and initiative is structured data with a location, stored in Sanity, so the map, directory and any later ideas all read from one source.
-- Statistics must trace to a source. The plan's figures (ecotourism market $172.4bn in 2022 and $374.2bn by 2028, 8 in 10 people affected by light pollution, EUR 111,000 across 14 countries, five case studies, seven guidelines) Record each ones source.
+- Statistics must trace to a source. The plan's figures (ecotourism market $172.4bn in 2022 and $374.2bn by 2028, 8 in 10 people affected by light pollution, EUR 111,000 across 14 countries, five case studies, seven guidelines) have **not yet been verified by me against sources**. Check each one before it goes on a page and record the source.
 - `Astrotourism Funded Projects 1.xlsx` is the funded-projects data, but each row is a single comma-separated text cell, some text has encoding damage (for example `√Ç`), and the link column contains raw HTML. It has to be cleaned and parsed before it goes into Sanity. Never import it as is.
 - Project copy from OAD's existing site is their writing. Don't paraphrase it in ways that change meaning. Flag edits for them to approve.
+- Consent: get OAD's confirmation before using named people or photos.
 
 ## Accessibility, performance, privacy
 
@@ -106,6 +133,11 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 1. **How Sanity content reaches the pages.** Plain JS can do it two ways. (a) The browser fetches content from Sanity when the page loads: simplest to learn and edits show immediately, but content appears after the JS runs, search engines and slow phones see less, and each visit uses Sanity API requests. (b) A small Node script pulls the content when the site is built and writes it into static HTML, and a Sanity webhook asks Netlify to rebuild when someone publishes: fastest for visitors and best for accessibility and search, but it adds a build step and an edit takes a minute or two to go live. A mix is possible (for example build-time for text, client-side for the filterable directory). Bring me the options with a worked example when we reach the first Sanity-driven section.
 2. **Hero video location.** In the repo and served by Netlify (not editable by OAD, no Sanity bandwidth used) vs uploaded as a Sanity file asset (OAD can swap it, but it counts against the 100 GB monthly bandwidth).
+3. **Fonts.** The plan lists three (Barlow, Space Grotesk, Outfit) but the concept rule was a maximum of two.
+4. **White text on sage.** Fails AA at normal size. Options: use large text only, darken sage, or put navy text on a light sage tint.
+5. **Resource chooser.** Planned but needs Ram and Joy to say who each resource is for.
+6. **Scope.** Whether to narrow the scope or take on the content restructure fully, now the job includes moving project data out of Drive folders and spreadsheets into Sanity.
+7. **Order of the phases after the hero.** See Build phases.
 
 ## Build phases
 
@@ -117,7 +149,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 ## Current state
 
-Nothing built yet for the subdomain The connected project folder is empty. Phase 0 has not started.
+Nothing built yet for the subdomain. Sitemap and mood board still need Ram and Joy's sign-off. Done in Phase 0 so far: repo on GitHub, Sanity account and project, empty Studio running locally. Still to do: `site/` folders, `netlify.toml`, `credits.md`, CSS design tokens (needs the font decision), connect Netlify.
 
 ## Decisions log
 
@@ -132,6 +164,11 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 - No "Further Reading" section. Ram asked for one for the extra resources, but we have decided to declutter, so only genuinely useful resources stay (10 Oct 2026).
 - Sanity is mandatory, and the Sanity account and project are set up in Phase 0, before the hero (10 Oct 2026).
 - Build one phase at a time, starting with the hero (10 Oct 2026).
+- Project folder is `C:\dev\oad-astrotourism`, outside OneDrive, backed up through GitHub (10 Oct 2026).
+- GitHub repo is public (10 Oct 2026).
+- Folder structure B: website in `site/`, Sanity Studio in `studio/`, Netlify publishes only `site/` (11 Oct 2026).
+- Studio written in JavaScript, not TypeScript (11 Oct 2026).
+- Signing in to Sanity with my GitHub login (10 Oct 2026). Ram and Joy are invited as editors by email later.
 
 ## Known gotchas (carried over from the concept build)
 
