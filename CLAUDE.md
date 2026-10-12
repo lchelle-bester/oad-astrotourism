@@ -157,14 +157,14 @@ Organised by audience, not department. Nothing important more than two clicks de
 **One phase at a time.** Finish, review and commit a phase before starting the next. Don't start building ahead, and don't touch sections that belong to a later phase. At the start of each phase: state what it includes, what Sanity content it needs, and what decisions I need to make. At the end: a checklist of what to test (desktop, 390px, keyboard, reduced motion, contrast) before it counts as done.
 
 - **Phase 0, setup.** Git repo on GitHub, folder structure, `.gitignore`, `credits.md`, design tokens (colours and fonts) in CSS, Sanity account and project, Netlify connected.
-- **Phase 1, hero.** Header with the "Part of OAD" link home, night-sky video, headline and subheading, buttons. Hero text (headline, subheading, affiliation line) as Sanity fields in a single-document `hero` type. No button in the hero for now. The video and its poster image stay in the repo, so the poster always matches the video.
+- **Phase 1, hero.** Header with the ‘Part of OAD’ link home, night-sky video, headline, subheading and affiliation line. No hero button for now.
 - **Phase 2 onwards.** Order to be agreed with me one phase at a time, following the homepage order in the structure above (the case, the six pillars, three paths, proof, news, get involved, footer), then the inner pages.
 
 ## Current state
 
-Phase 0 (setup) is complete. The placeholder page is live at https://astrotourism.netlify.app (checked in the browser on 11 Oct 2026: Space Grotesk and Barlow load, navy background, no sideways scroll). The Sanity Studio runs locally and has no content types yet. Sitemap and mood board still need Ram and Joy's sign-off.
+Phase 0 (setup) is complete. The placeholder page is live at https://astrotourism.netlify.app (checked in the browser on 11 Oct 2026: Space Grotesk and Barlow load, navy background, no sideways scroll). The Sanity Studio runs locally. 
 
-Phase 1 (hero) is being planned. Decided: build-time content, poster stays in the repo, headline and subheading wording, no hero button for now. Still to do: agree and write the `hero` schema, create `build/build.js`, change `netlify.toml`, connect the webhook, then the hero HTML and CSS. Waiting on the video clip.
+Phase 1 (hero) is in progress. The hero content type and single-document Studio setup are written and tested (12 Oct 2026). Next: the restriction on deleting or duplicating the hero, then build/build.js, then netlify.toml and the webhook, then the hero HTML and CSS. netlify.toml currently publishes site/ with a placeholder page, and changes to dist/ once build.js exists. Waiting on the video clip
 
 ## Decisions log
 
