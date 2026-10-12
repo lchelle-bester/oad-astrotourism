@@ -1,4 +1,9 @@
-# Netlify publishes only the site/ folder.
+# Netlify runs the build script, then publishes only the dist/ folder it creates.
 # The Sanity Studio in studio/ is never part of the public website.
 [build]
-  publish = "site"
+  command = "node build/build.js"
+  publish = "dist"
+
+# Pinned so Netlify builds with the same Node major version as my own machine.
+[build.environment]
+  NODE_VERSION = "24"
