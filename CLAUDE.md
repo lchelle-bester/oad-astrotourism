@@ -148,7 +148,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 2. **Resource chooser.** Planned but needs Ram and Joy to say who each resource is for.
 3. **Scope.** Whether to narrow the scope or take on the content restructure fully, now the job includes moving project data out of Drive folders and spreadsheets into Sanity.
 4. **Order of the phases after the hero.** See Build phases.
-5. **Hero video clip.** I am sourcing it. Tell me where it comes from so its licence can go in `credits.md`.
+5. **Hero video licence.** The clip was supplied by OAD. Who filmed it and its licence are still to confirm with Joy, and must be settled before pushing the video files. Update `credits.md` when she replies.
 6. **Hero button.** None for now. Add one once the rest of the site exists and we know what to link to, judged against the site plan structure. Note: the live fund page has no application route or deadline yet, so no "Apply" label until there is one.
 7. **Affiliation line link.** Whether the whole line ("A Flagship Initiative of the IAU Office of Astronomy for Development") links to astro4dev.org, or only the OAD name. Decide when building.
 
@@ -164,7 +164,9 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 Phase 0 (setup) is complete. The placeholder page is live at https://astrotourism.netlify.app (checked in the browser on 11 Oct 2026: Space Grotesk and Barlow load, navy background, no sideways scroll). The Sanity Studio runs locally. 
 
-Phase 1 (hero) is in progress. The hero content type and single-document Studio setup are written and tested (12 Oct 2026). Next: the restriction on deleting or duplicating the hero, then build/build.js, then netlify.toml and the webhook, then the hero HTML and CSS. netlify.toml currently publishes site/ with a placeholder page, and changes to dist/ once build.js exists. Waiting on the video clip
+Phase 1 (hero) is in progress. The hero content type and single-document Studio setup are written and tested (12 Oct 2026). Next: the restriction on deleting or duplicating the hero, then build/build.js, then netlify.toml and the webhook, then the hero HTML and CSS. netlify.toml currently publishes site/ with a placeholder page, and changes to dist/ once build.js exists.
+
+The hero video is done and committed (18 Oct 2026, commit 6f493fe, not pushed): four video files and the poster in `site/assets/video/`, with the source and processing steps in `credits.md`. Not pushed until Joy confirms the licence.
 
 ## Decisions log
 
@@ -194,6 +196,10 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 - Design intent: an extension of the main OAD site that is still clearly a different site (12 Oct 2026).
 - Studio written in JavaScript, not TypeScript (11 Oct 2026).
 - Signing in to Sanity with my GitHub login (10 Oct 2026). Ram and Joy are invited as editors by email later.
+- Hero video is a seamless crossfade loop, chosen over a plain loop (visible jump) and playing once then holding the last frame (18 Oct 2026).
+- Hero video slowed to half speed with motion interpolation, after removing the duplicate frames in OAD's original clip, so the stars move smoothly (18 Oct 2026).
+- Gentle sharpening on the hero video, chosen for crispness over smaller files. Strong sharpening was too much (18 Oct 2026).
+- Four hero video files: WebM and MP4 at 1920 and 1280 wide, so phones get the lighter version and older browsers get MP4 (18 Oct 2026).
 
 ## Known gotchas (carried over from the concept build)
 
