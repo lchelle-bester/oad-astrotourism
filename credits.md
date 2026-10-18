@@ -17,4 +17,16 @@ None yet.
 
 ## Video
 
-None yet.
+| File | Used for | Source | Licence |
+|---|---|---|---|
+| `site/assets/video/hero-1920.webm`, `hero-1920.mp4`, `hero-1280.webm`, `hero-1280.mp4` | Hero background (night sky over mountains) | Supplied by OAD. Filmed by: to confirm with Joy | To confirm with Joy |
+| `site/assets/video/hero-poster.jpg` | Hero poster image, also shown when reduced motion is on | First frame of the hero video above | Same as the hero video |
+
+How the hero files were made from OAD's original clip (8.7 s, 4K, HEVC):
+
+1. Trimmed to 0.7 s to 7.9 s, cutting the blue dusk at the start and the fade to black at the end.
+2. Removed the duplicate frames (every second frame in the original was a copy), leaving 104 real frames.
+3. Slowed to half speed with motion interpolation, so the stars move smoothly.
+4. Crossfaded the last 3 seconds into the start so the loop has no visible jump (10.6 s loop).
+5. Gentle sharpening to restore the crispness lost in steps 3 and 4.
+6. Encoded as WebM (VP9) and MP4 (H.264) at 1920 and 1280 wide, with the silent sound track removed.
