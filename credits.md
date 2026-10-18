@@ -13,8 +13,11 @@ The fonts are served from this site, not from Google, so visitors' browsers make
 
 ## Images
 
-None yet.
+| File | Used for | Source | Licence |
+|---|---|---|---|
+| `site/assets/images/logos/oad-*` (9 files) | OAD logo and symbol, header, footer and partner band | Official files from the "OAD Logo" folder, supplied by OAD. Renamed only, otherwise unaltered | OAD brand assets. To confirm with Ram or Joy |
 
+Which file to use where is in `site/assets/images/logos/README.md`. The logo is never recoloured, redrawn or stretched.
 ## Video
 
 | File | Used for | Source | Licence |
