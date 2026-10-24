@@ -45,6 +45,23 @@
         <p class="hero__subheading">{{hero.subheading}}</p>
       </div>
     </section>
+
+    <!-- The case: a short label, then two statistics written as sentences, the
+         figure in white and the rest softer. Designed for exactly these two
+         statements; OAD only updates the numbers and sources in Sanity. -->
+    <section class="case" aria-labelledby="case-heading">
+      <h2 id="case-heading" class="case__heading">{{caseSection.heading}}</h2>
+      <ul class="case__stats">
+        <li class="case__stat">
+          <p class="case__statement"><span class="case__figure">{{caseSection.stats.0.figure}}</span> {{caseSection.stats.0.label}}</p>
+          <p class="case__source"><a href="{{caseSection.stats.0.sourceUrl}}">Source: {{caseSection.stats.0.sourceName}} <span aria-hidden="true">↗</span></a></p>
+        </li>
+        <li class="case__stat">
+          <p class="case__statement"><span class="case__figure">{{caseSection.stats.1.figure}}</span> {{caseSection.stats.1.label}}</p>
+          <p class="case__source"><a href="{{caseSection.stats.1.sourceUrl}}">Source: {{caseSection.stats.1.sourceName}} <span aria-hidden="true">↗</span></a></p>
+        </li>
+      </ul>
+    </section>
   </main>
 
   <script src="/js/main.js" defer></script>

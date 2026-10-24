@@ -69,7 +69,21 @@ async function main() {
   if (!hero) {
     throw new Error('No published hero document found in Sanity. Publish it in the Studio.')
   }
-  const data = {hero}
+
+  const caseSection = await sanityQuery(
+    '*[_id == "caseSection"][0]{heading, stats[]{figure, label, sourceName, sourceUrl}}',
+  )
+  if (!caseSection || !caseSection.stats || caseSection.stats.length < 2) {
+    throw new Error('"The case" needs a heading and two statistics, published in the Studio.')
+  }
+  // Source links go into href="...": only allow real web addresses
+  for (const stat of caseSection.stats) {
+    if (!/^https?:\/\//.test(stat.sourceUrl || '')) {
+      throw new Error(`Source link for "${stat.figure}" must start with https:// or http://`)
+    }
+  }
+
+  const data = {hero, caseSection}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
