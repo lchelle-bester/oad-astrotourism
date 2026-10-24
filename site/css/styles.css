@@ -639,3 +639,21 @@ h3 {
     line-height: 1.5;
   }
 }
+
+/* Phone video file, on screens up to 448px wide (the <source> media in index.html
+   must match). It is only a slice of the picture, 26% to 85% across, so it is
+   placed exactly where that slice sits in the full picture, lining up with the
+   poster underneath. The full picture is drawn 650 mock-up pixels tall, so one
+   picture pixel is 650/1082 = 0.6007 --u. The slice starts 499.04 picture pixels in
+   (299.79 --u, so 0.21 --u left of the screen edge) and is 1132.36 wide (680.3 --u). */
+@media (max-width: 28em) {
+  .hero__video {
+    inset: auto;
+    left: calc(-0.21 * var(--u));
+    bottom: 0;
+    width: calc(680.3 * var(--u));
+    height: 100%;
+    object-fit: fill;
+    object-position: 0 0;   /* undo the full-picture shift from the phone hero rules */
+  }
+}

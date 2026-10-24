@@ -23,6 +23,7 @@ Which file to use where is in `site/assets/images/logos/README.md`. The logo is 
 | File | Used for | Source | Licence |
 |---|---|---|---|
 | `site/assets/video/hero-1920.webm`, `hero-1920.mp4`, `hero-1280.webm`, `hero-1280.mp4` | Hero background (night sky over mountains) | Supplied by OAD. Filmed by: Astronomy for Livelihood Creation / IAU OAD | Supplied by OAD for use on this site. Credit confirmed by Joy (Oct 2026) |
+| `site/assets/video/hero-phone.webm`, `hero-phone.mp4` | Hero background on phones up to 448px wide | Same clip and steps as above, from a slice of the 4K original (26% to 85% across, full height) at 1356 x 1296, so phones get a sharper picture. Brightening mask scaled to the new size (y 1018 to 1186) | Same as the hero video |
 | `site/assets/video/hero-poster.jpg` | Hero poster image, also shown when reduced motion is on | First frame of the hero video above | Same as the hero video |
 | `site/assets/video/hero-cutout.webp` | Mountains laid over the large word on desktop, so the peaks cut into it | First frame of the hero video above, with the sky made transparent (`docs/hero/make-mountain-cutout.py`), saved as WebP quality 92 | Same as the hero video |
 
