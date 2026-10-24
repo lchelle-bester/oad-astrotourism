@@ -22,7 +22,7 @@ Which file to use where is in `site/assets/images/logos/README.md`. The logo is 
 
 | File | Used for | Source | Licence |
 |---|---|---|---|
-| `site/assets/video/hero-1920.webm`, `hero-1920.mp4`, `hero-1280.webm`, `hero-1280.mp4` | Hero background (night sky over mountains) | Supplied by OAD. Filmed by: to confirm with Joy | To confirm with Joy |
+| `site/assets/video/hero-1920.webm`, `hero-1920.mp4`, `hero-1280.webm`, `hero-1280.mp4` | Hero background (night sky over mountains) | Supplied by OAD. Filmed by: Astronomy for Livelihood Creation / IAU OAD | Supplied by OAD for use on this site. Credit confirmed by Joy (Oct 2026) |
 | `site/assets/video/hero-poster.jpg` | Hero poster image, also shown when reduced motion is on | First frame of the hero video above | Same as the hero video |
 
 How the hero files were made from OAD's original clip (8.7 s, 4K, HEVC):

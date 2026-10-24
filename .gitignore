@@ -3,3 +3,5 @@ node_modules/
 .env.*
 dist/
 originals/
+# Site plan PDF: contains Ram's and Joy's email addresses, and the repo is public
+docs/Astrotourism Site Plan.pdf

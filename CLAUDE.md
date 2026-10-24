@@ -21,7 +21,7 @@ The full plan is the "Astrotourism Site Plan" Google Doc (shared with Ram and Jo
 ## People and timeline
 
 - **Ram (Ramasamy Venugopal) and Joy (Joyful Mdhluli)** run OAD's comms and website. They are the content owners and sign off on structure, design and what content stays. Joy is the astrotourism contact. Their comments on the site plan doc are the record of what they have agreed.
-- I owe them sign-off on the sitemap and mood board before building starts. Nothing structural gets built that they haven't seen.
+- The sitemap was signed off by Ram and Joy (about 17 Oct 2026). There is no mood board. Nothing structural gets built that they haven't seen.
 - Exams end mid-November. Target: finished by the end of the year, live by January.
 - OAD's office is closed about 21 December to 4 January, so anything needing their input or review must be done before then.
 - OAD's big event is 15 February at NEX.
@@ -112,7 +112,9 @@ Keep `credits.md` listing the source and licence of every image, video and font.
 - Logo source files are in the Google Drive folder "OAD Logo" (inside the astro-tourism photos drive). They are PNG and JPG only, no SVG. Use the official files unaltered, and confirm which one has light text for dark backgrounds before using it. The "04_OAD_full_transparent" file also contains partner logos (DSI, NRF, SAAO), so it suits a footer partner band, not the header.
 - Same typefaces and logo treatment as the main OAD site. Astrotourism takes its own emphasis from within the official palette.
 
-## Structure (from the site plan, subject to Ram and Joy's sign-off)
+## Structure (from the signed-off site plan, see docs/)
+
+A PDF copy of the site plan is kept in `docs/` but not committed, because it contains Ram's and Joy's email addresses and the repo is public.
 
 Organised by audience, not department. Nothing important more than two clicks deep.
 
@@ -148,9 +150,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 2. **Resource chooser.** Planned but needs Ram and Joy to say who each resource is for.
 3. **Scope.** Whether to narrow the scope or take on the content restructure fully, now the job includes moving project data out of Drive folders and spreadsheets into Sanity.
 4. **Order of the phases after the hero.** See Build phases.
-5. **Hero video licence.** The clip was supplied by OAD. Who filmed it and its licence are still to confirm with Joy, and must be settled before pushing the video files. Update `credits.md` when she replies.
-6. **Hero button.** None for now. Add one once the rest of the site exists and we know what to link to, judged against the site plan structure. Note: the live fund page has no application route or deadline yet, so no "Apply" label until there is one.
-7. **Affiliation line link.** Whether the whole line ("A Flagship Initiative of the IAU Office of Astronomy for Development") links to astro4dev.org, or only the OAD name. Decide when building.
+5. **Hero button.** None for now. Add one once the rest of the site exists and we know what to link to, judged against the site plan structure. Note: the live fund page has no application route or deadline yet, so no "Apply" label until there is one.
 
 ## Build phases
 
@@ -164,9 +164,9 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 Phase 0 (setup) is complete. The placeholder page is live at https://astrotourism.netlify.app (checked in the browser on 11 Oct 2026: Space Grotesk and Barlow load, navy background, no sideways scroll). The Sanity Studio runs locally. 
 
-Phase 1 (hero) is in progress. The hero content type and single-document Studio setup are written and tested (12 Oct 2026). Next: the restriction on deleting or duplicating the hero, then build/build.js, then netlify.toml and the webhook, then the hero HTML and CSS. netlify.toml currently publishes site/ with a placeholder page, and changes to dist/ once build.js exists.
+Phase 1 (hero) is in progress. Done: the hero content type with the single-document Studio setup and no delete or duplicate (12 Oct 2026), `build/build.js` (fetches the hero from Sanity, escapes it, fills the placeholders, writes `dist/`), `netlify.toml` (runs the build, publishes `dist/`, Node 24), and the hero video and poster (18 Oct 2026, pushed, credit confirmed by Joy).
 
-The hero video is done and committed (18 Oct 2026, commit 6f493fe, not pushed): four video files and the poster in `site/assets/video/`, with the source and processing steps in `credits.md`. Not pushed until Joy confirms the licence.
+The approved hero design is in `docs/hero/hero-design.md` with two reference images. Its open decisions were settled on 24 Oct 2026 (see decisions log). Next: split the headline into two Sanity fields, then the hero HTML, the desktop layout, the phone layout, and last the video work and the mountain cut-out. Also still to do in Phase 1: the Netlify build hook and the Sanity webhook (checked 24 Oct 2026, neither exists yet).
 
 ## Decisions log
 
@@ -200,6 +200,14 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 - Hero video slowed to half speed with motion interpolation, after removing the duplicate frames in OAD's original clip, so the stars move smoothly (18 Oct 2026).
 - Gentle sharpening on the hero video, chosen for crispness over smaller files. Strong sharpening was too much (18 Oct 2026).
 - Four hero video files: WebM and MP4 at 1920 and 1280 wide, so phones get the lighter version and older browsers get MP4 (18 Oct 2026).
+- Hero headline stored as two Sanity fields, the large word and the rest of the headline (24 Oct 2026). Chosen over one field split by build.js (a hidden rule editors can't see) and over hard-coding "Astrotourism". Two fields let the Studio check that the large word fits the layout.
+- Sitemap signed off by Ram and Joy (about 17 Oct 2026). The site plan PDF is kept locally in docs/, not committed.
+- Nav built in Phase 1 from the signed-off site plan (24 Oct 2026). Every dropdown item is its own page, at a folder-style address such as /resources/online-course/. Items with a dropdown are buttons that open it, not links. Addresses are provisional and may change as the pages are built.
+- Until a page exists, its nav link goes to the final address and a custom 404.html catches it (24 Oct 2026). Chosen over placeholder pages so nothing throwaway goes live.
+- Funding nav label stays "Get funding", as in the signed-off plan (24 Oct 2026). The funding page should say clearly when the next call opens.
+- Hero affiliation line is plain text, not a link (24 Oct 2026). The header link to astro4dev.org sits just above it, so a second link would be a duplicate.
+- Darker navy #0f1b2b used in the hero only, for the phone strip and ground, as a named token (24 Oct 2026). It matches the bottom of the video, but is outside the CI palette. Ram and Joy are not strict on brand colours. Colours for later sections, including where they meet the hero, are decided when those sections are built.
+- Hero video credit: Astronomy for Livelihood Creation / IAU OAD, confirmed by Joy (Oct 2026).
 
 ## Known gotchas (carried over from the concept build)
 
