@@ -9,10 +9,78 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <main style="padding: 4rem 1.5rem; max-width: 40rem;">
-    <h1>Astrotourism</h1>
-    <p>This site is being rebuilt. Setup page only, the real homepage comes in the next phase.</p>
-    <p><a href="https://astro4dev.org" style="color: var(--color-accent);">Visit the IAU Office of Astronomy for Development</a></p>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <!-- The "Part of OAD" link appears twice: this copy is the strip at the top on phones,
+         the copy at the end of the header is for desktop. CSS hides one of them at each
+         screen size, so keyboard and screen reader users only ever meet it once. -->
+    <div class="oad-strip">
+      <a class="oad-link" href="https://astro4dev.org">Part of the Office of Astronomy for Development <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <a class="site-home" href="/">
+      <img class="site-home__logo" src="assets/images/logos/oad-symbol-colour-transparent-for-dark-bg-300.png" alt="OAD" width="300" height="300">
+      <span class="site-home__name">Astrotourism</span>
+    </a>
+
+    <button class="menu-button" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">
+      <span class="menu-button__bar"></span>
+      <span class="menu-button__bar"></span>
+    </button>
+
+    <!-- Page addresses are provisional (see decisions log). Pages that don't exist yet go to 404.html. -->
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul class="site-nav__list">
+        <li class="site-nav__item">
+          <button class="site-nav__toggle" type="button" aria-expanded="false" aria-controls="nav-resources">Resources</button>
+          <ul id="nav-resources" class="site-nav__dropdown">
+            <li><a href="/resources/which-resource/">Which resource is right for you</a></li>
+            <li><a href="/resources/the-three-resources/">The three resources</a></li>
+            <li><a href="/resources/guidelines/">Practical guidelines</a></li>
+            <li><a href="/resources/online-course/">Online course</a></li>
+            <li><a href="/resources/community/">Community</a></li>
+          </ul>
+        </li>
+        <li class="site-nav__item">
+          <button class="site-nav__toggle" type="button" aria-expanded="false" aria-controls="nav-projects">Projects and impact</button>
+          <ul id="nav-projects" class="site-nav__dropdown">
+            <li><a href="/projects/impact/">Impact</a></li>
+            <li><a href="/projects/map/">Interactive map</a></li>
+            <li><a href="/projects/directory/">Project directory</a></li>
+            <li><a href="/projects/case-studies/">Case studies</a></li>
+            <li><a href="/projects/theory-of-change/">Theory of Change</a></li>
+            <li><a href="/projects/survey-report/">Global Survey Report</a></li>
+          </ul>
+        </li>
+        <li class="site-nav__item"><a href="/funding/">Get funding</a></li>
+        <li class="site-nav__item"><a href="/about/">About</a></li>
+      </ul>
+    </nav>
+
+    <div class="oad-desktop">
+      <a class="oad-link" href="https://astro4dev.org">Part of the Office of Astronomy for Development <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <!-- Decorative background: empty alt so screen readers skip it.
+           The video goes here in the last hero step; this poster then stays as the
+           still picture for people who have asked their device to reduce motion. -->
+      <div class="hero__media">
+        <img class="hero__poster" src="assets/video/hero-poster.jpg" alt="" width="1920" height="1082">
+      </div>
+
+      <div class="hero__content">
+        <p class="hero__affiliation">{{hero.affiliation}}</p>
+        <h1 class="hero__headline">
+          <span class="hero__word">{{hero.headlineWord}}</span>
+          <span class="hero__rest">{{hero.headlineRest}}</span>
+        </h1>
+        <p class="hero__subheading">{{hero.subheading}}</p>
+      </div>
+    </section>
   </main>
 </body>
 </html>
