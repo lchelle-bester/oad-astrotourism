@@ -50,6 +50,18 @@ function renderTemplate(template, data) {
   })
 }
 
+// Replaces each {{> name}} with the contents of site/partials/name.html, so shared
+// pieces such as the header are written once and appear on every page.
+function insertPartials(template) {
+  return template.replace(/\{\{>\s*([\w-]+)\s*\}\}/g, (match, name) => {
+    const file = path.join(SITE_DIR, 'partials', `${name}.html`)
+    if (!fs.existsSync(file)) {
+      throw new Error(`Partial ${match} not found: expected site/partials/${name}.html`)
+    }
+    return fs.readFileSync(file, 'utf8').trimEnd()
+  })
+}
+
 async function main() {
   const hero = await sanityQuery(
     '*[_id == "hero"][0]{headlineWord, headlineRest, subheading, affiliation}',
@@ -59,15 +71,24 @@ async function main() {
   }
   const data = {hero}
 
-  // Start from a clean dist/ and copy everything from site/ into it.
+  // Start from a clean dist/ and copy everything from site/ into it,
+  // apart from the partials, which only exist to be inserted into pages.
   fs.rmSync(DIST_DIR, {recursive: true, force: true})
-  fs.cpSync(SITE_DIR, DIST_DIR, {recursive: true})
+  fs.cpSync(SITE_DIR, DIST_DIR, {
+    recursive: true,
+    filter: (source) => !source.startsWith(path.join(SITE_DIR, 'partials')),
+  })
 
-  // Fill the placeholders in the pages, overwriting the copies in dist/.
-  const page = path.join(DIST_DIR, 'index.html')
-  fs.writeFileSync(page, renderTemplate(fs.readFileSync(page, 'utf8'), data))
+  // Every page at the top of site/ (index.html, 404.html, ...): insert the
+  // partials, then fill the placeholders, overwriting the copies in dist/.
+  const pages = fs.readdirSync(DIST_DIR).filter((name) => name.endsWith('.html'))
+  for (const name of pages) {
+    const page = path.join(DIST_DIR, name)
+    const html = insertPartials(fs.readFileSync(page, 'utf8'))
+    fs.writeFileSync(page, renderTemplate(html, data))
+  }
 
-  console.log('Built dist/ from site/ with hero:', hero.headlineWord, hero.headlineRest)
+  console.log(`Built ${pages.join(', ')} with hero:`, hero.headlineWord, hero.headlineRest)
 }
 
 // Only run the build when this file is started directly (node build/build.js),
@@ -79,4 +100,4 @@ if (require.main === module) {
   })
 }
 
-module.exports = {escapeHtml, renderTemplate}
+module.exports = {escapeHtml, renderTemplate, insertPartials}

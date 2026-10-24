@@ -6,6 +6,7 @@
    4. Skip link
    5. Header
    6. Hero
+   7. Page not found (404)
    ========================================================================== */
 
 
@@ -761,4 +762,33 @@ h3 {
     object-fit: fill;
     object-position: 0 0;   /* undo the full-picture shift from the phone hero rules */
   }
+}
+
+
+/* 7. PAGE NOT FOUND (404)
+   A plain page under the shared header. The header sits on top of the page
+   (position: absolute), so the content starts below it. */
+
+.not-found {
+  min-height: 100svh;
+  padding: 11rem var(--gutter) 4rem;
+  background: var(--color-night);
+}
+
+.not-found__heading {
+  max-width: 16ch;
+  margin: 0 0 1rem;
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  line-height: 1.05;
+}
+
+.not-found__text {
+  max-width: 36rem;
+  margin: 0 0 1.5rem;
+  color: rgb(255 255 255 / 0.91);
+}
+
+/* Sand on this navy is 8.9:1 */
+.not-found__home {
+  color: var(--color-accent-soft);
 }
