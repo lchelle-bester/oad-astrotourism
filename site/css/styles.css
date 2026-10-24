@@ -86,6 +86,9 @@
   --color-text:        var(--white);
   --color-accent:      var(--brand-yellow);  /* 7.7:1 on navy: buttons, key figures */
   --color-accent-soft: var(--brand-sand);    /* 6.4:1 on navy: secondary accent, OK as text */
+  --color-night:       #0f1b2b;  /* darker shade of the brand navy, NOT in the CI palette.
+                                    Hero only: phone strip and ground (decisions log, 24 Oct 2026).
+                                    White on it 17.3:1, sand 8.9:1 */
 
   /* Coloured panels. Text on them is white.
      terracotta 4.8:1 and teal 8.9:1 pass AA for normal text.
@@ -291,6 +294,84 @@ h3 {
   }
 }
 
+/* Phone header: everything below 1240px, over both hero layouts.
+   "not all and (...)" is the exact opposite of the desktop query above. */
+@media not all and (min-width: 77.5em) {
+  .site-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;   /* lets the strip take a whole row of its own */
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  /* "Part of OAD" strip across the very top */
+  .oad-strip {
+    flex: 0 0 100%;
+    display: flex;
+    align-items: center;
+    min-height: 2.125rem;
+    padding: 0 var(--gutter);
+    background: var(--color-night);
+    font-size: min(0.8125rem, 3.8vw);   /* 13px, a little smaller on very narrow phones */
+    line-height: 1.4;
+    white-space: nowrap;                /* keeps the arrow on the same line */
+  }
+
+  .site-home {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.75rem var(--gutter);
+  }
+
+  .site-home__logo {
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: auto;
+  }
+
+  .site-home__name {
+    padding-left: 0.75rem;
+    border-left: 1px solid rgb(255 255 255 / 0.4);
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+
+  /* 44 x 44 so it is easy to tap. The bars are 22px wide, so the button sits
+     11px further right than the gutter to line the bars up with the text edge. */
+  .menu-button {
+    display: grid;
+    place-content: center;
+    gap: 0.4375rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-left: auto;
+    margin-right: calc(var(--gutter) - 0.6875rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .menu-button__bar {
+    display: block;
+    width: 1.375rem;
+    height: 2px;
+    background: var(--color-text);
+  }
+
+  /* The menu opens in the nav step. Until then the nav is hidden here. */
+  .site-nav,
+  .oad-desktop {
+    display: none;
+  }
+}
+
 
 /* 6. HERO
    Layers, back to front: poster and video (and top shading), the large word,
@@ -300,10 +381,14 @@ h3 {
   display: block;
 }
 
-/* Video and cut-out are desktop only until the phone layout step */
-.hero__video,
+/* The cut-out is desktop only; the desktop rules below show it */
 .hero__cutout {
   display: none;
+}
+
+/* Lets children measure the hero's real width (cqw), which excludes the scrollbar */
+.hero {
+  container-type: inline-size;
 }
 
 .hero__headline {
@@ -341,7 +426,6 @@ h3 {
     min-height: 100svh;   /* svh: the screen height with the phone's browser bars showing */
     overflow: hidden;
     isolation: isolate;   /* keeps the z-index layers below inside the hero */
-    container-type: inline-size; /* lets children measure the hero's real width (cqw), which excludes the scrollbar */
   }
 
   .hero__media {
@@ -445,6 +529,104 @@ h3 {
     width: min(27.5rem, 40vw);
     margin: 0;
     font-size: 1.1875rem;
+    line-height: 1.5;
+  }
+}
+
+/* Phone hero: everything the desktop query above does not cover
+   (narrower than 720px, or shorter than 512px).
+   Measurements come from the 390px mock-up. --u is one mock-up pixel: it scales
+   with the screen width and stops growing at 480px, so wider screens show more
+   of the mountains instead of making everything bigger. */
+@media not all and (min-width: 45em) and (min-height: 32em) {
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--color-night);
+
+    --u: calc(min(100cqw, 480px) / 390);
+    /* 61px on the mock-up, smaller if needed so the word always fits on one line
+       (it is 5.68em wide at this letter-spacing) */
+    --word-size: min(61 * var(--u), (100cqw - 2 * var(--gutter)) / 5.68);
+  }
+
+  /* The video area: the top 650 mock-up pixels */
+  .hero__media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    height: calc(650 * var(--u));
+  }
+
+  /* The picture is shown at 0.6 of its 1080p size, shifted 300 mock-up pixels
+     left so the highest peak sits under the word. On wide, short screens the
+     shift shrinks so the picture always reaches the right-hand edge. */
+  .hero__poster,
+  .hero__video {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: max(-300 * var(--u), min(0px, 100cqw - 1152 * var(--u))) 100%;
+  }
+
+  /* Top shading behind the header, and the ground fade at the bottom of the
+     video area, so the picture melts into the dark ground band below it */
+  .hero__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgb(15 27 43 / 0.9) 0%, transparent 22%),
+      linear-gradient(to bottom, transparent 91.7%, var(--color-night) 100%);
+  }
+
+  /* The tagline and subheading flow in the ground band below the video area.
+     The affiliation and the large word are placed over the video. */
+  .hero__content {
+    position: relative;
+    z-index: 4;
+    padding: calc(672 * var(--u)) var(--gutter) 3rem;
+  }
+
+  /* Its bottom sits 20 mock-up pixels above the top of the capital letters.
+     translateY(-100%) lifts it by its own height, so it works for 1 or 2 lines. */
+  .hero__affiliation {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    top: calc(528 * var(--u) - 0.7 * var(--word-size) - 20 * var(--u));
+    transform: translateY(-100%);
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  /* Baseline on the highest peak (y 528 on the mock-up). The box top is
+     0.845em above the baseline (1 - 0.155, from the font measurement). */
+  .hero__word {
+    position: absolute;
+    left: calc(var(--gutter) - 1px);
+    top: calc(528 * var(--u) - 0.845 * var(--word-size));
+    font-size: var(--word-size);
+    letter-spacing: -0.05em;
+  }
+
+  .hero__rest {
+    text-align: end;
+    font-size: max(1.5rem, 30 * var(--u));
+  }
+
+  .hero__subheading {
+    margin: calc(20 * var(--u)) 0 0;
+    text-align: end;
+    font-size: 1.0625rem;
     line-height: 1.5;
   }
 }
