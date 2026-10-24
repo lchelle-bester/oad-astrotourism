@@ -56,6 +56,7 @@ The full plan is the "Astrotourism Site Plan" Google Doc (shared with Ram and Jo
 - Code lives in a GitHub repository, with Netlify deploying from it. Keep `.gitignore` for `node_modules`, `.env`, `dist/` and the full-size originals folder.
 - Commit small, one change per commit, with a message that says what changed and why.
 - The repo is public, so nothing secret is ever committed, not even briefly.
+- Netlify free plan: 300 credits a month, 15 per production deploy (every push to main), hard limit that pauses all sites when used up (checked in Netlify's docs, 24 Oct 2026). Commit freely, preview locally, and push to main as rarely as possible: only when the live site needs updating. Never push without me asking.
 
 ### Folder structure
 
@@ -151,6 +152,8 @@ Organised by audience, not department. Nothing important more than two clicks de
 3. **Scope.** Whether to narrow the scope or take on the content restructure fully, now the job includes moving project data out of Drive folders and spreadsheets into Sanity.
 4. **Order of the phases after the hero.** See Build phases.
 5. **Hero button.** None for now. Add one once the rest of the site exists and we know what to link to, judged against the site plan structure. Note: the live fund page has no application route or deadline yet, so no "Apply" label until there is one.
+6. **Rebuild cost of Sanity edits.** Each Sanity publish triggers a Netlify deploy (15 credits), so the free plan allows only about 20 deploys a month in total. Must be solved before Ram and Joy edit regularly: a paid Netlify plan, OAD paying, batching rebuilds, or another host (limits not yet checked).
+7. **Landscape phone layout.** Phones held sideways show only sky on the first screen. Left as is for now (24 Oct 2026); a compact desktop-style layout sized by height is the likely fix.
 
 ## Build phases
 
@@ -164,7 +167,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 Phase 0 (setup) is complete. The placeholder page is live at https://astrotourism.netlify.app (checked in the browser on 11 Oct 2026: Space Grotesk and Barlow load, navy background, no sideways scroll). The Sanity Studio runs locally. 
 
-Phase 1 (hero) is in progress. Done: the hero content type with the headline in two fields, build.js, netlify.toml, the hero HTML, the desktop layout (header from 1240px, hero from 720px wide and 512px tall), and the hero video with brightened mountains and the mountain cut-out (24 Oct 2026). Next: desktop checks and adjustments, then the phone layout (also used for the header up to 1240px), then the nav and menu JavaScript, then the 404 page. Still to do in Phase 1: the Netlify build hook and the Sanity webhook (neither exists yet), and the phone version of the video (a portrait crop from the 4K original).
+Phase 1 (hero) is in progress. Done: the hero content type with the headline in two fields, build.js, netlify.toml, the hero HTML, the desktop layout (header from 1240px, hero from 720px wide and 512px tall), the hero video with brightened mountains and the mountain cut-out, the phone layout (header below 1240px, hero below 720px wide or 512px tall) and the phone video file (24 Oct 2026). Next: the nav and menu JavaScript, then the 404 page. Still to do in Phase 1: the Netlify build hook and the Sanity webhook (neither exists yet; see open decision 6 on rebuild cost).
 
 ## Decisions log
 
@@ -212,6 +215,11 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 - Mountain cut-out saved as WebP (26 KB) instead of PNG (1.37 MB), with no visible difference (24 Oct 2026).
 - No pause button on the hero video (24 Oct 2026). Chosen over a quiet pause control and over a video that stops within 5 seconds. This fails WCAG 2.2.2 (Pause, Stop, Hide, Level A); Ram and Joy should be told, since the site plan promises WCAG 2.2 AA. The video still does not play when reduced motion is on.
 - Hero video speed and smoothness kept as they are (24 Oct 2026), after comparing one-third and one-quarter speed with crossfaded in-between frames. Those were smoother, but made the files 3 to 4 times bigger.
+- Phone hero fits on one screen on short phones; the picture and spacing scale by height too, while the large word always fills the width (24 Oct 2026).
+- On desktop, the word's height follows the ridge, so the peaks always cover 17.6% of the capital letters, as in the 1440 design (24 Oct 2026). Fixes the word sinking behind the mountains on portrait tablets.
+- Phone video: a slice of the 4K original (26% to 85% across, 1356 x 1296) for screens up to 448px, chosen over keeping the 1280 file and over the 1920 file (24 Oct 2026). The gain in sharpness is small because the source is soft.
+- Stay on main and push as rarely as possible, rather than working on a free dev branch (24 Oct 2026).
+- Claude updates CLAUDE.md (decisions log, open decisions, current state) directly, without asking first (24 Oct 2026).
 
 ## Known gotchas (carried over from the concept build)
 
@@ -225,4 +233,4 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 
 ## Keeping this file current
 
-At the end of a working session, offer to update Current state, Decisions log and Open decisions. Show me the change before you write it, so the file stays accurate and mine.
+Keep Current state, Decisions log and Open decisions up to date as decisions are made. Write the changes directly, without asking first, and tell me what changed (decided 24 Oct 2026).
