@@ -51,7 +51,9 @@ function renderTemplate(template, data) {
 }
 
 async function main() {
-  const hero = await sanityQuery('*[_id == "hero"][0]{headline, subheading, affiliation}')
+  const hero = await sanityQuery(
+    '*[_id == "hero"][0]{headlineWord, headlineRest, subheading, affiliation}',
+  )
   if (!hero) {
     throw new Error('No published hero document found in Sanity. Publish it in the Studio.')
   }
@@ -65,7 +67,7 @@ async function main() {
   const page = path.join(DIST_DIR, 'index.html')
   fs.writeFileSync(page, renderTemplate(fs.readFileSync(page, 'utf8'), data))
 
-  console.log('Built dist/ from site/ with hero:', hero.headline)
+  console.log('Built dist/ from site/ with hero:', hero.headlineWord, hero.headlineRest)
 }
 
 // Only run the build when this file is started directly (node build/build.js),
