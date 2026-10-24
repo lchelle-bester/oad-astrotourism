@@ -136,7 +136,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 ## Accessibility, performance, privacy
 
-- Standard: **WCAG 2.2 Level AA**, built into the markup. No accessibility overlay widget.
+- Standard: **WCAG 2.2 Level AA**, built into the markup. No accessibility overlay widget. One known exception: the hero video has no pause control (see decisions log).
 - Semantic HTML (real headings, lists, buttons, landmarks). Full keyboard use with a visible focus indicator. Skip-to-content link. Works at 200% zoom.
 - Alt text on every meaningful image, decorative images marked so screen readers skip them. Text rather than pictures of text.
 - Respect `prefers-reduced-motion`. Forms have proper labels and announce errors, not only with colour.
@@ -164,9 +164,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 Phase 0 (setup) is complete. The placeholder page is live at https://astrotourism.netlify.app (checked in the browser on 11 Oct 2026: Space Grotesk and Barlow load, navy background, no sideways scroll). The Sanity Studio runs locally. 
 
-Phase 1 (hero) is in progress. Done: the hero content type with the single-document Studio setup and no delete or duplicate (12 Oct 2026), `build/build.js` (fetches the hero from Sanity, escapes it, fills the placeholders, writes `dist/`), `netlify.toml` (runs the build, publishes `dist/`, Node 24), and the hero video and poster (18 Oct 2026, pushed, credit confirmed by Joy).
-
-The approved hero design is in `docs/hero/hero-design.md` with two reference images. Its open decisions were settled on 24 Oct 2026 (see decisions log). Next: split the headline into two Sanity fields, then the hero HTML, the desktop layout, the phone layout, and last the video work and the mountain cut-out. Also still to do in Phase 1: the Netlify build hook and the Sanity webhook (checked 24 Oct 2026, neither exists yet).
+Phase 1 (hero) is in progress. Done: the hero content type with the headline in two fields, build.js, netlify.toml, the hero HTML, the desktop layout (header from 1240px, hero from 720px wide and 512px tall), and the hero video with brightened mountains and the mountain cut-out (24 Oct 2026). Next: desktop checks and adjustments, then the phone layout (also used for the header up to 1240px), then the nav and menu JavaScript, then the 404 page. Still to do in Phase 1: the Netlify build hook and the Sanity webhook (neither exists yet), and the phone version of the video (a portrait crop from the 4K original).
 
 ## Decisions log
 
@@ -208,6 +206,12 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 - Hero affiliation line is plain text, not a link (24 Oct 2026). The header link to astro4dev.org sits just above it, so a second link would be a duplicate.
 - Darker navy #0f1b2b used in the hero only, for the phone strip and ground, as a named token (24 Oct 2026). It matches the bottom of the video, but is outside the CI palette. Ram and Joy are not strict on brand colours. Colours for later sections, including where they meet the hero, are decided when those sections are built.
 - Hero video credit: Astronomy for Livelihood Creation / IAU OAD, confirmed by Joy (Oct 2026).
+- Desktop header from 1240px wide; narrower screens get the phone header with the menu button (24 Oct 2026). Chosen over a middle version with the OAD link in the top strip, and over shortening the link to "Part of OAD".
+- Desktop hero only on screens at least 720px wide and 512px tall; shorter screens, such as a phone on its side, get the phone layout (24 Oct 2026). Chosen over shrinking the text by screen height.
+- Hero video rebuilt from OAD's 4K original with the mountains brightened before the crossfade (24 Oct 2026). The original is kept in originals/, outside git. It was committed and pushed once by mistake; it is no longer tracked but stays in the repo history (chosen over rewriting history).
+- Mountain cut-out saved as WebP (26 KB) instead of PNG (1.37 MB), with no visible difference (24 Oct 2026).
+- No pause button on the hero video (24 Oct 2026). Chosen over a quiet pause control and over a video that stops within 5 seconds. This fails WCAG 2.2.2 (Pause, Stop, Hide, Level A); Ram and Joy should be told, since the site plan promises WCAG 2.2 AA. The video still does not play when reduced motion is on.
+- Hero video speed and smoothness kept as they are (24 Oct 2026), after comparing one-third and one-quarter speed with crossfaded in-between frames. Those were smoother, but made the files 3 to 4 times bigger.
 
 ## Known gotchas (carried over from the concept build)
 

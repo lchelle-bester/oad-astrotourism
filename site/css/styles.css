@@ -136,6 +136,11 @@ h3 {
   outline-offset: 3px;
 }
 
+/* The hidden attribute must always win, even over a class that sets display */
+[hidden] {
+  display: none !important;
+}
+
 
 /* 4. SKIP LINK
    Off screen until it gets keyboard focus, then shown at the top left. */
@@ -288,11 +293,17 @@ h3 {
 
 
 /* 6. HERO
-   Layers, back to front: picture (and top shading), the large word,
-   [mountain cut-out, added later], bottom shading, the rest of the text. */
+   Layers, back to front: poster and video (and top shading), the large word,
+   the mountain cut-out, bottom shading, the rest of the text. */
 
 .hero__poster {
   display: block;
+}
+
+/* Video and cut-out are desktop only until the phone layout step */
+.hero__video,
+.hero__cutout {
+  display: none;
 }
 
 .hero__headline {
@@ -339,12 +350,27 @@ h3 {
     z-index: 0;
   }
 
-  /* Anchored to the bottom, so the mountains are never cropped off */
-  .hero__poster {
+  /* Poster, video and cut-out all fill the hero the same way, anchored to the
+     bottom so the mountains are never cropped off. Because they match exactly,
+     the cut-out lines up with the mountains in the video at every size. */
+  .hero__poster,
+  .hero__video,
+  .hero__cutout img {
+    position: absolute;
+    inset: 0;
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: 50% 100%;
+  }
+
+  .hero__cutout {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;   /* in front of the large word, behind the bottom shading */
+    pointer-events: none;
   }
 
   /* Top shading, so the header stays readable over the sky */

@@ -65,12 +65,26 @@
 
   <main id="main">
     <section class="hero">
-      <!-- Decorative background: empty alt so screen readers skip it.
-           The video goes here in the last hero step; this poster then stays as the
-           still picture for people who have asked their device to reduce motion. -->
+      <!-- Decorative background, hidden from screen readers. The poster is the still picture
+           shown until the video plays, and instead of it for people who have asked their
+           device to reduce motion. The video only loads when main.js starts it. -->
       <div class="hero__media">
         <img class="hero__poster" src="assets/video/hero-poster.jpg" alt="" width="1920" height="1082">
+        <video class="hero__video" muted loop playsinline preload="none" aria-hidden="true">
+          <source src="assets/video/hero-1280.webm" type="video/webm" media="(max-width: 64em)">
+          <source src="assets/video/hero-1920.webm" type="video/webm">
+          <source src="assets/video/hero-1280.mp4" type="video/mp4" media="(max-width: 64em)">
+          <source src="assets/video/hero-1920.mp4" type="video/mp4">
+        </video>
       </div>
+
+      <!-- The mountains with the sky made transparent, laid over the large word so the
+           peaks cut into it. Desktop layout only: the empty fallback image means phones
+           never download it. -->
+      <picture class="hero__cutout">
+        <source media="(min-width: 45em) and (min-height: 32em)" srcset="assets/video/hero-cutout.webp" type="image/webp">
+        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" width="1920" height="1082">
+      </picture>
 
       <div class="hero__content">
         <p class="hero__affiliation">{{hero.affiliation}}</p>
@@ -82,5 +96,7 @@
       </div>
     </section>
   </main>
+
+  <script src="js/main.js" defer></script>
 </body>
 </html>
