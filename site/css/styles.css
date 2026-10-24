@@ -3,6 +3,9 @@
    1. Fonts
    2. Design tokens
    3. Base
+   4. Skip link
+   5. Header
+   6. Hero
    ========================================================================== */
 
 
@@ -96,6 +99,9 @@
   /* Fonts */
   --font-heading: "Space Grotesk", system-ui, sans-serif;
   --font-body:    "Barlow", system-ui, sans-serif;
+
+  /* Spacing */
+  --gutter: clamp(1.25rem, 4.5vw, 4rem);   /* page side margin: 64px on a wide screen */
 }
 
 
@@ -128,4 +134,291 @@ h3 {
 :focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 3px;
+}
+
+
+/* 4. SKIP LINK
+   Off screen until it gets keyboard focus, then shown at the top left. */
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--color-accent);
+  color: var(--brand-navy);   /* navy on yellow is 7.7:1 */
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+
+/* 5. HEADER
+   Text styles shared by both layouts are outside the media query.
+   Desktop positions are inside it; the phone layout comes in its own step. */
+
+.site-home {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.site-home__name {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.oad-link {
+  color: var(--color-accent-soft);
+  text-decoration: none;
+}
+
+.oad-link:hover {
+  text-decoration: underline;
+}
+
+/* The full desktop header needs about 1240px (77.5em at the default text size).
+   Narrower screens get the phone header with the menu button.
+   Using em means the layout also switches if someone sets a larger text size. */
+@media (min-width: 77.5em) {
+  .site-header {
+    position: absolute;   /* sits on top of the hero instead of above it */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    padding: 1.5rem var(--gutter);
+    font-size: 1rem;
+  }
+
+  .oad-strip,
+  .menu-button {
+    display: none;   /* phone only */
+  }
+
+  .site-home {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .site-home__logo {
+    flex-shrink: 0;   /* never squash the logo when the header is tight */
+    width: 3.5rem;
+    height: auto;
+  }
+
+  .site-home__name {
+    padding-left: 1rem;
+    border-left: 1px solid rgb(255 255 255 / 0.4);
+    font-size: 1.375rem;
+    line-height: 1.4;
+  }
+
+  .site-nav {
+    margin-left: auto;   /* pushes the nav and the OAD link to the right */
+  }
+
+  .site-nav__list {
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-nav__item {
+    position: relative;   /* the dropdown will be placed against this */
+  }
+
+  .site-nav a,
+  .site-nav__toggle {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .site-nav a:hover,
+  .site-nav__toggle:hover {
+    text-decoration: underline;
+  }
+
+  /* Buttons come with browser styling (grey box, border); remove it so the
+     toggles look like the links next to them. */
+  .site-nav__toggle {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  /* Small chevron drawn with two borders of a rotated square */
+  .site-nav__toggle::after {
+    content: "";
+    display: inline-block;
+    width: 0.35em;
+    height: 0.35em;
+    margin-left: 0.5em;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-0.2em) rotate(45deg);
+  }
+
+  .site-nav__toggle[aria-expanded="true"]::after {
+    transform: translateY(0.05em) rotate(-135deg);
+  }
+
+  /* Closed dropdowns are hidden. Opening them needs JavaScript (next step). */
+  .site-nav__toggle[aria-expanded="false"] + .site-nav__dropdown {
+    display: none;
+  }
+
+  .oad-desktop {
+    margin-left: 2rem;
+    padding-left: 1rem;
+    border-left: 1px solid rgb(255 255 255 / 0.4);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+}
+
+
+/* 6. HERO
+   Layers, back to front: picture (and top shading), the large word,
+   [mountain cut-out, added later], bottom shading, the rest of the text. */
+
+.hero__poster {
+  display: block;
+}
+
+.hero__headline {
+  margin: 0;
+}
+
+.hero__word,
+.hero__rest {
+  display: block;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.hero__word {
+  letter-spacing: -0.045em;
+}
+
+.hero__affiliation {
+  color: var(--color-accent-soft);   /* sand on the dark sky */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+}
+
+.hero__subheading {
+  color: rgb(255 255 255 / 0.91);
+}
+
+/* Desktop hero from 720px wide (45em), but only on screens at least 512px tall (32em).
+   On shorter screens, such as a phone on its side, the text would run into the
+   large word, so they get the phone layout instead. */
+@media (min-width: 45em) and (min-height: 32em) {
+  .hero {
+    position: relative;
+    min-height: 100svh;   /* svh: the screen height with the phone's browser bars showing */
+    overflow: hidden;
+    isolation: isolate;   /* keeps the z-index layers below inside the hero */
+    container-type: inline-size; /* lets children measure the hero's real width (cqw), which excludes the scrollbar */
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* Anchored to the bottom, so the mountains are never cropped off */
+  .hero__poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 100%;
+  }
+
+  /* Top shading, so the header stays readable over the sky */
+  .hero__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgb(30 53 81 / 0.75) 0%, transparent 20%);
+  }
+
+  /* Bottom shading, above the mountains, so the text under the word stays readable */
+  .hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    height: 105px;
+    background: linear-gradient(to top, rgb(12 20 30 / 0.85) 0%, rgb(12 20 30 / 0.5) 55%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .hero__content {
+    position: absolute;
+    inset: 0;
+
+    /* How much the 1920 x 1082 picture is scaled to cover the hero:
+       screen pixels per picture pixel. Used to pin the word to the mountains.
+       The hero is exactly 100svh tall, so svh stands in for its height. */
+    --s: max(100cqw / 1920, 100svh / 1082);
+    --word-size: clamp(6rem, 15vw, 22rem);
+    --baseline: calc(155 * var(--s));    /* the word's baseline, from the bottom of the hero */
+    --foot: clamp(1.5rem, 4svh, 2.5rem); /* gap under the tagline and subheading */
+  }
+
+  /* The word's box is taller than its letters. Measured with the font:
+     the baseline sits 0.155em above the bottom of the box (line-height 1),
+     and capital letters are 0.70em tall. */
+  .hero__word {
+    position: absolute;
+    z-index: 1;
+    left: calc(var(--gutter) - 0.125rem);
+    bottom: calc(var(--baseline) - 0.155 * var(--word-size));
+    font-size: var(--word-size);
+  }
+
+  .hero__affiliation {
+    position: absolute;
+    z-index: 4;
+    left: calc(var(--gutter) + 0.375rem);
+    bottom: calc(var(--baseline) + 0.7 * var(--word-size) + 2.5rem);
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .hero__rest {
+    position: absolute;
+    z-index: 4;
+    left: calc(var(--gutter) + 0.125rem);
+    bottom: var(--foot);
+    font-size: clamp(2rem, 3.6vw, 4rem);
+    text-shadow: 0 2px 18px rgb(10 16 24 / 0.8);
+  }
+
+  .hero__subheading {
+    position: absolute;
+    z-index: 4;
+    right: var(--gutter);
+    bottom: var(--foot);
+    width: min(27.5rem, 40vw);
+    margin: 0;
+    font-size: 1.1875rem;
+    line-height: 1.5;
+  }
 }
