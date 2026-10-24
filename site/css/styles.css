@@ -487,7 +487,12 @@ h3 {
        The hero is exactly 100svh tall, so svh stands in for its height. */
     --s: max(100cqw / 1920, 100svh / 1082);
     --word-size: clamp(6rem, 15vw, 22rem);
-    --baseline: calc(155 * var(--s));    /* the word's baseline, from the bottom of the hero */
+    /* The word's baseline, from the bottom of the hero. The peaks under the word
+       reach about 186 picture pixels at every screen shape (measured from the
+       cut-out). The baseline is set so they always cover 17.6% of the capital
+       letters' height, as in the approved 1440 x 900 design (0.176 x 0.7 = 0.123).
+       On tall screens the picture is big and the word small, so the word moves up. */
+    --baseline: calc(186 * var(--s) - 0.123 * var(--word-size));
     --foot: clamp(1.5rem, 4svh, 2.5rem); /* gap under the tagline and subheading */
   }
 
@@ -537,7 +542,10 @@ h3 {
    (narrower than 720px, or shorter than 512px).
    Measurements come from the 390px mock-up. --u is one mock-up pixel: it scales
    with the screen width and stops growing at 480px, so wider screens show more
-   of the mountains instead of making everything bigger. */
+   of the mountains instead of making everything bigger. On short phones it also
+   shrinks so the whole hero fits on one screen: 768 mock-up pixels of picture and
+   text, plus up to three lines of subheading (4.5rem), which keeps its own size.
+   The large word follows the width only (--uw), so it always fills the line. */
 @media not all and (min-width: 45em) and (min-height: 32em) {
   .hero {
     position: relative;
@@ -546,10 +554,11 @@ h3 {
     isolation: isolate;
     background: var(--color-night);
 
-    --u: calc(min(100cqw, 480px) / 390);
+    --uw: calc(min(100cqw, 480px) / 390);
+    --u: min(var(--uw), (100svh - 4.5rem) / 768);
     /* 61px on the mock-up, smaller if needed so the word always fits on one line
        (it is 5.68em wide at this letter-spacing) */
-    --word-size: min(61 * var(--u), (100cqw - 2 * var(--gutter)) / 5.68);
+    --word-size: min(61 * var(--uw), (100cqw - 2 * var(--gutter)) / 5.68);
   }
 
   /* The video area: the top 650 mock-up pixels */
@@ -592,7 +601,7 @@ h3 {
   .hero__content {
     position: relative;
     z-index: 4;
-    padding: calc(672 * var(--u)) var(--gutter) 3rem;
+    padding: calc(672 * var(--u)) var(--gutter) calc(46 * var(--u));
   }
 
   /* Its bottom sits 20 mock-up pixels above the top of the capital letters.
