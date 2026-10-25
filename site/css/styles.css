@@ -146,6 +146,16 @@ h3 {
   display: none !important;
 }
 
+/* Hidden on screen but still read by screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 
 /* 4. SKIP LINK
    Off screen until it gets keyboard focus, then shown at the top left. */

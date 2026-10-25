@@ -45,6 +45,28 @@
         <p class="hero__subheading">{{hero.subheading}}</p>
       </div>
     </section>
+
+    <!-- The case (design "Trail", docs/case/case-design.md). All words and numbers come
+         from Sanity; the design is made for exactly three statistics. Each statistic
+         reads as one sentence, number first, then its source. -->
+    <section class="case" aria-labelledby="case-heading">
+      <p class="case__eyebrow">{{caseSection.eyebrow}}</p>
+      <h2 id="case-heading" class="case__heading">{{caseSection.heading}}</h2>
+      <ul class="case__stats">
+        <li class="case__stat">
+          <p class="case__statement"><span class="case__value">{{caseSection.stats.0.value}}</span> <span class="case__label">{{caseSection.stats.0.label}}</span></p>
+          <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.0.sourceText}}</p>
+        </li>
+        <li class="case__stat">
+          <p class="case__statement"><span class="case__value">{{caseSection.stats.1.value}}</span> <span class="case__label">{{caseSection.stats.1.label}}</span></p>
+          <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.1.sourceText}}</p>
+        </li>
+        <li class="case__stat">
+          <p class="case__statement"><span class="case__value">{{caseSection.stats.2.value}}</span> <span class="case__label">{{caseSection.stats.2.label}}</span></p>
+          <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.2.sourceText}}</p>
+        </li>
+      </ul>
+    </section>
   </main>
 
   <script src="/js/main.js" defer></script>

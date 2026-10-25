@@ -69,7 +69,17 @@ async function main() {
   if (!hero) {
     throw new Error('No published hero document found in Sanity. Publish it in the Studio.')
   }
-  const data = {hero}
+
+  // The case is designed for exactly three statistics (Sanity also enforces this).
+  // The source link and checked-on date are records for editors, not shown on the page.
+  const caseSection = await sanityQuery(
+    '*[_id == "caseSection"][0]{eyebrow, heading, stats[]{value, label, sourceText}}',
+  )
+  if (!caseSection || !Array.isArray(caseSection.stats) || caseSection.stats.length !== 3) {
+    throw new Error('"The case" needs exactly three published statistics. Check it in the Studio.')
+  }
+
+  const data = {hero, caseSection}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
