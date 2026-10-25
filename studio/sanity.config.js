@@ -4,7 +4,7 @@ import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 
 // Content types that only ever have one document
-const singletonTypes = new Set(['hero'])
+const singletonTypes = new Set(['hero', 'caseSection'])
 // The only actions an editor gets on those documents (no delete, no duplicate)
 const singletonActions = new Set(['publish', 'discardChanges', 'restore'])
 
@@ -25,6 +25,10 @@ export default defineConfig({
               .title('Hero')
               .id('hero')
               .child(S.document().schemaType('hero').documentId('hero')),
+            S.listItem()
+              .title('The case')
+              .id('caseSection')
+              .child(S.document().schemaType('caseSection').documentId('caseSection')),
           ]),
     }),
     visionTool(),
