@@ -6,8 +6,7 @@
    4. Skip link
    5. Header
    6. Hero
-   7. The case
-   8. Page not found (404)
+   7. Page not found (404)
    ========================================================================== */
 
 
@@ -572,9 +571,7 @@ h3 {
     background: linear-gradient(to bottom, rgb(30 53 81 / 0.75) 0%, transparent 20%);
   }
 
-  /* Bottom shading, above the mountains, so the text under the word stays readable.
-     It ends in solid ground colour, the same as the section below, so scrolling
-     down runs from the mountains into the ground with no visible edge. */
+  /* Bottom shading, above the mountains, so the text under the word stays readable */
   .hero::after {
     content: "";
     position: absolute;
@@ -582,8 +579,8 @@ h3 {
     right: 0;
     bottom: 0;
     z-index: 3;
-    height: 140px;
-    background: linear-gradient(to top, var(--color-night) 0%, rgb(15 27 43 / 0.85) 25%, rgb(15 27 43 / 0.5) 60%, transparent 100%);
+    height: 105px;
+    background: linear-gradient(to top, rgb(12 20 30 / 0.85) 0%, rgb(12 20 30 / 0.5) 55%, transparent 100%);
     pointer-events: none;
   }
 
@@ -768,96 +765,7 @@ h3 {
 }
 
 
-/* 7. THE CASE
-   Continues on the hero's ground colour, so scrolling runs from the mountains
-   onto the ground with no edge. A small sand label (like the hero's affiliation
-   line), then two statements set as large sentences: the figure in white, the
-   rest softer. On wider screens the second statement sits lower and to the
-   right, echoing the hero's tagline and subheading.
-   Contrast on #0f1b2b: white 17.3:1, the softer text (white at 55%) about 6:1,
-   sand 8.9:1. */
-
-.case {
-  padding: clamp(4.5rem, 13vh, 9rem) var(--gutter);
-  background: var(--color-night);
-}
-
-.case__heading {
-  margin: 0 0 clamp(2.5rem, 7vh, 4.5rem);
-  color: var(--color-accent-soft);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.6;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.case__stats {
-  display: grid;
-  gap: clamp(3rem, 9vh, 6rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Staggered on a 12-column grid: the first statement on the left, the second
-   overlapping it a little and one row lower, on the right */
-@media (min-width: 45em) {
-  .case__stats {
-    grid-template-columns: repeat(12, 1fr);
-    column-gap: 0;
-  }
-
-  .case__stat:first-child {
-    grid-column: 1 / span 7;
-  }
-
-  .case__stat:last-child {
-    grid-column: 6 / span 7;
-  }
-}
-
-.case__statement {
-  max-width: 22ch;
-  margin: 0;
-  color: rgb(255 255 255 / 0.55);
-  font-family: var(--font-heading);
-  font-size: clamp(1.75rem, 3.6vw, 3.5rem);
-  font-weight: 600;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-}
-
-/* Narrower for the first statement so "light-polluted" moves to the next line
-   whole, instead of breaking at its hyphen */
-.case__stat:first-child .case__statement {
-  max-width: 19ch;
-}
-
-.case__figure {
-  color: var(--color-text);
-}
-
-.case__source {
-  margin: 1.25rem 0 0;
-  font-size: 0.8125rem;
-}
-
-.case__source a {
-  color: rgb(255 255 255 / 0.55);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.case__source a:hover,
-.case__source a:focus-visible {
-  color: var(--color-text);
-  text-decoration: underline;
-}
-
-
-/* 8. PAGE NOT FOUND (404)
+/* 7. PAGE NOT FOUND (404)
    A plain page under the shared header. The header sits on top of the page
    (position: absolute), so the content starts below it. */
 
