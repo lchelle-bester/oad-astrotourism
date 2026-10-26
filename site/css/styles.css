@@ -582,17 +582,47 @@ h3 {
     background: linear-gradient(to bottom, rgb(30 53 81 / 0.75) 0%, transparent 20%);
   }
 
-  /* Bottom shading, above the mountains, so the text under the word stays readable */
+  /* Bottom fade: an eased fade over the last 210px that ends in exactly the colour
+     of the section below (The case), so there is no line where the hero ends.
+     Eased (slow start, fast finish) so the point where it begins does not show.
+     The fade reaches up behind "Astrotourism", so it is drawn twice, to keep the
+     letters fully white:
+     1. here, over the video but UNDER the word (z-index 0, after the media);
+     2. on the mountain cut-out only, through a mask (below). */
+  .hero {
+    --bottom-fade: linear-gradient(to bottom,
+      rgb(15 27 43 / 0) 0%,
+      rgb(15 27 43 / 0.05) 12%,
+      rgb(15 27 43 / 0.18) 30%,
+      rgb(15 27 43 / 0.42) 50%,
+      rgb(15 27 43 / 0.72) 70%,
+      rgb(15 27 43 / 0.92) 88%,
+      var(--color-night) 100%);
+  }
+
   .hero::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 3;
-    height: 105px;
-    background: linear-gradient(to top, rgb(12 20 30 / 0.85) 0%, rgb(12 20 30 / 0.5) 55%, transparent 100%);
+    z-index: 0;
+    height: 210px;
+    background: var(--bottom-fade);
     pointer-events: none;
+  }
+
+  /* The same fade laid over the cut-out. A mask decides where a layer shows: here
+     the cut-out picture itself is the mask, sized and placed exactly like the
+     picture, so the fade only darkens the mountains and never the gaps where the
+     letters show through. */
+  .hero__cutout::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--bottom-fade) 0 100% / 100% 210px no-repeat;
+    -webkit-mask: url("/assets/video/hero-cutout.webp") 50% 100% / cover no-repeat;
+    mask: url("/assets/video/hero-cutout.webp") 50% 100% / cover no-repeat;
   }
 
   .hero__content {
@@ -702,15 +732,33 @@ h3 {
     object-position: max(-300 * var(--u), min(0px, 100cqw - 1152 * var(--u))) 100%;
   }
 
-  /* Top shading behind the header, and the ground fade at the bottom of the
-     video area, so the picture melts into the dark ground band below it */
+  /* Top shading behind the header */
   .hero__media::after {
     content: "";
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(to bottom, rgb(15 27 43 / 0.9) 0%, transparent 22%),
-      linear-gradient(to bottom, transparent 91.7%, var(--color-night) 100%);
+    background: linear-gradient(to bottom, rgb(15 27 43 / 0.9) 0%, transparent 22%);
+  }
+
+  /* Ground fade: the bottom of the picture melts into the dark ground band over
+     112 mock-up pixels (y 550 to 662), with the same eased stops as on desktop */
+  .hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(550 * var(--u));
+    z-index: 1;
+    height: calc(112 * var(--u));
+    background: linear-gradient(to bottom,
+      rgb(15 27 43 / 0) 0%,
+      rgb(15 27 43 / 0.05) 12%,
+      rgb(15 27 43 / 0.18) 30%,
+      rgb(15 27 43 / 0.42) 50%,
+      rgb(15 27 43 / 0.72) 70%,
+      rgb(15 27 43 / 0.92) 88%,
+      var(--color-night) 100%);
+    pointer-events: none;
   }
 
   /* The tagline and subheading flow in the ground band below the video area.
