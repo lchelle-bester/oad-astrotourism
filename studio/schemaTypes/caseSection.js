@@ -1,6 +1,6 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
-// "The case" is the section under the hero: a small eyebrow, a heading, and three
+// "The case" is the section under the hero: a heading and three
 // statistics placed along the trail. There is only one, so it is a single document.
 // The design is made for exactly three statistics, and every statistic must have
 // its source, so a figure can never go live without one.
@@ -9,16 +9,6 @@ export const caseSection = defineType({
   title: 'The case',
   type: 'document',
   fields: [
-    defineField({
-      name: 'eyebrow',
-      title: 'Eyebrow',
-      type: 'string',
-      description: 'The small line above the heading, for example "Why astrotourism".',
-      validation: (Rule) => [
-        Rule.required().error('Add the eyebrow.'),
-        Rule.max(30).warning('The eyebrow works best as two or three words.'),
-      ],
-    }),
     defineField({
       name: 'heading',
       title: 'Heading',

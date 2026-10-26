@@ -73,7 +73,7 @@ async function main() {
   // The case is designed for exactly three statistics (Sanity also enforces this).
   // The source link and checked-on date are records for editors, not shown on the page.
   const caseSection = await sanityQuery(
-    '*[_id == "caseSection"][0]{eyebrow, heading, stats[]{value, label, sourceText}}',
+    '*[_id == "caseSection"][0]{heading, stats[]{value, label, sourceText}}',
   )
   if (!caseSection || !Array.isArray(caseSection.stats) || caseSection.stats.length !== 3) {
     throw new Error('"The case" needs exactly three published statistics. Check it in the Studio.')

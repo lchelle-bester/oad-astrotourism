@@ -838,16 +838,6 @@ h3 {
   background: var(--color-night);
 }
 
-.case__eyebrow {
-  margin: 0 0 1rem;
-  color: var(--color-accent-soft);
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
 .case__heading {
   margin: 0;
   line-height: 1.12;
@@ -1068,6 +1058,44 @@ h3 {
 
   .case__source {
     font-size: max(0.75rem, 12 * var(--px));
+  }
+}
+
+
+/* MOTION (only when main.js adds .case--animated, so the section looks finished
+   without JavaScript, and main.js never adds it when reduced motion is on) */
+
+/* Waypoint dots start dim and light up when the drawn trail reaches them */
+.case--animated .case__waypoint,
+.case--animated .case__stat::before {
+  opacity: 0.3;
+  transition: opacity 0.4s ease-out;
+}
+
+.case--animated .case__waypoint.is-lit,
+.case--animated .case__stat.is-lit::before {
+  opacity: 1;
+}
+
+/* Single column: each trail piece is cut off below the drawn point.
+   --reveal (0 to 1) is set by main.js on its stat or the intro; without it, 1. */
+.case__intro::before,
+.case__stat::after {
+  clip-path: inset(0 0 calc((1 - var(--reveal, 1)) * 100%) 0);
+}
+
+/* Desktop only: blocks fade in and rise 16px once, as they come into view.
+   Text on phones never moves. */
+@media (min-width: 78em) {
+  .case--animated .will-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .case--animated .will-reveal.is-revealed {
+    opacity: 1;
+    transform: none;
   }
 }
 
