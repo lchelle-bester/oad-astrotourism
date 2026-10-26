@@ -779,7 +779,7 @@ h3 {
 /* 7. THE CASE (design "Trail", docs/case/case-design.md)
    Statistics along a dotted trail, on the dark ground under the hero.
    Desktop: a "stage" with the mock-up's exact shape (aspect-ratio 1440 / 900),
-   capped at 1440px wide and centred. The trail drawing uses the same 1440 x 900
+   capped at 1920px wide and centred. The trail drawing uses the same 1440 x 900
    coordinates, and the text blocks are placed as fractions of the stage, so they
    stay lined up at every width. --px is one mock-up pixel: the stage width / 1440.
    Contrast on #0f1b2b: white 17.3:1, yellow 10.7:1, sand 8.9:1, white at 62% 7.3:1. */
@@ -882,9 +882,11 @@ h3 {
     pointer-events: none;
   }
 
+  /* Grows with the screen up to 1920px, so the heading stays in line with the
+     hero text on all common screens (decisions log, 26 Oct 2026) */
   .case__stage {
     position: relative;
-    max-width: 1440px;
+    max-width: 1920px;
     margin: 0 auto;
     aspect-ratio: 1440 / 900;
     container-type: inline-size;
@@ -900,9 +902,10 @@ h3 {
   }
 
   /* Each block is placed at the spec's position, as a fraction of the stage */
+  /* Same side margin as the hero text, so the two line up exactly */
   .case__intro {
     position: absolute;
-    left: calc(64 / 1440 * 100%);
+    left: var(--gutter);
     top: calc(56 / 900 * 100%);
     max-width: calc(560 * var(--px));
   }
