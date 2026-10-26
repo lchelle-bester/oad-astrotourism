@@ -1020,8 +1020,18 @@ h3 {
     max-width: calc(560 * var(--px));
   }
 
+  /* Body font, regular weight, soft white: clearly different from the bold white
+     "for a better world." just above it (decided 26 Oct 2026). One line, so the
+     trail can start right after it. White at 70% on #0f1b2b is about 9:1. */
   .case__heading {
-    font-size: max(1.75rem, 44 * var(--px));
+    max-width: none;
+    color: rgb(255 255 255 / 0.7);
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: max(1.75rem, 40 * var(--px));
+    line-height: 1.2;
+    letter-spacing: 0;
+    white-space: nowrap;
   }
 
   .case__stat {
@@ -1064,6 +1074,11 @@ h3 {
 
 /* MOTION (only when main.js adds .case--animated, so the section looks finished
    without JavaScript, and main.js never adds it when reduced motion is on) */
+
+/* The desktop trail's mask: a short ease smooths the steps between scroll events */
+.case--animated .case__trail-mask {
+  transition: stroke-dashoffset 0.2s ease-out;
+}
 
 /* Waypoint dots start dim and light up when the drawn trail reaches them */
 .case--animated .case__waypoint,
