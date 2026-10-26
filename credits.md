@@ -16,6 +16,7 @@ The fonts are served from this site, not from Google, so visitors' browsers make
 | File | Used for | Source | Licence |
 |---|---|---|---|
 | `site/assets/images/logos/oad-*` (9 files) | OAD logo and symbol, header, footer and partner band | Official files from the "OAD Logo" folder, supplied by OAD. Renamed only, otherwise unaltered | OAD brand assets. To confirm with Ram or Joy |
+| `site/assets/images/case/contours-desktop.svg`, and the trail and waypoint drawing inside `site/index.html` | The case: contour lines, dotted trail, waypoint dots | Drawn for this site, from the approved design files `docs/case/case-trail-desktop.svg` and `case-trail-phone.svg` | Made for this project |
 
 Which file to use where is in `site/assets/images/logos/README.md`. The logo is never recoloured, redrawn or stretched.
 ## Video

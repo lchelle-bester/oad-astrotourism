@@ -50,22 +50,50 @@
          from Sanity; the design is made for exactly three statistics. Each statistic
          reads as one sentence, number first, then its source. -->
     <section class="case" aria-labelledby="case-heading">
-      <p class="case__eyebrow">{{caseSection.eyebrow}}</p>
-      <h2 id="case-heading" class="case__heading">{{caseSection.heading}}</h2>
-      <ul class="case__stats">
-        <li class="case__stat">
-          <p class="case__statement"><span class="case__value">{{caseSection.stats.0.value}}</span> <span class="case__label">{{caseSection.stats.0.label}}</span></p>
-          <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.0.sourceText}}</p>
-        </li>
-        <li class="case__stat">
-          <p class="case__statement"><span class="case__value">{{caseSection.stats.1.value}}</span> <span class="case__label">{{caseSection.stats.1.label}}</span></p>
-          <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.1.sourceText}}</p>
-        </li>
-        <li class="case__stat">
-          <p class="case__statement"><span class="case__value">{{caseSection.stats.2.value}}</span> <span class="case__label">{{caseSection.stats.2.label}}</span></p>
-          <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.2.sourceText}}</p>
-        </li>
-      </ul>
+      <!-- Decorative drawings: contour lines across the full width, and the trail with
+           its three waypoint dots on the same 1440 x 900 grid as the text. Both are
+           hidden from screen readers. Coordinates are from docs/case/case-trail-desktop.svg. -->
+      <img class="case__contours" src="/assets/images/case/contours-desktop.svg" alt="" width="1440" height="900">
+
+      <div class="case__stage">
+        <svg class="case__trail" viewBox="0 0 1440 900" aria-hidden="true" focusable="false">
+          <g transform="translate(0,-120)">
+            <path id="case-trail" d="M720,124 C 760,200 980,240 1000,330 C 1020,440 470,470 430,610 C 420,820 900,820 1000,860 C 1060,890 760,985 720,1020" fill="none" stroke="#d9b487" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round"/>
+            <g class="case__waypoint">
+              <circle cx="1000" cy="330" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
+              <circle cx="1000" cy="330" r="9" fill="#f9c434"/>
+            </g>
+            <g class="case__waypoint">
+              <circle cx="430" cy="610" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
+              <circle cx="430" cy="610" r="9" fill="#f9c434"/>
+            </g>
+            <g class="case__waypoint">
+              <circle cx="1000" cy="860" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
+              <circle cx="1000" cy="860" r="9" fill="#f9c434"/>
+            </g>
+          </g>
+        </svg>
+
+        <div class="case__intro">
+          <p class="case__eyebrow">{{caseSection.eyebrow}}</p>
+          <h2 id="case-heading" class="case__heading">{{caseSection.heading}}</h2>
+        </div>
+
+        <ul class="case__stats">
+          <li class="case__stat">
+            <p class="case__statement"><span class="case__value">{{caseSection.stats.0.value}}</span> <span class="case__label">{{caseSection.stats.0.label}}</span></p>
+            <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.0.sourceText}}</p>
+          </li>
+          <li class="case__stat">
+            <p class="case__statement"><span class="case__value">{{caseSection.stats.1.value}}</span> <span class="case__label">{{caseSection.stats.1.label}}</span></p>
+            <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.1.sourceText}}</p>
+          </li>
+          <li class="case__stat">
+            <p class="case__statement"><span class="case__value">{{caseSection.stats.2.value}}</span> <span class="case__label">{{caseSection.stats.2.label}}</span></p>
+            <p class="case__source"><span class="visually-hidden">Source: </span>{{caseSection.stats.2.sourceText}}</p>
+          </li>
+        </ul>
+      </div>
     </section>
   </main>
 
