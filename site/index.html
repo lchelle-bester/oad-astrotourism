@@ -53,7 +53,10 @@
       <!-- Decorative drawings: contour lines across the full width, and the trail with
            its three waypoint dots on the same 1440 x 900 grid as the text. Both are
            hidden from screen readers. Coordinates are from docs/case/case-trail-desktop.svg. -->
-      <img class="case__contours" src="/assets/images/case/contours-desktop.svg" alt="" width="1440" height="900">
+      <picture class="case__contours">
+        <source media="(max-width: 44.99em)" srcset="/assets/images/case/contours-phone.svg">
+        <img src="/assets/images/case/contours-desktop.svg" alt="" width="1440" height="900">
+      </picture>
 
       <div class="case__stage">
         <svg class="case__trail" viewBox="0 0 1440 900" aria-hidden="true" focusable="false">

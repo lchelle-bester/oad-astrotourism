@@ -839,25 +839,59 @@ h3 {
   line-height: 1.4;
 }
 
-/* Until the phone layout (step d): text simply stacked, drawings hidden */
-@media not all and (min-width: 64em) {
+/* Contour lines: the phone or desktop drawing (chosen in the HTML), stretched over
+   the whole section */
+.case__contours,
+.case__contours img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* SINGLE COLUMN (below 1248px): stats in normal document flow, so long labels or
+   bigger text settings can never overlap. The trail runs down the left in pieces,
+   one per gap between dots, each stretched to fit and always passing through the
+   dots, which sit level with the middle of each number (72px numbers, so 36px down).
+   Text column: the side margin plus 52px; trail and dots: the side margin plus 2 to 32px. */
+@media not all and (min-width: 78em) {
   .case {
-    padding: 4rem var(--gutter);
+    --pad-top: 2rem;
+    --pad-bottom: 3rem;
+    --list-gap: 3.5rem;
+    padding: var(--pad-top) var(--gutter) var(--pad-bottom) calc(var(--gutter) + 52px);
   }
 
-  .case__contours,
   .case__trail {
     display: none;
   }
 
+  .case__intro,
+  .case__stats {
+    position: relative;
+    max-width: 34rem;
+  }
+
   .case__heading {
-    font-size: 1.75rem;
+    font-size: 1.5625rem;
+    line-height: 1.15;
   }
 
   .case__stats {
-    display: grid;
-    gap: 2.5rem;
-    margin-top: 2.5rem;
+    margin-top: var(--list-gap);
+  }
+
+  /* Each stat's height includes the space below it, so a trail piece that is
+     100% of its stat runs exactly from this dot to the next */
+  .case__stat {
+    position: relative;
+    padding-bottom: 4.5rem;
+  }
+
+  .case__stat:last-child {
+    padding-bottom: 0;
   }
 
   .case__value {
@@ -865,23 +899,61 @@ h3 {
     font-size: 4.5rem;
   }
 
+  .case__label {
+    font-size: 1rem;
+  }
+
   .case__source {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
+  }
+
+  /* Trail pieces: from the top of the section to the first dot (on the intro),
+     from each dot to the next (on each stat), and from the last dot to the bottom */
+  .case__intro::before,
+  .case__stat::after {
+    content: "";
+    position: absolute;
+    left: -50px;
+    width: 30px;
+    background: url("/assets/images/case/trail-phone-mid.svg") 0 0 / 100% 100% no-repeat;
+  }
+
+  .case__intro::before {
+    top: calc(-1 * var(--pad-top));
+    bottom: calc(-1 * (var(--list-gap) + 36px));
+    background-image: url("/assets/images/case/trail-phone-start.svg");
+  }
+
+  .case__stat::after {
+    top: 36px;
+    bottom: -36px;
+  }
+
+  .case__stat:last-child::after {
+    bottom: calc(-1 * var(--pad-bottom));
+    background-image: url("/assets/images/case/trail-phone-end.svg");
+  }
+
+  /* Waypoint dot: a yellow dot (radius 7) inside a ring (radius 15) at 35%,
+     centred on the trail and level with the middle of the number */
+  .case__stat::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    left: -52px;
+    top: 20px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgb(249 196 52 / 0.35);
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--color-accent) 0 7px, transparent 7.5px);
   }
 }
 
-/* Desktop: the zigzag. The breakpoint is provisional until step d measures it. */
-@media (min-width: 64em) {
-  /* Contour lines across the whole width and height of the section */
-  .case__contours {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
+/* DESKTOP (from 1248px): the zigzag. 1248px is the narrowest width where the
+   second stat keeps clear of the trail and the third fits inside the stage
+   (measured 26 Oct 2026). */
+@media (min-width: 78em) {
   /* Grows with the screen up to 1920px, so the heading stays in line with the
      hero text on all common screens (decisions log, 26 Oct 2026) */
   .case__stage {

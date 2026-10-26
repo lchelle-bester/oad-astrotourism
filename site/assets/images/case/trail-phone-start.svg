@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 228" preserveAspectRatio="none">
+<!-- The case, phone trail: from the top of the section down to the first dot.
+     Stretched to the height between two dots; it always starts and ends at x 14,
+     where the dots are. non-scaling-stroke keeps the line and its dots even. -->
+<path d="M14,0 C14,76 30,136 14,228" fill="none" stroke="#d9b487" stroke-width="2.5" stroke-dasharray="2 10" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</svg>
