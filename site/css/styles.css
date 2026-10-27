@@ -1479,12 +1479,6 @@ h3 {
   background: rgb(255 255 255 / 0.35);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.4 0.8C12.9 7.6 15.6 10.6 23.2 11.6C15.9 13.1 13.1 15.7 11.7 23.3C11.2 16.2 8.3 13.2 0.8 12.5C8.1 11 11 8.1 12.4 0.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.4 0.8C12.9 7.6 15.6 10.6 23.2 11.6C15.9 13.1 13.1 15.7 11.7 23.3C11.2 16.2 8.3 13.2 0.8 12.5C8.1 11 11 8.1 12.4 0.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  transition: transform 0.2s ease-out;
-}
-
-/* A slightly different tilt on alternate stars, so they look drawn by hand */
-.pillars__dots i:nth-child(even) {
-  transform: rotate(12deg);
 }
 
 .pillars__dots i.is-open {
