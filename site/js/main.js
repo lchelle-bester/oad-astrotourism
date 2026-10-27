@@ -479,20 +479,18 @@ if (pillarsSection) {
 
 
 // BACK TO TOP
-// The arrow fades in when at least 40% of the end of the page is on screen: the
-// footer once there is one, until then the last section of the page.
+// The arrow fades in once the hero has scrolled completely out of view (its
+// bottom edge above the top of the screen). On pages without a hero, such as the
+// 404 page, it appears once the page has scrolled one screen down.
 
 const toTop = document.querySelector('.to-top')
 
 if (toTop) {
-  const pageEnd = () => document.querySelector('.site-footer') || document.querySelector('main > :last-child')
+  const hero = document.querySelector('.hero')
 
   function updateToTop() {
-    const end = pageEnd()
-    if (!end) return
-    const box = end.getBoundingClientRect()
-    const visible = Math.max(0, Math.min(window.innerHeight, box.bottom) - Math.max(0, box.top))
-    toTop.classList.toggle('is-visible', visible >= Math.min(box.height, window.innerHeight) * 0.4)
+    const past = hero ? hero.getBoundingClientRect().bottom <= 0 : window.scrollY > window.innerHeight
+    toTop.classList.toggle('is-visible', past)
   }
 
   window.addEventListener('scroll', updateToTop, {passive: true})

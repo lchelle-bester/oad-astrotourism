@@ -1804,8 +1804,9 @@ h3 {
 
 
 /* BACK TO TOP (desktop only, from 1248px): a small square arrow in the bottom
-   right corner, as on the concept site. Hidden until main.js shows it, when the
-   end of the page is in view. Smooth scrolling only without reduced motion. */
+   right corner, as on the concept site. Hidden until main.js shows it, once the
+   hero has scrolled completely out of view. Smooth scrolling only without
+   reduced motion. */
 .to-top {
   display: none;
 }
