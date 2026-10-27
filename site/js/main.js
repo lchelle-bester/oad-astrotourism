@@ -261,6 +261,7 @@ if (pillarsSection) {
   const tablist = pillarsSection.querySelector('.pillars__tabs')
   const tabs = [...pillarsSection.querySelectorAll('.pillar-tab')]
   const cards = [...pillarsSection.querySelectorAll('.pillar-card')]
+  const cardsBox = pillarsSection.querySelector('.pillars__cards')
   const pager = pillarsSection.querySelector('.pillars__pager')
   const dots = [...pillarsSection.querySelectorAll('.pillars__dots i')]
   const steps = [...pillarsSection.querySelectorAll('.pillars__step')]
@@ -289,6 +290,7 @@ if (pillarsSection) {
       tab.tabIndex = j === open ? 0 : -1
     })
     cards.forEach((card, j) => card.classList.toggle('is-open', j === open))
+    pillarsSection.dataset.open = String(open) // the colour bar on desktop follows it
     dots.forEach((dot, j) => dot.classList.toggle('is-open', j === open))
     steps[0].setAttribute('aria-label', `Previous pillar: ${names[(open + 5) % 6]}`)
     steps[1].setAttribute('aria-label', `Next pillar: ${names[(open + 1) % 6]}`)
@@ -310,31 +312,34 @@ if (pillarsSection) {
   // DRAWING: the incoming trail and, on desktop, the connector from the open
   // segment to the card. Desktop works in mock-up units (1440 wide), scaled to
   // the stage; phones work in screen pixels.
-  const CENTRE = {x: 384, y: 580} // ring centre on the desktop mock-up
+  // Sizes on the 640-unit ring drawing (the ring box is scaled to fit the screen,
+  // so the code measures where the ring actually is)
   const OUTER = 304 // outer radius of the ring
   const POP = 12 // how far the open segment moves out
   const AROUND = 328 // the connector's path round the far side of the ring
-  const CARD_LEFT = 790
-  // From the top centre, where The case's trail leaves, curving left to end just
-  // after the heading "What we do" (which ends at x 303, middle y 125)
-  const DESKTOP_TRAIL = 'M720,0 C 720,80 520,125 330,125'
-
-  const at = (r, deg) => {
-    const a = (deg * Math.PI) / 180
-    return {x: CENTRE.x + r * Math.sin(a), y: CENTRE.y - r * Math.cos(a)}
-  }
-  const xy = (p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`
+  const BAR_GAP = 48 // the connector stops this far (mock-up px) before the text
+  const toUnits = (px, box, r) => ({
+    left: (r.left - box.left) / px, right: (r.right - box.left) / px,
+    top: (r.top - box.top) / px, bottom: (r.bottom - box.top) / px,
+  })
 
   function connectorPath(px, box) {
-    const card = cards[open].parentElement.getBoundingClientRect()
-    const top = (card.top - box.top) / px + 40
-    const bottom = (card.bottom - box.top) / px - 40
-    const clampY = (y) => Math.min(bottom, Math.max(top, y))
+    const ringBox = toUnits(px, box, ring.getBoundingClientRect())
+    const k = (ringBox.right - ringBox.left) / 640 // ring drawing units to mock-up units
+    const centre = {x: (ringBox.left + ringBox.right) / 2, y: (ringBox.top + ringBox.bottom) / 2}
+    const at = (r, deg) => {
+      const a = (deg * Math.PI) / 180
+      return {x: centre.x + r * k * Math.sin(a), y: centre.y - r * k * Math.cos(a)}
+    }
+    const xy = (p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`
+    const card = toUnits(px, box, cards[open].parentElement.getBoundingClientRect())
+    const cardLeft = card.left - BAR_GAP
+    const clampY = (y) => Math.min(card.bottom - 40, Math.max(card.top + 40, y))
     const angle = open * 60
     const start = at(OUTER + POP, angle)
-    // Segments facing the card (top, upper right, lower right): straight across
+    // Segments facing the text (top, upper right, lower right): straight across
     if (angle <= 120) {
-      return `M${xy(start)} L${CARD_LEFT},${clampY(start.y).toFixed(1)}`
+      return `M${xy(start)} L${cardLeft.toFixed(1)},${clampY(start.y).toFixed(1)}`
     }
     // The far side: out a little, round the outside of the ring to the 60 or
     // 120 degree point, then straight across, so the line never crosses the ring
@@ -342,7 +347,23 @@ if (pillarsSection) {
     const clockwise = angle === 300 ? 1 : 0
     const out = at(AROUND, angle)
     const end = at(AROUND, target)
-    return `M${xy(start)} L${xy(out)} A${AROUND},${AROUND} 0 0 ${clockwise} ${xy(end)} L${CARD_LEFT},${clampY(end.y).toFixed(1)}`
+    const r = (AROUND * k).toFixed(1)
+    return `M${xy(start)} L${xy(out)} A${r},${r} 0 0 ${clockwise} ${xy(end)} L${cardLeft.toFixed(1)},${clampY(end.y).toFixed(1)}`
+  }
+
+  // The trail: from the top centre, where The case's trail leaves, curving left to
+  // end just after the heading "What we do". The case's trail arrives heading down
+  // and to the left (its last control point is 40 left and 35 up from its end), so
+  // this one starts in that same direction (80 left, 70 down) and the two read as
+  // one continuous line.
+  function desktopTrail(px, box) {
+    const h = toUnits(px, box, pillarsSection.querySelector('.pillars__heading').getBoundingClientRect())
+    const r = document.createRange()
+    r.selectNodeContents(pillarsSection.querySelector('.pillars__heading'))
+    const text = toUnits(px, box, r.getBoundingClientRect())
+    const endX = text.right + 27
+    const endY = (h.top + h.bottom) / 2
+    return `M720,0 C 640,70 ${(endX + 190).toFixed(1)},${endY.toFixed(1)} ${endX.toFixed(1)},${endY.toFixed(1)}`
   }
 
   function draw() {
@@ -352,13 +373,33 @@ if (pillarsSection) {
     if (isDesktop.matches) {
       const px = box.width / 1440
       drawingScale.setAttribute('transform', `scale(${px})`)
-      d = DESKTOP_TRAIL
+      // The open pillar's text block runs from the top of the helper line
+      // ("Six pillars that feed into each other...") to the bottom of the ring
+      // (its outer edge is 16 of the ring box's 640 above the box's bottom)
+      const helper = pillarsSection.querySelector('.pillars__helper--wide').getBoundingClientRect()
+      const ringRect = ring.getBoundingClientRect()
+      const blockTop = helper.top - box.top
+      const blockBottom = ringRect.bottom - (ringRect.width * 16) / 640 - box.top
+      cardsBox.style.top = `${blockTop}px`
+      cardsBox.style.height = `${blockBottom - blockTop}px`
+      d = desktopTrail(px, box)
+      // One dot pattern across both sections (a 2-unit dot every 14 units): The
+      // case's pattern is shifted so its trail ends in the middle of a gap (8
+      // units into the pattern), and this trail starts at that same point. No
+      // half dot at the join, and the spacing carries on evenly.
+      if (caseTrail) {
+        caseTrail.style.strokeDashoffset = String((8 - (caseTrail.getTotalLength() % 14) + 14) % 14)
+        trailPath.style.strokeDashoffset = '8'
+      }
       connector.setAttribute('d', connectorPath(px, box))
     } else {
       // Phone: straight down the left, in line with The case's trail (the side
       // margin plus 16px, so x 36 on a 390 screen), ending level with the middle
       // of the heading
       drawingScale.removeAttribute('transform')
+      cardsBox.style.top = ''
+      cardsBox.style.height = ''
+      trailPath.style.strokeDashoffset = ''
       const section = pillarsSection.getBoundingClientRect()
       const heading = pillarsSection.querySelector('.pillars__heading').getBoundingClientRect()
       const gutter = parseFloat(getComputedStyle(pillarsSection).paddingLeft)

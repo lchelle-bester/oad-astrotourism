@@ -89,10 +89,80 @@ function renderPillarTabs(pillars) {
           </button>`).join('')
 }
 
+// PILLAR PHOTOS (decided 27 Oct 2026: downloaded at build time, served from this
+// site, so visitors' browsers never contact Sanity). Each photo is fetched from
+// Sanity's image service in two widths and two formats, then written into
+// dist/assets/images/pillars/. The file name includes part of the image's id, so
+// a replaced photo gets a new name and browsers never show a stale copy.
+const PHOTO_WIDTHS = [600, 1100]
+const PHOTO_DIR = 'assets/images/pillars'
+
+async function fetchPillarPhotos(pillars) {
+  const files = [] // {name, data}, written into dist/ after it is created
+  const photos = []
+  for (const [i, pillar] of pillars.entries()) {
+    const photo = pillar.photo
+    if (!photo || !photo.url) {
+      photos.push(null)
+      continue
+    }
+    if (!photo.alt || !photo.credit) {
+      throw new Error(`Pillar "${pillar.name}": the photo needs alt text and a credit in the Studio.`)
+    }
+    const id = photo.assetId.split('-')[1].slice(0, 10)
+    // Respect a crop set in the Studio: rect=left,top,width,height in pixels
+    let rect = ''
+    if (photo.crop && photo.width && photo.height) {
+      const {left = 0, top = 0, right = 0, bottom = 0} = photo.crop
+      const x = Math.round(left * photo.width)
+      const y = Math.round(top * photo.height)
+      const w = Math.round((1 - left - right) * photo.width)
+      const h = Math.round((1 - top - bottom) * photo.height)
+      rect = `&rect=${x},${y},${w},${h}`
+    }
+    const sources = {}
+    for (const format of ['webp', 'jpg']) {
+      sources[format] = []
+      for (const width of PHOTO_WIDTHS) {
+        const name = `${pillarId(i)}-${id}-${width}.${format}`
+        const url = `${photo.url}?w=${width}&fit=max&fm=${format}&q=${format === 'webp' ? 72 : 78}${rect}`
+        const response = await fetch(url)
+        if (!response.ok) throw new Error(`Could not download the photo for "${pillar.name}" (${response.status}).`)
+        files.push({name, data: Buffer.from(await response.arrayBuffer())})
+        sources[format].push(`/${PHOTO_DIR}/${name} ${width}w`)
+      }
+    }
+    // The focus point chosen in the Studio (hotspot), as a CSS position, so the
+    // important part stays in view however the photo area is shaped
+    const hx = Math.round((photo.hotspot?.x ?? 0.5) * 100)
+    const hy = Math.round((photo.hotspot?.y ?? 0.5) * 100)
+    photos.push({...photo, sources, position: `${hx}% ${hy}%`, fallback: sources.jpg.at(-1).split(' ')[0]})
+  }
+  return {files, photos}
+}
+
+function renderPhoto(photo) {
+  if (!photo) {
+    // No photo yet: the placeholder, a soft gradient with a mountain line
+    return `
+          <div class="pillar-card__photo" aria-hidden="true">
+            <svg viewBox="0 0 600 240" preserveAspectRatio="none" focusable="false"><path d="M0,190 C90,150 160,175 250,150 C340,125 420,170 500,140 C550,122 580,135 600,128 L600,240 L0,240 Z"/></svg>
+          </div>`
+  }
+  const sizes = '(min-width: 78em) 36vw, 100vw'
+  return `
+          <figure class="pillar-card__photo pillar-card__photo--real">
+            <picture>
+              <source type="image/webp" srcset="${photo.sources.webp.join(', ')}" sizes="${sizes}">
+              <img src="${photo.fallback}" srcset="${photo.sources.jpg.join(', ')}" sizes="${sizes}" alt="${escapeHtml(photo.alt.trim())}" loading="lazy" decoding="async" style="object-position: ${photo.position}">
+            </picture>
+            <figcaption class="pillar-card__credit">${escapeHtml(photo.credit.trim())}</figcaption>
+          </figure>`
+}
+
 // The cards: the plain list everyone gets without JavaScript, which becomes the
-// panel beside the ring. Photos are not shown yet (none chosen); every card gets
-// the placeholder, a soft gradient with a mountain line.
-function renderPillarCards(pillars) {
+// panel beside the ring. A pillar without a photo shows the placeholder.
+function renderPillarCards(pillars, photos = []) {
   return pillars.map((pillar, i) => {
     const links = (pillar.links || []).map((link) => {
       const href = link.page || link.url
@@ -103,10 +173,7 @@ function renderPillarCards(pillars) {
               <li><a href="${escapeHtml(href)}">${escapeHtml(link.label.trim())} <span aria-hidden="true">&rarr;</span></a></li>`
     }).join('')
     return `
-        <article class="pillar-card" id="${pillarId(i)}" aria-labelledby="${pillarId(i)}-name">
-          <div class="pillar-card__photo" aria-hidden="true">
-            <svg viewBox="0 0 600 240" preserveAspectRatio="none" focusable="false"><path d="M0,190 C90,150 160,175 250,150 C340,125 420,170 500,140 C550,122 580,135 600,128 L600,240 L0,240 Z"/></svg>
-          </div>
+        <article class="pillar-card" id="${pillarId(i)}" aria-labelledby="${pillarId(i)}-name">${renderPhoto(photos[i])}
           <div class="pillar-card__body">
             <h3 class="pillar-card__name" id="${pillarId(i)}-name">${escapeHtml(pillar.name.trim())}</h3>
             <p class="pillar-card__text">${escapeHtml(pillar.description.trim())}</p>
@@ -137,13 +204,16 @@ async function main() {
 
   // The six pillars, in order round the circle (Sanity enforces exactly six)
   const pillarsSection = await sanityQuery(
-    '*[_id == "pillarsSection"][0]{eyebrow, heading, helper, helperPhone, pillars[]{name, description, links[]{label, page, url}}}',
+    '*[_id == "pillarsSection"][0]{eyebrow, heading, helper, helperPhone, pillars[]{name, description, links[]{label, page, url}, ' +
+      '"photo": photo{alt, credit, hotspot, crop, "url": asset->url, "assetId": asset->_id, ' +
+      '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}}',
   )
   if (!pillarsSection || !Array.isArray(pillarsSection.pillars) || pillarsSection.pillars.length !== 6) {
     throw new Error('"What we do" needs exactly six published pillars. Check it in the Studio.')
   }
   pillarsSection.tabs = renderPillarTabs(pillarsSection.pillars)
-  pillarsSection.cards = renderPillarCards(pillarsSection.pillars)
+  const pillarPhotos = await fetchPillarPhotos(pillarsSection.pillars)
+  pillarsSection.cards = renderPillarCards(pillarsSection.pillars, pillarPhotos.photos)
 
   const data = {hero, caseSection, pillarsSection}
 
@@ -154,6 +224,12 @@ async function main() {
     recursive: true,
     filter: (source) => !source.startsWith(path.join(SITE_DIR, 'partials')),
   })
+
+  // The pillar photos downloaded from Sanity
+  fs.mkdirSync(path.join(DIST_DIR, PHOTO_DIR), {recursive: true})
+  for (const file of pillarPhotos.files) {
+    fs.writeFileSync(path.join(DIST_DIR, PHOTO_DIR, file.name), file.data)
+  }
 
   // Every page at the top of site/ (index.html, 404.html, ...): insert the
   // partials, then fill the placeholders, overwriting the copies in dist/.
