@@ -1120,8 +1120,10 @@ h3 {
    Without JavaScript: a plain list of cards. main.js adds .pillars--ring and
    turns it into the ring of six segments (tabs) with one card (the open panel).
    Segment colours belong to the positions round the circle, not to the pillars.
-   Label contrast (calculated): #0f1b2b on yellow 10.7:1, sand 8.9:1, sage 4.54:1;
-   white on teal 8.9:1, terracotta 4.8:1, navy 12.5:1. The 1.5px sand outline
+   Colours clockwise from the top (changed 27 Oct 2026): terracotta, yellow,
+   sand, teal, navy, sage. Label contrast (calculated): #0f1b2b on yellow
+   10.7:1, sand 8.9:1, sage 4.54:1; white on teal 8.9:1, terracotta 4.8:1,
+   navy 12.5:1. The 1.5px sand outline
    gives every segment at least 3:1 against the page (teal and navy alone do not). */
 
 .pillars {
@@ -1369,12 +1371,12 @@ h3 {
 }
 
 /* Positions clockwise from the top: angle, colour, label colour */
-.pillar-tab:nth-child(1) { --a: 0deg;   --fill: var(--brand-yellow);     --ink: var(--color-night); }
-.pillar-tab:nth-child(2) { --a: 60deg;  --fill: var(--brand-teal);       --ink: var(--white); }
+.pillar-tab:nth-child(1) { --a: 0deg;   --fill: var(--brand-terracotta); --ink: var(--white); }
+.pillar-tab:nth-child(2) { --a: 60deg;  --fill: var(--brand-yellow);     --ink: var(--color-night); }
 .pillar-tab:nth-child(3) { --a: 120deg; --fill: var(--brand-sand);       --ink: var(--color-night); }
-.pillar-tab:nth-child(4) { --a: 180deg; --fill: var(--brand-terracotta); --ink: var(--white); }
-.pillar-tab:nth-child(5) { --a: 240deg; --fill: var(--brand-sage);       --ink: var(--color-night); }
-.pillar-tab:nth-child(6) { --a: 300deg; --fill: var(--brand-navy);       --ink: var(--white); }
+.pillar-tab:nth-child(4) { --a: 180deg; --fill: var(--brand-teal);       --ink: var(--white); }
+.pillar-tab:nth-child(5) { --a: 240deg; --fill: var(--brand-navy);       --ink: var(--white); }
+.pillar-tab:nth-child(6) { --a: 300deg; --fill: var(--brand-sage);       --ink: var(--color-night); }
 
 /* Hover (only on devices with a real pointer, so taps do not leave it stuck):
    lift 6 of 640 and brighten a little */
@@ -1673,12 +1675,12 @@ h3 {
      and navy are faint against the page (1.9:1 and 1.4:1). The
      pillar name stays white, because teal, navy and terracotta are too dark to
      read as text here. The bar changes colour with the pillar. */
-  .pillars[data-open="0"] { --accent: var(--brand-yellow); }
-  .pillars[data-open="1"] { --accent: var(--brand-teal); }
+  .pillars[data-open="0"] { --accent: var(--brand-terracotta); }
+  .pillars[data-open="1"] { --accent: var(--brand-yellow); }
   .pillars[data-open="2"] { --accent: var(--brand-sand); }
-  .pillars[data-open="3"] { --accent: var(--brand-terracotta); }
-  .pillars[data-open="4"] { --accent: var(--brand-sage); }
-  .pillars[data-open="5"] { --accent: var(--brand-navy); }
+  .pillars[data-open="3"] { --accent: var(--brand-teal); }
+  .pillars[data-open="4"] { --accent: var(--brand-navy); }
+  .pillars[data-open="5"] { --accent: var(--brand-sage); }
 
   .pillars--ring .pillars__cards::before {
     content: "";
