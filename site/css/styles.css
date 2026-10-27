@@ -1710,6 +1710,26 @@ h3 {
     font-size: max(1rem, 16 * var(--s));
   }
 
+  /* The small parts scale too, so they keep their size relative to the rest on
+     large screens */
+  .pillars--ring .pillar-card__find {
+    font-size: max(0.75rem, 12 * var(--s));
+  }
+
+  .pillars--ring .pillars__step {
+    font-size: max(1rem, 16 * var(--s));
+  }
+
+  .pillars--ring .pillars__dots i {
+    width: max(11px, 11 * var(--s));
+    height: max(11px, 11 * var(--s));
+  }
+
+  .pillars--ring .pillars__dots i.is-open {
+    width: max(17px, 17 * var(--s));
+    height: max(17px, 17 * var(--s));
+  }
+
   .pillars__pager {
     margin: 0 0 calc(16 * var(--s));
     padding-top: calc(10 * var(--s));
