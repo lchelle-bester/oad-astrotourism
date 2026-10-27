@@ -1466,14 +1466,30 @@ h3 {
   gap: 0.5rem;
 }
 
+/* Small hand-drawn four-point stars instead of dots: each is the star shape used
+   as a mask, so its colour is just the background. The open pillar's star is
+   bigger and yellow. */
+.pillars__dots {
+  align-items: center;
+}
+
 .pillars__dots i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.3);
+  width: 11px;
+  height: 11px;
+  background: rgb(255 255 255 / 0.35);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.4 0.8C12.9 7.6 15.6 10.6 23.2 11.6C15.9 13.1 13.1 15.7 11.7 23.3C11.2 16.2 8.3 13.2 0.8 12.5C8.1 11 11 8.1 12.4 0.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.4 0.8C12.9 7.6 15.6 10.6 23.2 11.6C15.9 13.1 13.1 15.7 11.7 23.3C11.2 16.2 8.3 13.2 0.8 12.5C8.1 11 11 8.1 12.4 0.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.2s ease-out;
+}
+
+/* A slightly different tilt on alternate stars, so they look drawn by hand */
+.pillars__dots i:nth-child(even) {
+  transform: rotate(12deg);
 }
 
 .pillars__dots i.is-open {
+  width: 17px;
+  height: 17px;
   background: var(--color-accent);
 }
 
@@ -1560,9 +1576,12 @@ h3 {
   }
 }
 
-/* DESKTOP (from 1248px): the mock-up's layout on a stage with its proportions
-   (1440 x 940), scaled with the screen up to 1920px like The case. --px is one
-   mock-up pixel. */
+/* DESKTOP (from 1248px): the heading and the ring fit on one screen (decided
+   27 Oct 2026). Sideways, things are placed in mock-up pixels of the width
+   (--px, the stage width / 1440). Heights and sizes use --s, which is --px but
+   never more than the screen height allows: the section is 860 units tall
+   (heading at 40, ring box from 210 to 850), so on a short screen everything
+   shrinks to fit instead of running off the bottom. */
 @media (min-width: 78em) {
   .pillars__helper--phone {
     display: none !important;
@@ -1576,37 +1595,43 @@ h3 {
     position: relative;
     max-width: 1920px;
     margin: 0 auto;
-    aspect-ratio: 1440 / 940;
+    height: calc(860 * min(min(100vw, 1920px) / 1440, (100svh - 3rem) / 860));
     container-type: inline-size;
     --px: calc(100cqw / 1440);
+    --s: min(var(--px), (100svh - 3rem) / 860);
+    /* The ring and the open pillar's text are centred as a pair: the ring, a
+       150 gap, then the 500-wide text block */
+    --pair: calc(640 * var(--s) + 150 * var(--px) + 500 * var(--px));
   }
 
   .pillars--ring .pillars__intro {
     position: absolute;
     left: var(--gutter);
-    top: calc(64 / 940 * 100%);
-    max-width: calc(600 * var(--px));
+    top: calc(40 * var(--s));
+    /* The helper line stays on one line: the ring and text block are centred
+       far enough apart that it ends before the colour bar */
+    white-space: nowrap;
   }
 
   .pillars--ring .pillars__eyebrow {
-    margin-bottom: calc(16 * var(--px));
-    font-size: max(0.75rem, 14 * var(--px));
+    margin-bottom: calc(16 * var(--s));
+    font-size: max(0.75rem, 14 * var(--s));
   }
 
   .pillars--ring .pillars__heading {
-    font-size: max(1.75rem, 44 * var(--px));
+    font-size: max(1.75rem, 44 * var(--s));
   }
 
   .pillars--ring .pillars__helper {
-    font-size: max(1rem, 18 * var(--px));
+    font-size: max(1rem, 18 * var(--s));
   }
 
-  /* Ring centre at (384, 580): the 640 box starts at (64, 260) */
+  /* The 640 ring box starts at x 64, y 210; its centre is at y 530 */
   .pillars__ring {
     position: absolute;
-    left: calc(64 / 1440 * 100%);
-    top: calc(260 / 940 * 100%);
-    width: calc(640 / 1440 * 100%);
+    left: calc((100% - var(--pair)) / 2);
+    top: calc(210 * var(--s));
+    width: calc(640 * var(--s));
   }
 
   /* Larger labels on the bigger desktop ring: 22px when the ring box is 640px */
@@ -1615,17 +1640,50 @@ h3 {
     font-size: 3.4375cqw;
   }
 
-  /* The card: 500 x 520, centred on the ring's middle (y 580), so it sits
-     balanced against the ring. The photo takes whatever height the text leaves,
-     so the card never grows. */
+  /* The open pillar sits on the page, not in a card. Its colour appears only as
+     an accent: a bar down the left of the text block in the open segment's
+     colour, with no outline (decided 27 Oct 2026). It is decoration only: teal
+     and navy are faint against the page (1.9:1 and 1.4:1). The
+     pillar name stays white, because teal, navy and terracotta are too dark to
+     read as text here. The bar changes colour with the pillar. */
+  .pillars[data-open="0"] { --accent: var(--brand-yellow); }
+  .pillars[data-open="1"] { --accent: var(--brand-teal); }
+  .pillars[data-open="2"] { --accent: var(--brand-sand); }
+  .pillars[data-open="3"] { --accent: var(--brand-terracotta); }
+  .pillars[data-open="4"] { --accent: var(--brand-sage); }
+  .pillars[data-open="5"] { --accent: var(--brand-navy); }
+
+  .pillars--ring .pillars__cards::before {
+    content: "";
+    position: absolute;
+    left: calc(-36 * var(--px));
+    top: 0;
+    bottom: 0;
+    width: calc(8 * var(--s));
+    min-width: 6px;
+    border-radius: 4px;
+    background: var(--accent);
+    transition: background-color 0.3s ease-out;
+  }
+
+  /* The content block: 500 wide, centred on the ring's middle (y 580). No box,
+     no rounded corners: the photo is a plain rectangle and the text sits on the
+     page. The photo takes whatever height the text leaves. */
   .pillars--ring .pillars__cards {
     position: absolute;
-    left: calc(790 / 1440 * 100%);
-    top: calc(320 / 940 * 100%);
-    width: calc(500 / 1440 * 100%);
-    height: calc(520 * var(--px));
+    left: calc((100% - var(--pair)) / 2 + 640 * var(--s) + 150 * var(--px));
+    top: calc(270 * var(--s));
+    width: calc(500 * var(--px));
+    height: calc(520 * var(--s));
     margin: 0;
     grid-template-rows: 1fr auto;
+    overflow: visible;
+    border-radius: 0;
+    background: none;
+  }
+
+  .pillars--ring .pillar-card {
+    background: none;
   }
 
   .pillars--ring .pillar-card {
@@ -1637,29 +1695,30 @@ h3 {
   .pillars--ring .pillar-card__photo {
     flex: 1 1 auto;
     height: auto;
-    min-height: 4rem;
+    min-height: 0; /* on short screens the photo gives way, never the text */
   }
 
+  /* No side padding: the text lines up with the photo's edges */
   .pillars--ring .pillar-card__body {
-    padding: calc(24 * var(--px)) calc(36 * var(--px)) calc(16 * var(--px));
+    padding: calc(24 * var(--s)) 0 calc(16 * var(--s));
   }
 
   .pillars--ring .pillar-card__name {
-    font-size: max(1.625rem, 32 * var(--px));
+    font-size: max(1.625rem, 32 * var(--s));
   }
 
   .pillars--ring .pillar-card__text {
-    margin-top: calc(8 * var(--px));
-    font-size: max(1rem, 17 * var(--px));
+    margin-top: calc(8 * var(--s));
+    font-size: max(1rem, 17 * var(--s));
   }
 
   .pillars--ring .pillar-card__links a {
-    font-size: max(1rem, 16 * var(--px));
+    font-size: max(1rem, 16 * var(--s));
   }
 
   .pillars__pager {
-    margin: 0 calc(36 * var(--px)) calc(16 * var(--px));
-    padding-top: calc(10 * var(--px));
+    margin: 0 0 calc(16 * var(--s));
+    padding-top: calc(10 * var(--s));
   }
 }
 
@@ -1675,7 +1734,8 @@ h3 {
   }
 
   .pillar-tab__shape polygon,
-  .pillars--ring .pillar-card {
+  .pillars--ring .pillar-card,
+  .pillars--ring .pillars__cards::before {
     transition: none;
   }
 }
