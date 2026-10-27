@@ -444,9 +444,9 @@ if (pillarsSection) {
     if (isDesktop.matches) {
       // The case's trail finishes when its stage's bottom (this stage's top)
       // passes 85% down the screen; this one starts there. The case draws its
-      // whole length over its 900-unit-tall stage: use the same length per unit.
+      // whole length over its 800-unit-tall stage: use the same length per unit.
       const px = box.width / 1440
-      const pace = caseTrail ? caseTrail.getTotalLength() / 900 : 2
+      const pace = caseTrail ? caseTrail.getTotalLength() / 800 : 2
       const scrolled = (window.innerHeight * 0.85 - box.top) / px
       progress = (scrolled * pace) / length
     } else {
@@ -475,4 +475,27 @@ if (pillarsSection) {
   isDesktop.addEventListener('change', draw)
 
   select(0)
+}
+
+
+// BACK TO TOP
+// The arrow fades in when at least 40% of the end of the page is on screen: the
+// footer once there is one, until then the last section of the page.
+
+const toTop = document.querySelector('.to-top')
+
+if (toTop) {
+  const pageEnd = () => document.querySelector('.site-footer') || document.querySelector('main > :last-child')
+
+  function updateToTop() {
+    const end = pageEnd()
+    if (!end) return
+    const box = end.getBoundingClientRect()
+    const visible = Math.max(0, Math.min(window.innerHeight, box.bottom) - Math.max(0, box.top))
+    toTop.classList.toggle('is-visible', visible >= Math.min(box.height, window.innerHeight) * 0.4)
+  }
+
+  window.addEventListener('scroll', updateToTop, {passive: true})
+  window.addEventListener('resize', updateToTop)
+  updateToTop()
 }

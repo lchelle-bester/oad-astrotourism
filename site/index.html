@@ -61,28 +61,28 @@
       </picture>
 
       <div class="case__stage">
-        <svg class="case__trail" viewBox="0 0 1440 900" aria-hidden="true" focusable="false">
+        <svg class="case__trail" viewBox="0 0 1440 800" aria-hidden="true" focusable="false">
           <g transform="translate(0,-120)">
             <!-- Reveal mask for the scroll animation: a solid copy of the trail. main.js
                  attaches it and draws it with stroke-dashoffset (pathLength 1: 1 = hidden,
                  0 = fully drawn). Without JavaScript it is never attached, so the trail shows. -->
             <defs>
-              <mask id="case-trail-reveal" maskUnits="userSpaceOnUse" x="-50" y="0" width="1540" height="1200">
-                <path class="case__trail-mask" d="M642,206 C 780,212 960,250 1000,330 C 1020,440 470,470 430,610 C 420,820 900,820 1000,860 C 1060,890 760,985 720,1020" fill="none" stroke="#fff" stroke-width="12" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0"/>
+              <mask id="case-trail-reveal" maskUnits="userSpaceOnUse" x="-50" y="0" width="1540" height="1100">
+                <path class="case__trail-mask" d="M642,190 C 780,195.7 960,231.9 1000,308 C 1020,403.1 470,429 430,550 C 420,760 860,760 1000,740 C 1060,773.8 760,880.6 720,920" fill="none" stroke="#fff" stroke-width="12" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0"/>
               </mask>
             </defs>
-            <path id="case-trail" d="M642,206 C 780,212 960,250 1000,330 C 1020,440 470,470 430,610 C 420,820 900,820 1000,860 C 1060,890 760,985 720,1020" fill="none" stroke="#d9b487" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round"/>
+            <path id="case-trail" d="M642,190 C 780,195.7 960,231.9 1000,308 C 1020,403.1 470,429 430,550 C 420,760 860,760 1000,740 C 1060,773.8 760,880.6 720,920" fill="none" stroke="#d9b487" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round"/>
             <g class="case__waypoint">
-              <circle cx="1000" cy="330" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
-              <circle cx="1000" cy="330" r="9" fill="#f9c434"/>
+              <circle cx="1000" cy="308" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
+              <circle cx="1000" cy="308" r="9" fill="#f9c434"/>
             </g>
             <g class="case__waypoint">
-              <circle cx="430" cy="610" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
-              <circle cx="430" cy="610" r="9" fill="#f9c434"/>
+              <circle cx="430" cy="550" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
+              <circle cx="430" cy="550" r="9" fill="#f9c434"/>
             </g>
             <g class="case__waypoint">
-              <circle cx="1000" cy="860" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
-              <circle cx="1000" cy="860" r="9" fill="#f9c434"/>
+              <circle cx="1000" cy="740" r="20" fill="none" stroke="rgba(249,196,52,0.35)" stroke-width="2"/>
+              <circle cx="1000" cy="740" r="9" fill="#f9c434"/>
             </g>
           </g>
         </svg>
@@ -152,6 +152,8 @@
       </div>
     </section>
   </main>
+
+{{> to-top}}
 
   <script src="/js/main.js" defer></script>
 </body>
