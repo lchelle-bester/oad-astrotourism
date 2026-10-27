@@ -1522,8 +1522,10 @@ h3 {
   background: var(--color-accent);
 }
 
-/* PHONE AND TABLET (below 1248px): heading, ring, then the card */
-@media not all and (min-width: 78em) {
+/* PHONE AND TABLET (below 920px, 57.5em): heading, ring, then the card.
+   This section has its own switching point, lower than the header's 1248px:
+   side by side works down to 920px (measured 27 Oct 2026). */
+@media not all and (min-width: 57.5em) {
   .pillars--ring {
     padding: 1.75rem var(--gutter) 3rem;
   }
@@ -1605,13 +1607,21 @@ h3 {
   }
 }
 
-/* DESKTOP (from 1248px): the heading and the ring fit on one screen (decided
+/* Between 920 and 1248px The case above is a single column with its trail down
+   the left, so the heading moves in beside that trail, as on phones */
+@media (min-width: 57.5em) and (max-width: 77.99em) {
+  .pillars--ring .pillars__intro {
+    padding-left: 52px;
+  }
+}
+
+/* SIDE BY SIDE (from 920px): the heading and the ring fit on one screen (decided
    27 Oct 2026). Sideways, things are placed in mock-up pixels of the width
    (--px, the stage width / 1440). Heights and sizes use --s, which is --px but
    never more than the screen height allows: the section is 860 units tall
    (heading at 40, ring box from 210 to 850), so on a short screen everything
    shrinks to fit instead of running off the bottom. */
-@media (min-width: 78em) {
+@media (min-width: 57.5em) {
   .pillars__helper--phone {
     display: none !important;
   }
@@ -1637,9 +1647,10 @@ h3 {
     position: absolute;
     left: var(--gutter);
     top: calc(40 * var(--s));
-    /* The helper line stays on one line: the ring and text block are centred
-       far enough apart that it ends before the colour bar */
-    white-space: nowrap;
+    /* The helper line stops before the colour bar beside the open pillar's text
+       (which starts 36 before the text block), wrapping onto two lines on
+       narrower screens. On most laptops it fits on one line. */
+    max-width: calc((100% - var(--pair)) / 2 + 640 * var(--s) + 114 * var(--px) - var(--gutter) - 1.5rem);
   }
 
   .pillars--ring .pillars__eyebrow {

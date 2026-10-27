@@ -149,7 +149,7 @@ function renderPhoto(photo) {
             <svg viewBox="0 0 600 240" preserveAspectRatio="none" focusable="false"><path d="M0,190 C90,150 160,175 250,150 C340,125 420,170 500,140 C550,122 580,135 600,128 L600,240 L0,240 Z"/></svg>
           </div>`
   }
-  const sizes = '(min-width: 78em) 36vw, 100vw'
+  const sizes = '(min-width: 57.5em) 36vw, 100vw'
   return `
           <figure class="pillar-card__photo pillar-card__photo--real">
             <picture>

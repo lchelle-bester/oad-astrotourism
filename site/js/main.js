@@ -269,7 +269,7 @@ if (pillarsSection) {
   const drawingScale = pillarsSection.querySelector('.pillars__drawing-scale')
   const trailPath = pillarsSection.querySelector('.pillars__trail')
   const connector = pillarsSection.querySelector('.pillars__connector')
-  const isDesktop = window.matchMedia('(min-width: 78em)')
+  const isDesktop = window.matchMedia('(min-width: 57.5em)')
   const names = tabs.map((tab) => tab.textContent.trim())
   let open = 0
 
@@ -366,6 +366,23 @@ if (pillarsSection) {
     return `M720,0 C 640,70 ${(endX + 190).toFixed(1)},${endY.toFixed(1)} ${endX.toFixed(1)},${endY.toFixed(1)}`
   }
 
+  // Straight down the left, in line with The case's trail when that is a single
+  // column (the side margin plus 16px, so x 36 on a 390 screen), ending level
+  // with the middle of the heading. In drawing units (screen px / scale).
+  const caseIsColumn = window.matchMedia('not all and (min-width: 78em)')
+  function columnTrail(box, scale) {
+    const heading = pillarsSection.querySelector('.pillars__heading').getBoundingClientRect()
+    // The case's column trail runs 36px left of its text column, so measure that
+    const caseText = document.querySelector('.case__intro')
+    const lineX = caseText
+      ? caseText.getBoundingClientRect().left - 36
+      : pillarsSection.getBoundingClientRect().left + parseFloat(getComputedStyle(pillarsSection).paddingLeft) + 16
+    const x = (lineX - box.left) / scale
+    const top = (pillarsSection.getBoundingClientRect().top - box.top) / scale
+    const end = (heading.top + heading.height / 2 - box.top) / scale
+    return `M${x.toFixed(1)},${top.toFixed(1)} L${x.toFixed(1)},${end.toFixed(1)}`
+  }
+
   function draw() {
     const box = stage.getBoundingClientRect()
     drawing.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`)
@@ -382,7 +399,9 @@ if (pillarsSection) {
       const blockBottom = ringRect.bottom - (ringRect.width * 16) / 640 - box.top
       cardsBox.style.top = `${blockTop}px`
       cardsBox.style.height = `${blockBottom - blockTop}px`
-      d = desktopTrail(px, box)
+      // Below 1248px The case is a single column with its trail down the left,
+      // so this trail carries straight on down the left, as on phones
+      d = caseIsColumn.matches ? columnTrail(box, px) : desktopTrail(px, box)
       // One dot pattern across both sections (a 2-unit dot every 14 units): The
       // case's pattern is shifted so its trail ends in the middle of a gap (8
       // units into the pattern), and this trail starts at that same point. No
@@ -393,18 +412,11 @@ if (pillarsSection) {
       }
       connector.setAttribute('d', connectorPath(px, box))
     } else {
-      // Phone: straight down the left, in line with The case's trail (the side
-      // margin plus 16px, so x 36 on a 390 screen), ending level with the middle
-      // of the heading
       drawingScale.removeAttribute('transform')
       cardsBox.style.top = ''
       cardsBox.style.height = ''
       trailPath.style.strokeDashoffset = ''
-      const section = pillarsSection.getBoundingClientRect()
-      const heading = pillarsSection.querySelector('.pillars__heading').getBoundingClientRect()
-      const gutter = parseFloat(getComputedStyle(pillarsSection).paddingLeft)
-      const x = section.left + gutter + 16 - box.left
-      d = `M${x},${section.top - box.top} L${x},${heading.top + heading.height / 2 - box.top}`
+      d = columnTrail(box, 1)
       connector.setAttribute('d', '')
     }
     trailPath.setAttribute('d', d)
