@@ -1615,14 +1615,15 @@ h3 {
     font-size: 3.4375cqw;
   }
 
-  /* The card is exactly as tall as the ring (608, from y 276 to 884). The photo
-     takes whatever height the text leaves, so the card never grows. */
+  /* The card: 500 x 520, centred on the ring's middle (y 580), so it sits
+     balanced against the ring. The photo takes whatever height the text leaves,
+     so the card never grows. */
   .pillars--ring .pillars__cards {
     position: absolute;
     left: calc(790 / 1440 * 100%);
-    top: calc(276 / 940 * 100%);
-    width: calc(586 / 1440 * 100%);
-    height: calc(608 * var(--px));
+    top: calc(320 / 940 * 100%);
+    width: calc(500 / 1440 * 100%);
+    height: calc(520 * var(--px));
     margin: 0;
     grid-template-rows: 1fr auto;
   }
