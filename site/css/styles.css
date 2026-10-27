@@ -7,7 +7,8 @@
    5. Header
    6. Hero
    7. The case
-   8. Page not found (404)
+   8. The six pillars
+   9. Page not found (404)
    ========================================================================== */
 
 
@@ -1115,7 +1116,571 @@ h3 {
 }
 
 
-/* 8. PAGE NOT FOUND (404)
+/* 8. THE SIX PILLARS (design in docs/pillars/pillars-design.md)
+   Without JavaScript: a plain list of cards. main.js adds .pillars--ring and
+   turns it into the ring of six segments (tabs) with one card (the open panel).
+   Segment colours belong to the positions round the circle, not to the pillars.
+   Label contrast (calculated): #0f1b2b on yellow 10.7:1, sand 8.9:1, sage 4.54:1;
+   white on teal 8.9:1, terracotta 4.8:1, navy 12.5:1. The 1.5px sand outline
+   gives every segment at least 3:1 against the page (teal and navy alone do not). */
+
+.pillars {
+  position: relative;
+  overflow-x: clip; /* the open segment pops out past the screen edge on small phones */
+  padding: 4rem var(--gutter);
+  background: var(--color-night);
+}
+
+.pillars__eyebrow {
+  margin: 0 0 1rem;
+  color: var(--color-accent-soft);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pillars__heading {
+  margin: 0;
+  font-size: 1.875rem;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.pillars__helper {
+  margin: 0.75rem 0 0;
+  color: rgb(255 255 255 / 0.75);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* The drawing only exists in ring mode */
+.pillars__drawing {
+  display: none;
+}
+
+/* CARDS (the list without JavaScript, the panel in ring mode) */
+
+.pillars__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.pillar-card {
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--brand-navy);
+}
+
+/* Placeholder until a photo is chosen: a soft gradient with a mountain line */
+.pillar-card__photo {
+  height: 170px;
+  background: linear-gradient(165deg, #2c4c74 0%, #1d4a52 55%, var(--brand-teal) 100%);
+}
+
+.pillar-card__photo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pillar-card__photo path {
+  fill: rgb(15 27 43 / 0.45);
+}
+
+.pillar-card__body {
+  padding: 1.5rem;
+}
+
+.pillar-card__name {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.15;
+}
+
+.pillar-card__text {
+  margin: 0.75rem 0 0;
+  color: rgb(255 255 255 / 0.91);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.pillar-card__find {
+  margin: 1.25rem 0 0.5rem;
+  color: var(--color-accent-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pillar-card__links {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pillar-card__links a {
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 600;
+  text-underline-offset: 0.2em;
+}
+
+.pillar-card__links a:hover {
+  color: var(--color-accent);
+}
+
+/* RING MODE */
+
+.pillars--ring .pillars__drawing {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.pillars__trail,
+.pillars__connector {
+  fill: none;
+  stroke-width: 3;
+  stroke-dasharray: 2 12;
+  stroke-linecap: round;
+}
+
+.pillars__trail {
+  stroke: var(--color-accent-soft);
+}
+
+/* A short ease smooths the steps between scroll events, as in The case */
+.pillars__trail-mask {
+  transition: stroke-dashoffset 0.2s ease-out;
+}
+
+.pillars__connector {
+  stroke: var(--color-accent);
+}
+
+/* The ring: a square box; everything inside is placed in fractions of it
+   (the shapes use a 640 x 640 grid, centre 320,320) */
+.pillars__ring {
+  position: relative;
+  aspect-ratio: 1;
+  container-type: inline-size;
+}
+
+.pillars__tabs {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each segment is a real button covering the whole ring box. The button itself
+   ignores the pointer; only its painted shape reacts, so the hit area is exactly
+   the segment. --a is the angle of the segment's middle, clockwise from the top;
+   --lift moves the segment and its label outwards along that angle. */
+.pillar-tab {
+  --lift: 0px;
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: none;
+  transform: translate(calc(sin(var(--a)) * var(--lift)), calc(cos(var(--a)) * var(--lift) * -1));
+  transition: transform 0.2s ease-out;
+}
+
+.pillar-tab:focus-visible {
+  outline: none; /* the focus ring is drawn on the shape instead (below) */
+}
+
+.pillar-tab__shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pillar-tab__shape polygon {
+  fill: var(--fill);
+  stroke: var(--color-accent-soft);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  pointer-events: visiblePainted;
+  transition: filter 0.2s ease-out;
+}
+
+/* The name, centred on the segment's middle (222 of 640 = 34.6875% out from the centre) */
+.pillar-tab__label {
+  position: absolute;
+  left: calc(50% + 34.6875% * sin(var(--a)));
+  top: calc(50% - 34.6875% * cos(var(--a)));
+  width: 25%;
+  transform: translate(-50%, -50%);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 2.8125cqw; /* 18px when the ring box is 640px */
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Positions clockwise from the top: angle, colour, label colour */
+.pillar-tab:nth-child(1) { --a: 0deg;   --fill: var(--brand-yellow);     --ink: var(--color-night); }
+.pillar-tab:nth-child(2) { --a: 60deg;  --fill: var(--brand-teal);       --ink: var(--white); }
+.pillar-tab:nth-child(3) { --a: 120deg; --fill: var(--brand-sand);       --ink: var(--color-night); }
+.pillar-tab:nth-child(4) { --a: 180deg; --fill: var(--brand-terracotta); --ink: var(--white); }
+.pillar-tab:nth-child(5) { --a: 240deg; --fill: var(--brand-sage);       --ink: var(--color-night); }
+.pillar-tab:nth-child(6) { --a: 300deg; --fill: var(--brand-navy);       --ink: var(--white); }
+
+/* Hover (only on devices with a real pointer, so taps do not leave it stuck):
+   lift 6 of 640 and brighten a little */
+@media (hover: hover) and (pointer: fine) {
+  .pillar-tab:hover {
+    --lift: 0.9375cqw;
+  }
+
+  .pillar-tab:hover polygon {
+    filter: brightness(1.12);
+  }
+}
+
+/* Keyboard focus: the same lift, plus a wide white outline with a yellow glow,
+   so it never relies on colour alone */
+.pillar-tab:focus-visible {
+  --lift: 0.9375cqw;
+}
+
+.pillar-tab:focus-visible polygon {
+  stroke: var(--white);
+  stroke-width: 5;
+  filter: brightness(1.12) drop-shadow(0 0 0.6cqw rgb(249 196 52 / 0.9));
+}
+
+/* Open: pops out 12 of 640, white outline, brighter; it does not lift further */
+.pillar-tab[aria-selected="true"] {
+  --lift: 1.875cqw;
+}
+
+.pillar-tab[aria-selected="true"] polygon {
+  stroke: var(--white);
+  stroke-width: 3;
+  filter: brightness(1.12);
+}
+
+.pillar-tab[aria-selected="true"]:focus-visible polygon {
+  stroke-width: 5;
+  filter: brightness(1.12) drop-shadow(0 0 0.6cqw rgb(249 196 52 / 0.9));
+}
+
+/* Centre of the ring: not clickable */
+.pillars__centre {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 4.0625cqw; /* 26px at 640 */
+  line-height: 1.15;
+  text-align: center;
+  pointer-events: none;
+}
+
+.pillars__centre span {
+  display: block;
+  margin-bottom: 0.4em;
+  color: var(--color-accent-soft);
+  font-family: var(--font-body);
+  font-size: 0.615em; /* 16px at 640 */
+  letter-spacing: 0.14em;
+}
+
+/* The card in ring mode: one box, the six panels stacked in the same grid cell
+   (so the box keeps the height of the tallest and never jumps), only the open
+   one visible. The pager sits at the bottom. */
+.pillars--ring .pillars__cards {
+  grid-template-columns: 1fr;
+  gap: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--brand-navy);
+}
+
+.pillars--ring .pillar-card {
+  grid-area: 1 / 1;
+  border-radius: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-out, visibility 0.2s;
+}
+
+.pillars--ring .pillar-card.is-open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.pillars__pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 1.5rem 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 0.15);
+}
+
+.pillars__step {
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+  color: rgb(255 255 255 / 0.78);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.pillars__step[data-step="1"] {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.pillars__step:hover {
+  color: var(--color-text);
+}
+
+.pillars__dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pillars__dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.3);
+}
+
+.pillars__dots i.is-open {
+  background: var(--color-accent);
+}
+
+/* PHONE AND TABLET (below 1248px): heading, ring, then the card */
+@media not all and (min-width: 78em) {
+  .pillars--ring {
+    padding: 1.75rem var(--gutter) 3rem;
+  }
+
+  .pillars--ring .pillars__stage {
+    position: relative;
+  }
+
+  .pillars--ring .pillars__intro {
+    position: relative;
+    padding-left: 52px;
+  }
+
+  .pillars--ring .pillars__eyebrow {
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+  }
+
+  .pillars__helper--phone {
+    font-size: 0.9375rem;
+  }
+
+  .pillars__helper--wide {
+    display: none !important;
+  }
+
+  /* About 98% of a phone's width (the circle nearly fills it), capped for tablets */
+  .pillars__ring {
+    --ring: min(98.2vw, 32rem);
+    width: var(--ring);
+    margin: 1.125rem calc(50% - var(--ring) / 2) 0;
+  }
+
+  .pillar-tab__label {
+    font-size: 3.9cqw; /* 15px when the ring box is 383px */
+  }
+
+  .pillars__centre {
+    width: 30%;
+  }
+
+  /* Kept compact so the ring and the card sit close together */
+  .pillars--ring .pillars__cards {
+    margin-top: 1rem;
+    border-radius: 16px;
+  }
+
+  /* On phones the card fits the open pillar (no empty space under shorter ones);
+     the trade-off is that the page below moves a little when switching */
+  .pillars--ring .pillar-card:not(.is-open) {
+    display: none;
+  }
+
+  .pillars--ring .pillar-card__photo {
+    height: 96px;
+  }
+
+  .pillars--ring .pillar-card__body {
+    padding: 1.125rem 1.25rem 0.75rem;
+  }
+
+  .pillars--ring .pillar-card__name {
+    font-size: 1.5rem;
+  }
+
+  .pillars--ring .pillar-card__text {
+    margin-top: 0.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .pillars--ring .pillar-card__find {
+    margin-top: 0.875rem;
+  }
+
+  .pillars__pager {
+    margin: 0 1.25rem 0.75rem;
+    padding-top: 0.5rem;
+  }
+}
+
+/* DESKTOP (from 1248px): the mock-up's layout on a stage with its proportions
+   (1440 x 940), scaled with the screen up to 1920px like The case. --px is one
+   mock-up pixel. */
+@media (min-width: 78em) {
+  .pillars__helper--phone {
+    display: none !important;
+  }
+
+  .pillars--ring {
+    padding: 0;
+  }
+
+  .pillars--ring .pillars__stage {
+    position: relative;
+    max-width: 1920px;
+    margin: 0 auto;
+    aspect-ratio: 1440 / 940;
+    container-type: inline-size;
+    --px: calc(100cqw / 1440);
+  }
+
+  .pillars--ring .pillars__intro {
+    position: absolute;
+    left: var(--gutter);
+    top: calc(64 / 940 * 100%);
+    max-width: calc(600 * var(--px));
+  }
+
+  .pillars--ring .pillars__eyebrow {
+    margin-bottom: calc(16 * var(--px));
+    font-size: max(0.75rem, 14 * var(--px));
+  }
+
+  .pillars--ring .pillars__heading {
+    font-size: max(1.75rem, 44 * var(--px));
+  }
+
+  .pillars--ring .pillars__helper {
+    font-size: max(1rem, 18 * var(--px));
+  }
+
+  /* Ring centre at (384, 580): the 640 box starts at (64, 260) */
+  .pillars__ring {
+    position: absolute;
+    left: calc(64 / 1440 * 100%);
+    top: calc(260 / 940 * 100%);
+    width: calc(640 / 1440 * 100%);
+  }
+
+  /* Larger labels on the bigger desktop ring: 22px when the ring box is 640px */
+  .pillar-tab__label {
+    width: 28%;
+    font-size: 3.4375cqw;
+  }
+
+  /* The card is exactly as tall as the ring (608, from y 276 to 884). The photo
+     takes whatever height the text leaves, so the card never grows. */
+  .pillars--ring .pillars__cards {
+    position: absolute;
+    left: calc(790 / 1440 * 100%);
+    top: calc(276 / 940 * 100%);
+    width: calc(586 / 1440 * 100%);
+    height: calc(608 * var(--px));
+    margin: 0;
+    grid-template-rows: 1fr auto;
+  }
+
+  .pillars--ring .pillar-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .pillars--ring .pillar-card__photo {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 4rem;
+  }
+
+  .pillars--ring .pillar-card__body {
+    padding: calc(24 * var(--px)) calc(36 * var(--px)) calc(16 * var(--px));
+  }
+
+  .pillars--ring .pillar-card__name {
+    font-size: max(1.625rem, 32 * var(--px));
+  }
+
+  .pillars--ring .pillar-card__text {
+    margin-top: calc(8 * var(--px));
+    font-size: max(1rem, 17 * var(--px));
+  }
+
+  .pillars--ring .pillar-card__links a {
+    font-size: max(1rem, 16 * var(--px));
+  }
+
+  .pillars__pager {
+    margin: 0 calc(36 * var(--px)) calc(16 * var(--px));
+    padding-top: calc(10 * var(--px));
+  }
+}
+
+/* Reduced motion: nothing lifts, pops or fades; the open segment keeps its
+   white outline and brightness, and changes are instant */
+@media (prefers-reduced-motion: reduce) {
+  .pillar-tab,
+  .pillar-tab[aria-selected="true"],
+  .pillar-tab:focus-visible,
+  .pillar-tab:hover {
+    --lift: 0px;
+    transition: none;
+  }
+
+  .pillar-tab__shape polygon,
+  .pillars--ring .pillar-card {
+    transition: none;
+  }
+}
+
+
+/* 9. PAGE NOT FOUND (404)
    A plain page under the shared header. The header sits on top of the page
    (position: absolute), so the content starts below it. */
 

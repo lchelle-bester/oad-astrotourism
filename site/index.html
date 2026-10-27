@@ -107,6 +107,50 @@
         </ul>
       </div>
     </section>
+
+    <!-- What we do: the six pillars (design in docs/pillars/pillars-design.md). Without
+         JavaScript this is a plain list of cards. main.js turns it into the ring of
+         segments (a set of tabs) with one card beside it. Words, links and photos come
+         from Sanity; shapes, colours, trail and connector are fixed here and in the CSS. -->
+    <section class="pillars" aria-labelledby="pillars-heading">
+      <div class="pillars__stage">
+        <!-- Decorative: the trail continuing from The case and ending beside the heading,
+             and the connector to the card. Both drawn by main.js. The mask reveals the
+             dotted trail as the page scrolls (a solid copy drawn with stroke-dashoffset). -->
+        <svg class="pillars__drawing" aria-hidden="true" focusable="false">
+          <g class="pillars__drawing-scale">
+            <defs>
+              <mask id="pillars-trail-reveal" maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000">
+                <path class="pillars__trail-mask" d="" fill="none" stroke="#fff" stroke-width="12" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0"/>
+              </mask>
+            </defs>
+            <path class="pillars__trail" d=""/>
+            <path class="pillars__connector" d=""/>
+          </g>
+        </svg>
+
+        <div class="pillars__intro">
+          <p class="pillars__eyebrow">{{pillarsSection.eyebrow}}</p>
+          <h2 id="pillars-heading" class="pillars__heading">{{pillarsSection.heading}}</h2>
+          <p class="pillars__helper pillars__helper--wide" hidden>{{pillarsSection.helper}}</p>
+          <p class="pillars__helper pillars__helper--phone" hidden>{{pillarsSection.helperPhone}}</p>
+        </div>
+
+        <div class="pillars__ring" hidden>
+          <div class="pillars__tabs" role="tablist" aria-label="{{pillarsSection.eyebrow}}">{{{pillarsSection.tabs}}}
+          </div>
+          <p class="pillars__centre" aria-hidden="true"><span>OAD</span> Flagship ecosystem</p>
+        </div>
+
+        <div class="pillars__cards">{{{pillarsSection.cards}}}
+          <div class="pillars__pager" hidden>
+            <button class="pillars__step" type="button" data-step="-1"><span aria-hidden="true">&larr;</span> Previous</button>
+            <span class="pillars__dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <button class="pillars__step" type="button" data-step="1">Next <span aria-hidden="true">&rarr;</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="/js/main.js" defer></script>

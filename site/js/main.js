@@ -244,3 +244,182 @@ if (caseSection) {
   if (!reduceMotion.matches) start()
   reduceMotion.addEventListener('change', () => (reduceMotion.matches ? stop() : start()))
 }
+
+
+// THE SIX PILLARS
+// The page arrives as a plain list of six cards (what visitors without JavaScript
+// see). This turns it into the ring: six segments acting as tabs, and one card
+// beside the ring (below it on phones) showing the open pillar.
+// Tabs: only the open segment is a Tab stop; the arrow keys move round the circle
+// (wrapping at the ends), Home and End go to the first and last.
+
+const pillarsSection = document.querySelector('.pillars')
+
+if (pillarsSection) {
+  const stage = pillarsSection.querySelector('.pillars__stage')
+  const ring = pillarsSection.querySelector('.pillars__ring')
+  const tablist = pillarsSection.querySelector('.pillars__tabs')
+  const tabs = [...pillarsSection.querySelectorAll('.pillar-tab')]
+  const cards = [...pillarsSection.querySelectorAll('.pillar-card')]
+  const pager = pillarsSection.querySelector('.pillars__pager')
+  const dots = [...pillarsSection.querySelectorAll('.pillars__dots i')]
+  const steps = [...pillarsSection.querySelectorAll('.pillars__step')]
+  const drawing = pillarsSection.querySelector('.pillars__drawing')
+  const drawingScale = pillarsSection.querySelector('.pillars__drawing-scale')
+  const trailPath = pillarsSection.querySelector('.pillars__trail')
+  const connector = pillarsSection.querySelector('.pillars__connector')
+  const isDesktop = window.matchMedia('(min-width: 78em)')
+  const names = tabs.map((tab) => tab.textContent.trim())
+  let open = 0
+
+  // Switch on ring mode
+  pillarsSection.classList.add('pillars--ring')
+  ring.hidden = false
+  pager.hidden = false
+  pillarsSection.querySelectorAll('.pillars__helper').forEach((p) => (p.hidden = false))
+  cards.forEach((card, i) => {
+    card.setAttribute('role', 'tabpanel')
+    card.setAttribute('aria-labelledby', tabs[i].id)
+  })
+
+  function select(i, moveFocus = false) {
+    open = (i + tabs.length) % tabs.length
+    tabs.forEach((tab, j) => {
+      tab.setAttribute('aria-selected', String(j === open))
+      tab.tabIndex = j === open ? 0 : -1
+    })
+    cards.forEach((card, j) => card.classList.toggle('is-open', j === open))
+    dots.forEach((dot, j) => dot.classList.toggle('is-open', j === open))
+    steps[0].setAttribute('aria-label', `Previous pillar: ${names[(open + 5) % 6]}`)
+    steps[1].setAttribute('aria-label', `Next pillar: ${names[(open + 1) % 6]}`)
+    if (moveFocus) tabs[open].focus()
+    draw()
+  }
+
+  tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)))
+  steps.forEach((step) => step.addEventListener('click', () => select(open + Number(step.dataset.step))))
+
+  tablist.addEventListener('keydown', (event) => {
+    const moves = {ArrowRight: open + 1, ArrowDown: open + 1, ArrowLeft: open - 1, ArrowUp: open - 1, Home: 0, End: tabs.length - 1}
+    if (event.key in moves) {
+      event.preventDefault()
+      select(moves[event.key], true)
+    }
+  })
+
+  // DRAWING: the incoming trail and, on desktop, the connector from the open
+  // segment to the card. Desktop works in mock-up units (1440 wide), scaled to
+  // the stage; phones work in screen pixels.
+  const CENTRE = {x: 384, y: 580} // ring centre on the desktop mock-up
+  const OUTER = 304 // outer radius of the ring
+  const POP = 12 // how far the open segment moves out
+  const AROUND = 328 // the connector's path round the far side of the ring
+  const CARD_LEFT = 790
+  // From the top centre, where The case's trail leaves, curving left to end just
+  // after the heading "What we do" (which ends at x 303, middle y 125)
+  const DESKTOP_TRAIL = 'M720,0 C 720,80 520,125 330,125'
+
+  const at = (r, deg) => {
+    const a = (deg * Math.PI) / 180
+    return {x: CENTRE.x + r * Math.sin(a), y: CENTRE.y - r * Math.cos(a)}
+  }
+  const xy = (p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`
+
+  function connectorPath(px, box) {
+    const card = cards[open].parentElement.getBoundingClientRect()
+    const top = (card.top - box.top) / px + 40
+    const bottom = (card.bottom - box.top) / px - 40
+    const clampY = (y) => Math.min(bottom, Math.max(top, y))
+    const angle = open * 60
+    const start = at(OUTER + POP, angle)
+    // Segments facing the card (top, upper right, lower right): straight across
+    if (angle <= 120) {
+      return `M${xy(start)} L${CARD_LEFT},${clampY(start.y).toFixed(1)}`
+    }
+    // The far side: out a little, round the outside of the ring to the 60 or
+    // 120 degree point, then straight across, so the line never crosses the ring
+    const target = angle === 300 ? 60 : 120
+    const clockwise = angle === 300 ? 1 : 0
+    const out = at(AROUND, angle)
+    const end = at(AROUND, target)
+    return `M${xy(start)} L${xy(out)} A${AROUND},${AROUND} 0 0 ${clockwise} ${xy(end)} L${CARD_LEFT},${clampY(end.y).toFixed(1)}`
+  }
+
+  function draw() {
+    const box = stage.getBoundingClientRect()
+    drawing.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`)
+    let d
+    if (isDesktop.matches) {
+      const px = box.width / 1440
+      drawingScale.setAttribute('transform', `scale(${px})`)
+      d = DESKTOP_TRAIL
+      connector.setAttribute('d', connectorPath(px, box))
+    } else {
+      // Phone: straight down the left, in line with The case's trail (the side
+      // margin plus 16px, so x 36 on a 390 screen), ending level with the middle
+      // of the heading
+      drawingScale.removeAttribute('transform')
+      const section = pillarsSection.getBoundingClientRect()
+      const heading = pillarsSection.querySelector('.pillars__heading').getBoundingClientRect()
+      const gutter = parseFloat(getComputedStyle(pillarsSection).paddingLeft)
+      const x = section.left + gutter + 16 - box.left
+      d = `M${x},${section.top - box.top} L${x},${heading.top + heading.height / 2 - box.top}`
+      connector.setAttribute('d', '')
+    }
+    trailPath.setAttribute('d', d)
+    trailMask.setAttribute('d', d)
+    revealTrail()
+  }
+
+  // THE TRAIL DRAWS ITSELF, carrying on from The case's trail at the same pace,
+  // and stays drawn once drawn. Nothing is hidden without JavaScript or with
+  // reduced motion.
+  const trailMask = pillarsSection.querySelector('.pillars__trail-mask')
+  const caseTrail = document.getElementById('case-trail')
+  const reduceMotionPillars = window.matchMedia('(prefers-reduced-motion: reduce)')
+  let trailDrawn = 0
+
+  function revealTrail() {
+    if (reduceMotionPillars.matches) {
+      trailPath.removeAttribute('mask')
+      return
+    }
+    trailPath.setAttribute('mask', 'url(#pillars-trail-reveal)')
+    const box = stage.getBoundingClientRect()
+    const length = trailPath.getTotalLength()
+    let progress
+    if (isDesktop.matches) {
+      // The case's trail finishes when its stage's bottom (this stage's top)
+      // passes 85% down the screen; this one starts there. The case draws its
+      // whole length over its 900-unit-tall stage: use the same length per unit.
+      const px = box.width / 1440
+      const pace = caseTrail ? caseTrail.getTotalLength() / 900 : 2
+      const scrolled = (window.innerHeight * 0.85 - box.top) / px
+      progress = (scrolled * pace) / length
+    } else {
+      // Phones: the tip follows a line 70% down the screen, as in The case
+      const top = pillarsSection.getBoundingClientRect().top
+      progress = (window.innerHeight * 0.7 - top) / length
+    }
+    trailDrawn = Math.max(trailDrawn, Math.min(1, Math.max(0, progress)))
+    trailMask.style.strokeDashoffset = String(1 - trailDrawn)
+  }
+
+  let trailQueued = false
+  window.addEventListener('scroll', () => {
+    if (!trailQueued) {
+      trailQueued = true
+      requestAnimationFrame(() => {
+        trailQueued = false
+        revealTrail()
+      })
+    }
+  }, {passive: true})
+  reduceMotionPillars.addEventListener('change', revealTrail)
+
+  // Redraw when anything changes size (screen, fonts loading, text wrapping)
+  new ResizeObserver(draw).observe(stage)
+  isDesktop.addEventListener('change', draw)
+
+  select(0)
+}

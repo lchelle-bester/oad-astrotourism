@@ -36,18 +36,25 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
+    .replace(/\{/g, '&#123;') // so text from Sanity can never look like a {{placeholder}}
+}
+
+function lookup(data, key, match) {
+  const value = key.split('.').reduce((obj, part) => (obj == null ? undefined : obj[part]), data)
+  if (value === undefined || value === null) {
+    throw new Error(`Template placeholder ${match} has no value in the Sanity data.`)
+  }
+  return value
 }
 
 // Replaces each {{name.field}} in the template with the matching value from
 // data, escaped. An unknown placeholder stops the build, so typos are caught.
+// {{{name.field}}} (three braces) inserts HTML that this script has built itself
+// from escaped parts, such as the pillar cards. Never use it for Sanity text directly.
 function renderTemplate(template, data) {
-  return template.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (match, key) => {
-    const value = key.split('.').reduce((obj, part) => (obj == null ? undefined : obj[part]), data)
-    if (value === undefined || value === null) {
-      throw new Error(`Template placeholder ${match} has no value in the Sanity data.`)
-    }
-    return escapeHtml(value)
-  })
+  return template
+    .replace(/\{\{\{\s*([\w.]+)\s*\}\}\}/g, (match, key) => String(lookup(data, key, match)))
+    .replace(/\{\{\s*([\w.]+)\s*\}\}/g, (match, key) => escapeHtml(lookup(data, key, match)))
 }
 
 // Replaces each {{> name}} with the contents of site/partials/name.html, so shared
@@ -60,6 +67,55 @@ function insertPartials(template) {
     }
     return fs.readFileSync(file, 'utf8').trimEnd()
   })
+}
+
+// THE SIX PILLARS
+// The ring's six segment shapes (fixed design, from docs/pillars/pillars-ring.svg).
+const RING_POINTS = [...fs.readFileSync(path.join(__dirname, 'pillars-ring.svg'), 'utf8')
+  .matchAll(/<polygon id="segment-(\d)"[^>]* points="([^"]+)"/g)]
+  .sort((a, b) => a[1] - b[1])
+  .map((m) => m[2])
+
+const pillarId = (i) => `pillar-${i + 1}`
+
+// The segments of the ring: one real button per pillar, holding its own shape
+// (only the painted shape reacts to the pointer) and its name. Hidden until
+// main.js turns the list of cards into the ring.
+function renderPillarTabs(pillars) {
+  return pillars.map((pillar, i) => `
+          <button class="pillar-tab" id="${pillarId(i)}-tab" type="button" role="tab" aria-selected="false" aria-controls="${pillarId(i)}" tabindex="-1">
+            <svg class="pillar-tab__shape" viewBox="0 0 640 640" aria-hidden="true" focusable="false"><polygon points="${RING_POINTS[i]}"/></svg>
+            <span class="pillar-tab__label">${escapeHtml(pillar.name.trim())}</span>
+          </button>`).join('')
+}
+
+// The cards: the plain list everyone gets without JavaScript, which becomes the
+// panel beside the ring. Photos are not shown yet (none chosen); every card gets
+// the placeholder, a soft gradient with a mountain line.
+function renderPillarCards(pillars) {
+  return pillars.map((pillar, i) => {
+    const links = (pillar.links || []).map((link) => {
+      const href = link.page || link.url
+      if (!/^(\/|https?:\/\/)/.test(href || '')) {
+        throw new Error(`Pillar "${pillar.name}": link "${link.label}" needs a page or a web address.`)
+      }
+      return `
+              <li><a href="${escapeHtml(href)}">${escapeHtml(link.label.trim())} <span aria-hidden="true">&rarr;</span></a></li>`
+    }).join('')
+    return `
+        <article class="pillar-card" id="${pillarId(i)}" aria-labelledby="${pillarId(i)}-name">
+          <div class="pillar-card__photo" aria-hidden="true">
+            <svg viewBox="0 0 600 240" preserveAspectRatio="none" focusable="false"><path d="M0,190 C90,150 160,175 250,150 C340,125 420,170 500,140 C550,122 580,135 600,128 L600,240 L0,240 Z"/></svg>
+          </div>
+          <div class="pillar-card__body">
+            <h3 class="pillar-card__name" id="${pillarId(i)}-name">${escapeHtml(pillar.name.trim())}</h3>
+            <p class="pillar-card__text">${escapeHtml(pillar.description.trim())}</p>
+            <p class="pillar-card__find">Find it on this site</p>
+            <ul class="pillar-card__links">${links}
+            </ul>
+          </div>
+        </article>`
+  }).join('')
 }
 
 async function main() {
@@ -79,7 +135,17 @@ async function main() {
     throw new Error('"The case" needs exactly three published statistics. Check it in the Studio.')
   }
 
-  const data = {hero, caseSection}
+  // The six pillars, in order round the circle (Sanity enforces exactly six)
+  const pillarsSection = await sanityQuery(
+    '*[_id == "pillarsSection"][0]{eyebrow, heading, helper, helperPhone, pillars[]{name, description, links[]{label, page, url}}}',
+  )
+  if (!pillarsSection || !Array.isArray(pillarsSection.pillars) || pillarsSection.pillars.length !== 6) {
+    throw new Error('"What we do" needs exactly six published pillars. Check it in the Studio.')
+  }
+  pillarsSection.tabs = renderPillarTabs(pillarsSection.pillars)
+  pillarsSection.cards = renderPillarCards(pillarsSection.pillars)
+
+  const data = {hero, caseSection, pillarsSection}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.

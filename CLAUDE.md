@@ -173,7 +173,7 @@ Phase 1 (hero) is in progress. Done: the hero content type with the headline in 
 
 Phase 2 ("The case", design "Trail", spec in docs/case/case-design.md) is done: all six steps built and the phase-end checklist passed (26 Oct 2026). Not pushed yet. Before launch: Joy sees stat 3 (commercial estimate).
 
-Phase 3 is the six pillars (design in docs/pillars/pillars-design.md), started 27 Oct 2026. Schema written 27 Oct; waiting for content to be entered.
+Phase 3 is the six pillars (design in docs/pillars/pillars-design.md), started 27 Oct 2026. Schema written and content entered 27 Oct. Built and tested 27 Oct in Chrome at 1440, 1248 and 390 (no errors, no sideways scroll); the last change (phone card fits the open pillar) is not yet screenshotted. build.js renders the cards and tabs, HTML in index.html, CSS section 8, JavaScript in main.js. Still open: decision 4 (connector route for the far side; built as "round the outside to the 60 or 120 degree point", L'chelle to confirm after seeing Publications open), decisions 5 and 6 for Ram and Joy.
 
 Still to do in Phase 1: the Netlify build hook and the Sanity webhook (neither exists yet; see open decision 6 on rebuild cost).
 
@@ -248,6 +248,13 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 - Pillars in Sanity (27 Oct 2026): one pillarsSection document (eyebrow, heading, helper lines for computer and phone, exactly six pillars in circle order), chosen over six separate pillar documents (count and order hard to enforce) and pillar documents picked by a section (two places to edit). Colours belong to the positions, in CSS. Each pillar: name, sentence, optional photo (hotspot; alt text and credit required once there is a photo), one to three links.
 - Pillar links pick from a dropdown of the site's pages (studio/schemaTypes/sitePages.js, kept in step with the nav), or an outside web address, chosen over free-text paths and over page documents in Sanity (27 Oct 2026).
 - No consent checkbox on pillar photos (27 Oct 2026); consent is handled by our own process with OAD before a photo is added.
+- Pillars use the tabs pattern (tablist, tab, tabpanel; one Tab stop, arrow keys round the circle, Home and End), chosen over six buttons with aria-pressed (27 Oct 2026).
+- Pillar segments are real HTML buttons (27 Oct 2026). Each button holds its own SVG segment shape and label; the button ignores the pointer and only the painted shape reacts, so the hit area is exactly the segment. This replaces the clip-path idea agreed first, because clip-path would cut off the outlines and the focus ring. The focus ring is drawn on the shape (wide white outline with a yellow glow).
+- The first pillar (Promotion & Awareness) is open when the page loads (27 Oct 2026), chosen over none with a prompt and over Resources.
+- Pillars trail (27 Oct 2026, changed from the spec): it continues from The case's trail and ends beside the heading "What we do" instead of curling into the ring. Desktop path M720,0 C 720,80 520,125 330,125; phones straight down the left (side margin + 16px) to the middle of the heading. It draws itself on scroll through an SVG mask, starting when The case's trail finishes and at the same pace (length per unit of scroll), and stays drawn.
+- Pillars desktop (27 Oct 2026, changed from the spec): segment labels 22px (was 18) and 28% of the ring wide; the card is exactly as tall as the ring (608, y 276 to 884) and its photo takes whatever height the text leaves. Card text: name 32, sentence 17, links 16. Breakpoint 1248px, like the header and The case (checked: Publications fits at 1248).
+- Pillars phone (27 Oct 2026, changed from the spec): shorter card (photo 96px, tighter padding, name 24px, sentence 15px), 16px below the ring, and the card fits the open pillar instead of the tallest one, so the page below moves a little when switching. The section clips sideways overflow, since the open segment pops past the edge of a 390 screen.
+- Pillar card photos: none yet; every card shows the placeholder (gradient with a mountain line, no "placeholder" text on the live site). How photos are served (Sanity image CDN or self-hosted at build time) is still the open question from the Sanity rules.
 - 404 page wording is fixed in the HTML, not in Sanity, as a system message: "This page isn't here yet", one line of explanation and a link home (24 Oct 2026). Marked noindex.
 
 ## Known gotchas (carried over from the concept build)
