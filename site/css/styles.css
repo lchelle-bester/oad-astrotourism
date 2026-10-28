@@ -240,16 +240,14 @@ h3 {
 }
 
 /* Donate: the one action in the nav, an outlined button (decided 28 Oct 2026,
-   instead of solid yellow): a thin sand outline round white text, turning
-   yellow on hover and keyboard focus, like the back-to-top arrow.
-   White on the dark header 12:1 or more; the sand outline 8.9:1. */
+   instead of solid yellow): a thin sand outline round text in the same soft
+   white and weight as the other nav links, turning yellow on hover and keyboard
+   focus, like the back-to-top arrow. The sand outline is 8.9:1 on the page. */
 .site-nav a.site-nav__donate {
   display: inline-block;
   padding: 0.4em 1em;
   border: 1px solid var(--color-accent-soft);
   border-radius: 0.35rem;
-  color: var(--color-text);
-  font-weight: 600;
   line-height: 1.3;
   transition: color 0.2s, border-color 0.2s;
 }
