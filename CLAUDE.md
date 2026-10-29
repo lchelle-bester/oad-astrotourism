@@ -175,7 +175,7 @@ Phase 2 ("The case", design "Trail", spec in docs/case/case-design.md) is done: 
 
 Phase 3 is the six pillars (design in docs/pillars/pillars-design.md), started 27 Oct 2026. Schema written and content entered 27 Oct. Built and tested 27 Oct in Chrome at 1440, 1248 and 390 (no errors, no sideways scroll); the last change (phone card fits the open pillar) is not yet screenshotted. build.js renders the cards and tabs, HTML in index.html, CSS section 8, JavaScript in main.js. Still open: decision 4 (connector route for the far side; built as "round the outside to the 60 or 120 degree point", L'chelle to confirm after seeing Publications open), decisions 5 and 6 for Ram and Joy.
 
-Phase 4 is proof (design in docs/proof/proof-design.md), started 29 Oct 2026. Step a, the schema (studio/schemaTypes/impactFigure.js and impactSection.js), written and validated 29 Oct; next L'chelle enters the content. Breakpoint to be measured and chosen at step d.
+Phase 4 is proof (design in docs/proof/proof-design.md), started 29 Oct 2026. Step a, the schema (studio/schemaTypes/impactFigure.js and impactSection.js), written and validated 29 Oct, content entered. Step b (build.js writes the section, index.html) and step c (teal band with the ridge, desktop layout, CSS section 9; ridge drawings in site/assets/images/proof/) done 29 Oct. Desktop layout currently from 920px, provisional: the breakpoint is measured and chosen at step d.
 
 Still to do in Phase 1: the Netlify build hook and the Sanity webhook (neither exists yet; see open decision 6 on rebuild cost).
 

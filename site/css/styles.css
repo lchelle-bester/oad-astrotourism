@@ -1845,6 +1845,174 @@ h3 {
 }
 
 
+/* 9. PROOF (design in docs/proof/proof-design.md)
+   A full-width teal band after the pillars. Its top edge is a mountain ridge
+   (a fixed drawing in the repo), so the page reads as landscape, not a box.
+   Contrast on teal (calculated): white 8.9:1, sand 4.6:1 (small bold labels
+   only), yellow 5.5:1. */
+
+.proof {
+  /* The ridge keeps the drawing's proportions (1440 x 120), up to 1920 wide */
+  --ridge: calc(min(100vw, 1920px) * 120 / 1440);
+  /* Three layers, top first: the ridge drawing (teal below its line, see-through
+     above it), solid teal for the rest of the band (starting 2px under the
+     ridge's bottom so no seam can show), and the pillars' dark navy behind */
+  background:
+    url("../assets/images/proof/ridge-desktop.svg") left top / 100% var(--ridge) no-repeat,
+    linear-gradient(var(--panel-teal), var(--panel-teal)) left calc(var(--ridge) - 2px) / 100% 100% no-repeat,
+    var(--color-night);
+}
+
+.proof__inner {
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: calc(var(--ridge) + 3rem) var(--gutter) 3rem;
+}
+
+.proof__eyebrow {
+  margin: 0;
+  color: var(--color-accent-soft);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.proof__heading {
+  margin: 0;
+}
+
+.proof__headline {
+  margin: 0;
+}
+
+/* The number on its own line, very large, with its sentence underneath */
+.proof__headline-number {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.proof__headline-label {
+  display: block;
+}
+
+.proof__button {
+  display: inline-block;
+}
+
+.proof__results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgb(255 255 255 / 0.22);
+}
+
+.proof__result {
+  border-bottom: 1px solid rgb(255 255 255 / 0.22);
+}
+
+.proof__result-text,
+.proof__result-tag {
+  margin: 0;
+}
+
+.proof__result-number {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.proof__result-tag {
+  color: var(--color-accent-soft);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Desktop: two columns, sized from the 1440 design. --px is one design pixel
+   (the band's width / 1440, up to 1920 wide). The small text never drops below
+   a readable size. The breakpoint is provisional, chosen at step d. */
+@media (min-width: 57.5em) {
+  .proof__inner {
+    --px: calc(min(100vw, 1920px) / 1440);
+    display: grid;
+    grid-template-columns: calc(560 * var(--px)) 1fr;
+    column-gap: calc(76 * var(--px));
+    align-items: center;
+    padding: calc(140 * var(--px)) var(--gutter) calc(52 * var(--px));
+  }
+
+  .proof__eyebrow {
+    font-size: max(0.75rem, 14 * var(--px));
+    line-height: 1.4;
+  }
+
+  .proof__heading {
+    margin-top: calc(10 * var(--px));
+    font-size: max(1.75rem, 40 * var(--px));
+    line-height: 1.12;
+  }
+
+  .proof__headline {
+    margin-top: calc(36 * var(--px));
+  }
+
+  .proof__headline-number {
+    font-size: calc(112 * var(--px));
+  }
+
+  .proof__headline-label {
+    margin-top: calc(18 * var(--px));
+    font-size: max(1.0625rem, 21 * var(--px));
+    line-height: 1.45;
+  }
+
+  .proof__button {
+    margin-top: calc(40 * var(--px));
+  }
+
+  /* Each result: the number in its own column, the tag above the sentence beside
+     it. The paragraph around the number and sentence steps aside (display:
+     contents) so both can sit in the grid; the reading order is unchanged. */
+  .proof__result {
+    display: grid;
+    grid-template-columns: calc(132 * var(--px)) 1fr;
+    grid-template-areas:
+      "number tag"
+      "number label";
+    column-gap: calc(28 * var(--px));
+    align-items: center;
+    padding: calc(24 * var(--px)) 0;
+  }
+
+  .proof__result-text {
+    display: contents;
+  }
+
+  .proof__result-number {
+    grid-area: number;
+    font-size: calc(76 * var(--px));
+  }
+
+  .proof__result-tag {
+    grid-area: tag;
+    align-self: end;
+    margin-bottom: calc(6 * var(--px));
+    font-size: max(0.75rem, 12 * var(--px));
+    line-height: 1.4;
+    letter-spacing: 0.12em;
+  }
+
+  .proof__result-label {
+    grid-area: label;
+    align-self: start;
+    font-size: max(1.0625rem, 22 * var(--px));
+    line-height: 1.35;
+  }
+}
+
+
 /* BACK TO TOP (desktop only, from 1248px): a small square arrow in the bottom
    right corner, as on the concept site. Hidden until main.js shows it, once the
    hero has scrolled completely out of view. Smooth scrolling only without
@@ -1905,7 +2073,7 @@ h3 {
 }
 
 
-/* 9. PAGE NOT FOUND (404)
+/* 10. PAGE NOT FOUND (404)
    A plain page under the shared header. The header sits on top of the page
    (position: absolute), so the content starts below it. */
 
