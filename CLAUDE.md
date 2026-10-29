@@ -123,7 +123,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 - **Audiences:** A) people starting an initiative, B) the tourism industry, C) funders, policymakers and partners.
 - **Sections:** Home, Resources, Projects and impact, Get Funding, About.
-- **Homepage order:** hero, the case (statistics), the six pillars as clickable cards, three paths (one per audience), proof, news and updates, get involved, footer.
+- **Homepage order:** hero, the case (statistics), the six pillars as clickable cards, proof, news and updates, get involved, footer. "Three paths" was cut on 29 Oct 2026 (see decisions log).
 - **Interactive pieces:** map of funded projects and surveyed initiatives, searchable and filterable project directory (country, category, year), resource chooser, clickable pillars.
 - **Removed:** the Team page (one OAD-wide team page instead, Joy's details go on the contact page).
 - **Theory of Change:** rebuilt as a real page, with the diagram downloadable and a text equivalent.
@@ -132,7 +132,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 - The site holds only relevant, current content. It is not a Drive for everything OAD has ever done. When in doubt, ask Ram and Joy whether something stays.
 - Every project and initiative is structured data with a location, stored in Sanity, so the map, directory and any later ideas all read from one source.
-- Statistics must trace to a source. Checked so far (see decisions log): 8 in 10 under light-polluted skies (Falchi et al. 2016), 62% of travellers considering darker sky destinations (Booking.com, 2024), $2.2bn astro tourism market in 2025 (Growth Market Reports, a commercial estimate; Joy to see before launch). Still to verify: EUR 111,000 across 14 countries, five case studies, seven guidelines. Check each one before it goes on a page and record the source.
+- Statistics must trace to a source. Checked so far (see decisions log): 8 in 10 under light-polluted skies (Falchi et al. 2016), 62% of travellers considering darker sky destinations (Booking.com, 2024), $2.2bn astro tourism market in 2025 (Growth Market Reports, a commercial estimate; Joy to see before launch). Proof headline figure: shown as "€111,000+ across 17 countries" (L'chelle's choice, 29 Oct 2026), which no single source says: OAD's Impact page (copied 28 Oct 2026) says around €111,000 across 14 countries, Joy's June 2026 paper says over €100,000 across 17 countries. Joy to confirm once the homepage is built. Still to verify: five case studies, seven guidelines. Check each one before it goes on a page and record the source.
 - `Astrotourism Funded Projects 1.xlsx` is the funded-projects data, but each row is a single comma-separated text cell, some text has encoding damage (for example `√Ç`), and the link column contains raw HTML. It has to be cleaned and parsed before it goes into Sanity. Never import it as is.
 - Project copy from OAD's existing site is their writing. Don't paraphrase it in ways that change meaning. Text does not need approval before it is written into the site: flag what changed and Ram and Joy review it afterwards (decided 12 Oct 2026).
 - Consent: get OAD's confirmation before using named people or photos.
@@ -163,7 +163,7 @@ Organised by audience, not department. Nothing important more than two clicks de
 
 - **Phase 0, setup.** Git repo on GitHub, folder structure, `.gitignore`, `credits.md`, design tokens (colours and fonts) in CSS, Sanity account and project, Netlify connected.
 - **Phase 1, hero.** Header with the ‘Part of OAD’ link home, night-sky video, headline, subheading and affiliation line. No hero button for now.
-- **Phase 2 onwards.** Order to be agreed with me one phase at a time, following the homepage order in the structure above (the case, the six pillars, three paths, proof, news, get involved, footer), then the inner pages.
+- **Phase 2 onwards.** Order to be agreed with me one phase at a time, following the homepage order in the structure above (the case, the six pillars, proof, news, get involved, footer), then the inner pages.
 
 ## Current state
 
@@ -174,6 +174,8 @@ Phase 1 (hero) is in progress. Done: the hero content type with the headline in 
 Phase 2 ("The case", design "Trail", spec in docs/case/case-design.md) is done: all six steps built and the phase-end checklist passed (26 Oct 2026). Not pushed yet. Before launch: Joy sees stat 3 (commercial estimate).
 
 Phase 3 is the six pillars (design in docs/pillars/pillars-design.md), started 27 Oct 2026. Schema written and content entered 27 Oct. Built and tested 27 Oct in Chrome at 1440, 1248 and 390 (no errors, no sideways scroll); the last change (phone card fits the open pillar) is not yet screenshotted. build.js renders the cards and tabs, HTML in index.html, CSS section 8, JavaScript in main.js. Still open: decision 4 (connector route for the far side; built as "round the outside to the 60 or 120 degree point", L'chelle to confirm after seeing Publications open), decisions 5 and 6 for Ram and Joy.
+
+Phase 4 is proof (design in docs/proof/proof-design.md), started 29 Oct 2026. Step a, the schema (studio/schemaTypes/impactFigure.js and impactSection.js), written and validated 29 Oct; next L'chelle enters the content. Breakpoint to be measured and chosen at step d.
 
 Still to do in Phase 1: the Netlify build hook and the Sanity webhook (neither exists yet; see open decision 6 on rebuild cost).
 
@@ -264,6 +266,9 @@ Add an entry (with the date) whenever I make a decision, including the reason. M
 - Pillar card photos: none yet; every card shows the placeholder (gradient with a mountain line, no "placeholder" text on the live site). How photos are served (Sanity image CDN or self-hosted at build time) is still the open question from the Sanity rules.
 - Back-to-top arrow (27 Oct 2026): desktop only (from 1248px), styled as on the concept site, bottom right. Appears once the hero has scrolled completely out of view (on pages without a hero, after one screen of scrolling). A shared partial, site/partials/to-top.html, on every page.
 - Donate added to the main nav (28 Oct 2026): last item, an outlined button (thin sand outline, text in the same soft white and weight as the other nav links, yellow on hover and focus; solid yellow was tried and rejected; on phones a full-width outlined button at the bottom of the menu), linking to https://iau.org/Iau/Fundraising/Donate_Now.aspx?WebsiteKey=9e4eaea2-b0d6-4c4b-bd18-913a208b91be. NOT YET CONFIRMED: iau.org blocks automated checks, so L'chelle to open it and check it is an OAD or astrotourism donation page, and Ram and Joy to agree to the nav change. To make room, the desktop header link is shortened to "Part of the IAU OAD ↗" (full name in its title and for screen readers; the phone strip keeps the full wording), chosen over switching to the menu button below about 1320px and over smaller nav text. The full header still fits from 1248px.
+- "Three paths" cut from the homepage (29 Oct 2026). The order is now hero, the case, the six pillars, proof, news and updates, get involved, footer. Phase 4 is proof, design in docs/proof/proof-design.md. Ram and Joy signed off a sitemap that included three paths, so they need to be told.
+- Proof in Sanity (29 Oct 2026): one impactSection document (eyebrow, heading, headline figure, exactly three results, button with page or outside address), chosen over sharing one figure type with The case (its values are text such as "8 in 10" and never count up, and Phase 2 would change) and over separate figure documents (two places to edit). The figure shape lives in its own file (impactFigure.js) so the Impact page can reuse it. Each figure: optional text before and after, a whole number (the site adds the comma), sentence, and a required source, source link and checked-on date that are never shown. Results add a tag and a place. No editor note field.
+- Proof button goes to the new site's Impact page, /projects/impact/, chosen over the current live Impact page, which disappears when this site takes over the address at launch (29 Oct 2026). Until the page is built it shows the 404 page. It is a Sanity setting, so it can change without code.
 - 404 page wording is fixed in the HTML, not in Sanity, as a system message: "This page isn't here yet", one line of explanation and a link home (24 Oct 2026). Marked noindex.
 
 ## Known gotchas (carried over from the concept build)
