@@ -529,6 +529,7 @@ if (proofNumbers.length && 'IntersectionObserver' in window && !reduceMotionProo
     c.state = 'done'
     c.el.textContent = c.final
     c.el.style.minWidth = ''
+    c.el.style.filter = ''
     c.el.removeAttribute('aria-hidden')
     if (c.spoken) c.spoken.remove()
     observer.unobserve(c.el)
@@ -542,6 +543,11 @@ if (proofNumbers.length && 'IntersectionObserver' in window && !reduceMotionProo
       const t = Math.min((now - start) / COUNT_TIME, 1)
       const eased = 1 - Math.pow(1 - t, 3) // ease out: fast at first, slowing at the end
       show(c, Math.round(c.value * eased))
+      // Motion blur: as blurred as the number is fast, so the racing digits
+      // smear like a moving photo and the number lands sharp. The speed of this
+      // ease out falls with (1 - t) squared; at the start the blur is 0.04 of
+      // the text size (about 4px on desktop).
+      c.el.style.filter = `blur(${(0.04 * Math.pow(1 - t, 2)).toFixed(4)}em)`
       if (t < 1) requestAnimationFrame(step)
       else finish(c)
     }
