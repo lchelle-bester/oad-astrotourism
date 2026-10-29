@@ -151,6 +151,22 @@
         </div>
       </div>
     </section>
+
+    <!-- Proof: what OAD-funded projects have achieved (design in docs/proof/proof-design.md).
+         All words and numbers come from Sanity, with the real final numbers written here,
+         so nobody ever sees or hears a half-counted figure. -->
+    <section class="proof" aria-labelledby="proof-heading">
+      <div class="proof__inner">
+        <div class="proof__main">
+          <p class="proof__eyebrow">{{impactSection.eyebrow}}</p>
+          <h2 id="proof-heading" class="proof__heading">{{impactSection.heading}}</h2>
+          <p class="proof__headline"><span class="proof__headline-number">{{impactSection.headlineNumber}}</span> <span class="proof__headline-label">{{impactSection.headline.label}}</span></p>
+          <a class="proof__button" href="{{impactSection.buttonHref}}">{{impactSection.button.label}} <span class="proof__button-icon" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <ul class="proof__results">{{{impactSection.results}}}
+        </ul>
+      </div>
+    </section>
   </main>
 
 {{> to-top}}

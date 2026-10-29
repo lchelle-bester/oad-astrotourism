@@ -185,6 +185,25 @@ function renderPillarCards(pillars, photos = []) {
   }).join('')
 }
 
+// PROOF (the impact figures)
+// A figure as it is shown, for example "€111,000+": the number gets its thousands
+// comma here, so editors type 111000 in the Studio.
+function formatFigure(figure) {
+  const number = new Intl.NumberFormat('en-GB').format(figure.value)
+  return `${(figure.prefix || '').trim()}${number}${(figure.suffix || '').trim()}`
+}
+
+// The three results. Each item reads as one sentence, number first, then the tag
+// and place (the CSS shows the tag above the sentence). The dot between tag and
+// place is hidden from screen readers, which hear a comma instead.
+function renderImpactResults(results) {
+  return results.map((result) => `
+          <li class="proof__result">
+            <p class="proof__result-text"><span class="proof__result-number">${escapeHtml(formatFigure(result))}</span> <span class="proof__result-label">${escapeHtml(result.label.trim())}</span></p>
+            <p class="proof__result-tag">${escapeHtml(result.tag.trim())}<span aria-hidden="true"> · </span><span class="visually-hidden">, </span>${escapeHtml(result.place.trim())}</p>
+          </li>`).join('')
+}
+
 async function main() {
   const hero = await sanityQuery(
     '*[_id == "hero"][0]{headlineWord, headlineRest, subheading, affiliation}',
@@ -215,7 +234,24 @@ async function main() {
   const pillarPhotos = await fetchPillarPhotos(pillarsSection.pillars)
   pillarsSection.cards = renderPillarCards(pillarsSection.pillars, pillarPhotos.photos)
 
-  const data = {hero, caseSection, pillarsSection}
+  // Proof: one headline figure and exactly three results (Sanity enforces this).
+  // The source fields are records for editors, so they are not fetched.
+  const impactSection = await sanityQuery(
+    '*[_id == "impactSection"][0]{eyebrow, heading, headline{prefix, value, suffix, label}, ' +
+      'results[]{prefix, value, suffix, label, tag, place}, button{label, page, url}}',
+  )
+  if (!impactSection || !impactSection.headline || !Array.isArray(impactSection.results) || impactSection.results.length !== 3) {
+    throw new Error('"Impact (proof)" needs a headline figure and exactly three published results. Check it in the Studio.')
+  }
+  impactSection.headlineNumber = formatFigure(impactSection.headline)
+  impactSection.results = renderImpactResults(impactSection.results)
+  const buttonHref = impactSection.button?.page || impactSection.button?.url
+  if (!/^(\/|https?:\/\/)/.test(buttonHref || '')) {
+    throw new Error('"Impact (proof)": the button needs a page or a web address.')
+  }
+  impactSection.buttonHref = buttonHref
+
+  const data = {hero, caseSection, pillarsSection, impactSection}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
