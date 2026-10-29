@@ -1851,14 +1851,17 @@ h3 {
    Contrast on teal (calculated): white 8.9:1, sand 4.6:1 (small bold labels
    only), yellow 5.5:1. */
 
+/* Phone first (reference 390 wide); the desktop rules below override these. */
 .proof {
-  /* The ridge keeps the drawing's proportions (1440 x 120), up to 1920 wide */
-  --ridge: calc(min(100vw, 1920px) * 120 / 1440);
+  /* The phone ridge (390 x 80) stretched to the width, but never taller than
+     96px, so it stays a gentle ridge on wide phones and tablets */
+  --ridge: min(100vw * 80 / 390, 6rem);
+  --ridge-image: url("/assets/images/proof/ridge-phone.svg");
   /* Three layers, top first: the ridge drawing (teal below its line, see-through
      above it), solid teal for the rest of the band (starting 2px under the
      ridge's bottom so no seam can show), and the pillars' dark navy behind */
   background:
-    url("../assets/images/proof/ridge-desktop.svg") left top / 100% var(--ridge) no-repeat,
+    var(--ridge-image) left top / 100% var(--ridge) no-repeat,
     linear-gradient(var(--panel-teal), var(--panel-teal)) left calc(var(--ridge) - 2px) / 100% 100% no-repeat,
     var(--color-night);
 }
@@ -1866,29 +1869,35 @@ h3 {
 .proof__inner {
   max-width: 1920px;
   margin: 0 auto;
-  padding: calc(var(--ridge) + 3rem) var(--gutter) 3rem;
+  padding: calc(var(--ridge) + 0.25rem) var(--gutter) 2.5rem;
 }
 
 .proof__eyebrow {
   margin: 0;
   color: var(--color-accent-soft);
+  font-size: 0.75rem;
   font-weight: 600;
+  line-height: 1.4;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .proof__heading {
-  margin: 0;
+  margin: 0.625rem 0 0;
+  font-size: 1.875rem;
+  line-height: 1.12;
 }
 
 .proof__headline {
-  margin: 0;
+  margin: 1.5rem 0 0;
 }
 
-/* The number on its own line, very large, with its sentence underneath */
+/* The number on its own line, very large, with its sentence underneath.
+   On narrow phones it shrinks with the screen so "€111,000+" always fits. */
 .proof__headline-number {
   display: block;
   font-family: var(--font-heading);
+  font-size: min(4.25rem, 19vw);
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.045em;
@@ -1896,51 +1905,108 @@ h3 {
 
 .proof__headline-label {
   display: block;
+  margin-top: 0.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.5;
 }
 
 .proof__button {
   display: inline-block;
+  margin-top: 1.5rem;
 }
 
 .proof__results {
-  margin: 0;
+  margin: 1.75rem 0 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid rgb(255 255 255 / 0.22);
 }
 
+/* Each result: the number with its tag beside it on one line, the sentence
+   underneath at full width. The paragraph around the number and sentence steps
+   aside (display: contents) so both can sit in the grid; the reading order is
+   unchanged. */
 .proof__result {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "number tag"
+    "label label";
+  column-gap: 0.875rem;
+  row-gap: 0.5rem;
+  padding: 1rem 0;
   border-bottom: 1px solid rgb(255 255 255 / 0.22);
 }
 
-.proof__result-text,
-.proof__result-tag {
-  margin: 0;
+.proof__result-text {
+  display: contents;
 }
 
 .proof__result-number {
+  grid-area: number;
+  align-self: baseline;
   font-family: var(--font-heading);
+  font-size: 2.75rem;
   font-weight: 600;
   line-height: 1;
 }
 
 .proof__result-tag {
+  grid-area: tag;
+  align-self: baseline;
+  margin: 0;
   color: var(--color-accent-soft);
+  font-size: 0.6875rem;
   font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.proof__result-label {
+  grid-area: label;
+  font-size: 1.0625rem;
+  line-height: 1.4;
 }
 
 /* Desktop: two columns, sized from the 1440 design. --px is one design pixel
    (the band's width / 1440, up to 1920 wide). The small text never drops below
-   a readable size. The breakpoint is provisional, chosen at step d. */
+   a readable size. From 920px, the same switch as the pillars (decided 29 Oct
+   2026): below that the stacked phone layout is used. */
 @media (min-width: 57.5em) {
+  /* The desktop ridge keeps the drawing's proportions (1440 x 120), up to 1920 wide */
+  .proof {
+    --ridge: calc(min(100vw, 1920px) * 120 / 1440);
+    --ridge-image: url("/assets/images/proof/ridge-desktop.svg");
+  }
+
+  /* Left column: the heading and headline figure, with the button under them.
+     Right column: the results, centred against the left column's height. */
   .proof__inner {
     --px: calc(min(100vw, 1920px) / 1440);
     display: grid;
     grid-template-columns: calc(560 * var(--px)) 1fr;
+    grid-template-areas:
+      "main results"
+      "button results";
     column-gap: calc(76 * var(--px));
-    align-items: center;
     padding: calc(140 * var(--px)) var(--gutter) calc(52 * var(--px));
+  }
+
+  .proof__main {
+    grid-area: main;
+  }
+
+  .proof__results {
+    grid-area: results;
+    align-self: center;
+    margin: 0;
+  }
+
+  .proof__button {
+    grid-area: button;
+    justify-self: start;
+    align-self: start;
   }
 
   .proof__eyebrow {
@@ -1976,27 +2042,21 @@ h3 {
      it. The paragraph around the number and sentence steps aside (display:
      contents) so both can sit in the grid; the reading order is unchanged. */
   .proof__result {
-    display: grid;
     grid-template-columns: calc(132 * var(--px)) 1fr;
     grid-template-areas:
       "number tag"
       "number label";
     column-gap: calc(28 * var(--px));
-    align-items: center;
+    row-gap: 0;
     padding: calc(24 * var(--px)) 0;
   }
 
-  .proof__result-text {
-    display: contents;
-  }
-
   .proof__result-number {
-    grid-area: number;
+    align-self: center;
     font-size: calc(76 * var(--px));
   }
 
   .proof__result-tag {
-    grid-area: tag;
     align-self: end;
     margin-bottom: calc(6 * var(--px));
     font-size: max(0.75rem, 12 * var(--px));

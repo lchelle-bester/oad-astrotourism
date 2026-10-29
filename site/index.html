@@ -161,10 +161,11 @@
           <p class="proof__eyebrow">{{impactSection.eyebrow}}</p>
           <h2 id="proof-heading" class="proof__heading">{{impactSection.heading}}</h2>
           <p class="proof__headline"><span class="proof__headline-number">{{impactSection.headlineNumber}}</span> <span class="proof__headline-label">{{impactSection.headline.label}}</span></p>
-          <a class="proof__button" href="{{impactSection.buttonHref}}">{{impactSection.button.label}} <span class="proof__button-icon" aria-hidden="true">&rarr;</span></a>
         </div>
         <ul class="proof__results">{{{impactSection.results}}}
         </ul>
+        <!-- After the results, as on phones; the desktop grid places it under the headline -->
+        <a class="proof__button" href="{{impactSection.buttonHref}}">{{impactSection.button.label}} <span class="proof__button-icon" aria-hidden="true">&rarr;</span></a>
       </div>
     </section>
   </main>
