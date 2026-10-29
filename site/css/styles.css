@@ -1845,6 +1845,95 @@ h3 {
 }
 
 
+/* PILL BUTTON (shared: proof's "See all outcomes", news's "See all updates")
+   A yellow pill with a navy circle holding a yellow arrow. Dark navy text on
+   yellow 10.7:1, on white 17.3:1. It sets its own colours for every state, so
+   no link style can turn the text yellow on yellow. Always as wide as its text.
+   Each section places it with its own class (margins, grid area); the look
+   lives only here. Sizes: phone 16px text and a 40px circle; desktop, from
+   920px, 17px text and a 42px circle at 1440, growing with the screen (made
+   smaller than the proof design on 29 Oct 2026, which had 20 and 48). */
+.pill-button {
+  --circle: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: fit-content;
+  padding: 0.4375rem 0.4375rem 0.4375rem 1.375rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  box-shadow: 0 0.625rem 1.5rem rgb(0 0 0 / 0.25);
+  color: var(--color-night);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 0.25s ease-out;
+}
+
+.pill-button__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--circle);
+  height: var(--circle);
+  border-radius: 50%;
+  background: var(--color-night);
+  color: var(--color-accent);
+  font-size: 1.25em;
+  line-height: 1;
+  transition: transform 0.25s ease-out;
+}
+
+@media (min-width: 57.5em) {
+  .pill-button {
+    --bpx: calc(min(100vw, 1920px) / 1440); /* one design pixel */
+    --circle: max(2.5rem, 42 * var(--bpx));
+    gap: calc(16 * var(--bpx));
+    padding: calc(7 * var(--bpx)) calc(7 * var(--bpx)) calc(7 * var(--bpx)) calc(26 * var(--bpx));
+    font-size: max(1rem, 17 * var(--bpx));
+  }
+}
+
+/* Hover only on devices that really hover (not phones), and keyboard focus:
+   the pill turns white and the arrow moves 4px right. Focus also gets a 3px
+   white outline (8.9:1 against teal, 17.3:1 against the dark navy). */
+@media (hover: hover) {
+  .pill-button:hover {
+    background: var(--white);
+    color: var(--color-night);
+  }
+
+  .pill-button:hover .pill-button__icon {
+    transform: translateX(4px);
+  }
+}
+
+.pill-button:focus-visible {
+  outline: 3px solid var(--white);
+  outline-offset: 3px;
+  background: var(--white);
+  color: var(--color-night);
+}
+
+.pill-button:focus-visible .pill-button__icon {
+  transform: translateX(4px);
+}
+
+/* Reduced motion: the colour changes straight away and the arrow stays put */
+@media (prefers-reduced-motion: reduce) {
+  .pill-button,
+  .pill-button__icon {
+    transition: none;
+  }
+
+  .pill-button:hover .pill-button__icon,
+  .pill-button:focus-visible .pill-button__icon {
+    transform: none;
+  }
+}
+
+
 /* 9. PROOF (design in docs/proof/proof-design.md)
    A full-width teal band after the pillars. Its top edge is a mountain ridge
    (a fixed drawing in the repo), so the page reads as landscape, not a box.
@@ -1903,6 +1992,45 @@ h3 {
   letter-spacing: -0.045em;
 }
 
+/* While the figure rolls (main.js): one box per character, each one line high.
+   A digit box is a window onto a strip of digits that slides upwards. The
+   digits on the strip are 1.25em apart (SPACING in main.js) and the window is
+   exactly one of those slots, so only one digit fits in it. The window
+   overhangs the line by 0.125em above and below, and is 0.15em wider each side
+   than the digit, all taken back by negative margins, so nothing around it
+   moves. Its top and bottom 0.2em fade out, which never touches a digit that
+   has landed. */
+.proof__char {
+  display: inline-block;
+  height: 1em;
+  vertical-align: top;
+}
+
+.proof__char--digit {
+  height: 1.25em;
+  margin: -0.125em -0.15em;
+  padding: 0 0.15em;
+  -webkit-mask-image: linear-gradient(transparent, #000 0.2em, #000 1.05em, transparent);
+  mask-image: linear-gradient(transparent, #000 0.2em, #000 1.05em, transparent);
+}
+
+.proof__strip {
+  display: block;
+  text-align: center;
+}
+
+.proof__strip > span {
+  display: block;
+  height: 1.25em;
+  line-height: 1.25;
+}
+
+.proof__roll-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
 .proof__headline-label {
   display: block;
   margin-top: 0.75rem;
@@ -1910,81 +2038,10 @@ h3 {
   line-height: 1.5;
 }
 
-/* "See all outcomes": a yellow pill with a navy circle holding a yellow arrow,
-   the only yellow in the section. Dark navy text on yellow 10.7:1, on white
-   17.3:1; the yellow against teal 5.5:1. It sets its own colours for every
-   state, so no general link style can turn the text yellow on yellow.
-   On phones it is as wide as its text, left-aligned under the results
-   (changed 29 Oct 2026 from full width, which looked too long). */
+/* "See all outcomes": the shared pill button (see PILL BUTTON above), placed
+   under the results on phones and under the headline figure on desktop. */
 .proof__button {
-  --circle: 2.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: fit-content;
   margin-top: 1.75rem;
-  padding: 0.4375rem 0.4375rem 0.4375rem 1.375rem;
-  border-radius: 999px;
-  background: var(--color-accent);
-  box-shadow: 0 0.625rem 1.5rem rgb(0 0 0 / 0.25);
-  color: var(--color-night);
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.2;
-  text-decoration: none;
-  transition: background-color 0.25s ease-out;
-}
-
-.proof__button-icon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: var(--circle);
-  height: var(--circle);
-  border-radius: 50%;
-  background: var(--color-night);
-  color: var(--color-accent);
-  font-size: 1.25em;
-  line-height: 1;
-  transition: transform 0.25s ease-out;
-}
-
-/* Hover only on devices that really hover (not phones), and keyboard focus:
-   the pill turns white and the arrow moves 4px right. Focus also gets a 3px
-   white outline, 8.9:1 against the teal. */
-@media (hover: hover) {
-  .proof__button:hover {
-    background: var(--white);
-    color: var(--color-night);
-  }
-
-  .proof__button:hover .proof__button-icon {
-    transform: translateX(4px);
-  }
-}
-
-.proof__button:focus-visible {
-  outline: 3px solid var(--white);
-  outline-offset: 3px;
-  background: var(--white);
-  color: var(--color-night);
-}
-
-.proof__button:focus-visible .proof__button-icon {
-  transform: translateX(4px);
-}
-
-/* Reduced motion: the colour changes straight away and the arrow stays put */
-@media (prefers-reduced-motion: reduce) {
-  .proof__button,
-  .proof__button-icon {
-    transition: none;
-  }
-
-  .proof__button:hover .proof__button-icon,
-  .proof__button:focus-visible .proof__button-icon {
-    transform: none;
-  }
 }
 
 .proof__results {
@@ -2075,16 +2132,10 @@ h3 {
     margin: 0;
   }
 
-  /* Desktop: as wide as its text. Made smaller than the design on 29 Oct 2026
-     (17px text and a 42px circle instead of 20 and 48) */
   .proof__button {
-    --circle: max(2.5rem, 42 * var(--px));
     grid-area: button;
     justify-self: start;
     align-self: start;
-    gap: calc(16 * var(--px));
-    padding: calc(7 * var(--px)) calc(7 * var(--px)) calc(7 * var(--px)) calc(26 * var(--px));
-    font-size: max(1rem, 17 * var(--px));
   }
 
   .proof__eyebrow {
@@ -2151,6 +2202,252 @@ h3 {
 }
 
 
+/* 10. NEWS AND UPDATES (design in docs/news/news-design.md)
+   The three newest posts on the dark navy, with star trails arcing behind from
+   the top right (a background drawing, so screen readers never meet it). Only
+   the photos and text blocks are solid navy, so the trails show in the gaps
+   but never behind words. Contrast on #0f1b2b (calculated): white 17.3:1,
+   sand 8.9:1, white at 70% 7.3:1, yellow 10.7:1. */
+
+/* Phone first (version C): one big card, then two rows with square photos */
+.news {
+  --trails: url("/assets/images/news/trails-phone.svg");
+  background: var(--trails) right top / cover no-repeat, var(--color-night);
+}
+
+.news__inner {
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 3.5rem var(--gutter) 3rem;
+}
+
+/* The eyebrow and heading only as wide as their words, each with the navy
+   behind it, so no trail crosses the text */
+.news__eyebrow,
+.news__heading {
+  width: fit-content;
+  background: var(--color-night);
+}
+
+.news__eyebrow {
+  margin: 0;
+  color: var(--color-accent-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.news__heading {
+  margin: 0.625rem 0 0;
+  font-size: 1.75rem;
+  line-height: 1.12;
+}
+
+.news__list {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.news-card {
+  position: relative; /* the stretched title link covers the card */
+}
+
+.news-card__photo {
+  display: block;
+}
+
+.news-card__photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 15 / 8;
+  object-fit: cover;
+  border-radius: 14px;
+  background: var(--color-night);
+}
+
+/* The title comes first in the HTML (read first); the category and date line
+   is moved above it here */
+.news-card__text {
+  display: flex;
+  flex-direction: column;
+  padding-top: 0.875rem;
+  background: var(--color-night);
+}
+
+.news-card__meta {
+  order: -1;
+  margin: 0;
+  color: rgb(255 255 255 / 0.7);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.news-card__category {
+  color: var(--color-accent-soft);
+}
+
+.news-card__dot {
+  margin: 0 0.625rem;
+  color: rgb(255 255 255 / 0.35);
+}
+
+.news-card__title {
+  margin: 0.875rem 0 0;
+  font-size: 1.3125rem;
+  line-height: 1.22;
+}
+
+/* The title link, stretched over the whole card by its ::after, so the photo
+   and date are clickable too while each post is still a single link. Yellow
+   and underlined on hover and keyboard focus (not shown by colour alone); the
+   focus ring goes round the whole card. */
+.news-card__title a {
+  color: var(--color-text);
+  text-decoration: none;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 0.06em;
+}
+
+.news-card__title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+}
+
+.news-card__title a:hover,
+.news-card__title a:focus-visible {
+  color: var(--color-accent);
+  text-decoration-line: underline;
+}
+
+.news-card__title a:focus-visible {
+  outline: none;
+}
+
+.news-card__title a:focus-visible::after {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 6px;
+}
+
+.news__button {
+  margin-top: 1.75rem;
+}
+
+/* Phones and tablets: posts 2 and 3 become rows, a 96px square photo on the
+   left (build.js switches to the square file) and the text on the right.
+   A thin line above each row. Long titles wrap; they are never cut off. */
+@media not all and (min-width: 57.5em) {
+  .news__item + .news__item {
+    padding: 1rem 0;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+
+  .news__item:first-child {
+    padding-bottom: 1.5rem;
+  }
+
+  .news__item + .news__item .news-card {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    column-gap: 0.875rem;
+    align-items: start;
+  }
+
+  .news__item + .news__item .news-card__photo img {
+    width: 6rem;
+    aspect-ratio: 1;
+    border-radius: 10px;
+  }
+
+  .news__item + .news__item .news-card__text {
+    padding-top: 0;
+  }
+
+  .news__item + .news__item .news-card__title {
+    margin-top: 0.375rem;
+    font-size: 1.0625rem;
+    line-height: 1.25;
+  }
+
+  .news__item + .news__item .news-card__title a::after {
+    border-radius: 10px;
+  }
+
+  .news__button {
+    margin-top: 0.375rem;
+  }
+}
+
+/* Desktop: the heading on the left with the button beside it, bottom-aligned,
+   then three equal columns. Sizes from the 1440 design: --px is one design
+   pixel (width / 1440, up to 1920 wide). From 920px, like the pillars and
+   proof (provisional, to be measured). */
+@media (min-width: 57.5em) {
+  .news {
+    --trails: url("/assets/images/news/trails-desktop.svg");
+  }
+
+  .news__inner {
+    --px: calc(min(100vw, 1920px) / 1440);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "intro button"
+      "list list";
+    column-gap: 2rem;
+    padding: calc(80 * var(--px)) var(--gutter) calc(110 * var(--px));
+  }
+
+  .news__intro {
+    grid-area: intro;
+  }
+
+  .news__button {
+    grid-area: button;
+    align-self: end;
+    margin: 0;
+  }
+
+  .news__eyebrow {
+    font-size: max(0.75rem, 14 * var(--px));
+  }
+
+  .news__heading {
+    margin-top: calc(10 * var(--px));
+    font-size: max(1.75rem, 40 * var(--px));
+  }
+
+  .news__list {
+    grid-area: list;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: calc(40 * var(--px));
+    margin-top: calc(44 * var(--px));
+  }
+
+  .news-card__text {
+    padding-top: calc(14 * var(--px));
+  }
+
+  .news-card__meta {
+    font-size: max(0.75rem, 12 * var(--px));
+  }
+
+  .news-card__title {
+    margin-top: calc(14 * var(--px));
+    font-size: max(1.125rem, 22 * var(--px));
+  }
+}
+
+
 /* BACK TO TOP (desktop only, from 1248px): a small square arrow in the bottom
    right corner, as on the concept site. Hidden until main.js shows it, once the
    hero has scrolled completely out of view. Smooth scrolling only without
@@ -2211,7 +2508,7 @@ h3 {
 }
 
 
-/* 10. PAGE NOT FOUND (404)
+/* 11. PAGE NOT FOUND (404)
    A plain page under the shared header. The header sits on top of the page
    (position: absolute), so the content starts below it. */
 
