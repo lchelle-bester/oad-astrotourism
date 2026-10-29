@@ -15,5 +15,5 @@ export const sitePages = [
   {title: 'Projects and impact: Theory of Change', value: '/projects/theory-of-change/'},
   {title: 'Projects and impact: Global Survey Report', value: '/projects/survey-report/'},
   {title: 'Get funding: The Astrotourism Fund', value: '/funding/'},
-  {title: 'About', value: '/about/'},
+  {title: 'News', value: '/news/'},
 ]
