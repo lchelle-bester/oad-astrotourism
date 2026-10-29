@@ -1,4 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {GenerateOnlySlugInput} from './components/GenerateOnlySlugInput'
 
 // A news post. Every post lives in the one News list in the Studio; the homepage
 // shows the three newest, and the News page (next phase) shows them all.
@@ -34,8 +35,8 @@ export const post = defineType({
       description:
         'The end of the post\'s web address, for example astrotourism.astro4dev.org/news/starry-safaris-tanzania/. Finish the title first, then click Generate. Once generated it is locked and cannot be edited, so links to the post never break.',
       options: {source: 'title', maxLength: 96},
-      // Locked as soon as it has a value (decided 29 Oct 2026)
-      readOnly: ({value}) => Boolean(value?.current),
+      // No typing: only a Generate button, then locked (decided 29 Oct 2026)
+      components: {input: GenerateOnlySlugInput},
       validation: (Rule) => Rule.required().error('Generate the web address from the title.'),
     }),
     defineField({
