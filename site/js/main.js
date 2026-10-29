@@ -429,8 +429,19 @@ if (pillarsSection) {
   // reduced motion.
   const trailMask = pillarsSection.querySelector('.pillars__trail-mask')
   const caseTrail = document.getElementById('case-trail')
+  const caseMask = document.querySelector('.case__trail-mask')
   const reduceMotionPillars = window.matchMedia('(prefers-reduced-motion: reduce)')
   let trailDrawn = 0
+  let waitingForCase = false
+
+  // The case's desktop trail eases into place over 0.2s (CSS), so after a fast
+  // scroll it can still be drawing on screen when this trail's turn comes. This
+  // reads what is actually on screen at this moment, not where it is heading.
+  // (The case's single-column trail has no easing, so it is never behind.)
+  function caseStillDrawing() {
+    if (!caseMask || caseIsColumn.matches) return false
+    return parseFloat(getComputedStyle(caseMask).strokeDashoffset) > 0.001
+  }
 
   function revealTrail() {
     if (reduceMotionPillars.matches) {
@@ -459,6 +470,18 @@ if (pillarsSection) {
       progress = (window.innerHeight * 0.7 - top) / (length * scale)
     }
     trailDrawn = Math.max(trailDrawn, Math.min(1, Math.max(0, progress)))
+    // Wait for The case's trail to arrive at its end on screen, checking again
+    // every frame, so the two always draw one after the other, as one line
+    if (trailDrawn > 0 && caseStillDrawing()) {
+      if (!waitingForCase) {
+        waitingForCase = true
+        requestAnimationFrame(() => {
+          waitingForCase = false
+          revealTrail()
+        })
+      }
+      return
+    }
     trailMask.style.strokeDashoffset = String(1 - trailDrawn)
   }
 
