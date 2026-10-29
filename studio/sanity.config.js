@@ -37,6 +37,20 @@ export default defineConfig({
               .title('Impact (proof)')
               .id('impactSection')
               .child(S.document().schemaType('impactSection').documentId('impactSection')),
+            S.divider(),
+            // Every news post, newest first (two posts on the same date: the one
+            // created later first)
+            S.listItem()
+              .title('News')
+              .id('news')
+              .child(
+                S.documentTypeList('post')
+                  .title('News')
+                  .defaultOrdering([
+                    {field: 'publishedAt', direction: 'desc'},
+                    {field: '_createdAt', direction: 'desc'},
+                  ]),
+              ),
           ]),
     }),
     visionTool(),
