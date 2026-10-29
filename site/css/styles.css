@@ -1914,20 +1914,21 @@ h3 {
    the only yellow in the section. Dark navy text on yellow 10.7:1, on white
    17.3:1; the yellow against teal 5.5:1. It sets its own colours for every
    state, so no general link style can turn the text yellow on yellow.
-   On phones it runs the full width. */
+   On phones it is as wide as its text, left-aligned under the results
+   (changed 29 Oct 2026 from full width, which looked too long). */
 .proof__button {
-  --circle: 2.75rem;
+  --circle: 2.5rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.125rem;
-  margin-top: 1.5rem;
-  padding: 0.5rem 0.5rem 0.5rem 1.625rem;
+  gap: 1rem;
+  width: fit-content;
+  margin-top: 1.75rem;
+  padding: 0.4375rem 0.4375rem 0.4375rem 1.375rem;
   border-radius: 999px;
   background: var(--color-accent);
   box-shadow: 0 0.625rem 1.5rem rgb(0 0 0 / 0.25);
   color: var(--color-night);
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
@@ -2074,14 +2075,16 @@ h3 {
     margin: 0;
   }
 
-  /* Desktop: as wide as its text, sized from the design (20px text, 48px circle) */
+  /* Desktop: as wide as its text. Made smaller than the design on 29 Oct 2026
+     (17px text and a 42px circle instead of 20 and 48) */
   .proof__button {
-    --circle: max(2.75rem, 48 * var(--px));
+    --circle: max(2.5rem, 42 * var(--px));
     grid-area: button;
     justify-self: start;
     align-self: start;
-    padding: calc(9 * var(--px)) calc(9 * var(--px)) calc(9 * var(--px)) calc(32 * var(--px));
-    font-size: max(1.125rem, 20 * var(--px));
+    gap: calc(16 * var(--px));
+    padding: calc(7 * var(--px)) calc(7 * var(--px)) calc(7 * var(--px)) calc(26 * var(--px));
+    font-size: max(1rem, 17 * var(--px));
   }
 
   .proof__eyebrow {

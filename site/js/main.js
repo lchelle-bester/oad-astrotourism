@@ -478,6 +478,97 @@ if (pillarsSection) {
 }
 
 
+// PROOF: THE HEADLINE FIGURE COUNTS UP
+// Only the big figure counts (decided 29 Oct 2026: the small numbers counted too
+// slowly beside it). The real final number is in the HTML, so screen readers,
+// search engines and anyone without JavaScript always get it. This only
+// animates over it, once:
+// - if it is already on screen when the page loads it is left as it is, so
+//   nobody sees it jump back to zero
+// - otherwise it is set to zero while still off screen, then counts up (2s,
+//   fast at first, slowing at the end) once 60% of it is in view
+// - while counting, screen readers hear a hidden copy of the final number
+//   instead of every step, and the number keeps its final width so nothing
+//   beside it moves
+// With reduced motion nothing happens; turning it on mid-way finishes at once.
+
+const proofNumbers = [...document.querySelectorAll('.proof__headline-number')]
+const reduceMotionProof = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+if (proofNumbers.length && 'IntersectionObserver' in window && !reduceMotionProof.matches) {
+  const format = new Intl.NumberFormat('en-GB')
+  const COUNT_TIME = 2000
+
+  // Splits "€111,000+" into "€", 111000 and "+". Anything that is not one whole
+  // number with optional text either side is left alone.
+  const counters = proofNumbers.map((el) => {
+    const match = el.textContent.trim().match(/^(\D*)(\d[\d,]*)(\D*)$/)
+    if (!match) return null
+    return {el, final: el.textContent, prefix: match[1], value: Number(match[2].replace(/,/g, '')), suffix: match[3], state: 'new'}
+  }).filter(Boolean)
+
+  const show = (c, n) => {
+    c.el.textContent = c.prefix + format.format(n) + c.suffix
+  }
+
+  // Hides the changing digits from screen readers and gives them the final
+  // number instead, and fixes the width at the final number's width
+  function prepare(c) {
+    c.el.style.minWidth = c.el.getBoundingClientRect().width + 'px'
+    c.el.setAttribute('aria-hidden', 'true')
+    c.spoken = document.createElement('span')
+    c.spoken.className = 'visually-hidden'
+    c.spoken.textContent = c.final
+    c.el.after(c.spoken)
+    show(c, 0)
+    c.state = 'waiting'
+  }
+
+  function finish(c) {
+    if (c.state === 'done') return
+    c.state = 'done'
+    c.el.textContent = c.final
+    c.el.style.minWidth = ''
+    c.el.removeAttribute('aria-hidden')
+    if (c.spoken) c.spoken.remove()
+    observer.unobserve(c.el)
+  }
+
+  function count(c) {
+    c.state = 'counting'
+    const start = performance.now()
+    function step(now) {
+      if (c.state !== 'counting') return
+      const t = Math.min((now - start) / COUNT_TIME, 1)
+      const eased = 1 - Math.pow(1 - t, 3) // ease out: fast at first, slowing at the end
+      show(c, Math.round(c.value * eased))
+      if (t < 1) requestAnimationFrame(step)
+      else finish(c)
+    }
+    requestAnimationFrame(step)
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      const c = counters.find((item) => item.el === entry.target)
+      if (!c) continue
+      if (c.state === 'new') {
+        // The first report says where each number is when the page loads
+        if (entry.isIntersecting) finish(c)
+        else prepare(c)
+      } else if (c.state === 'waiting' && entry.intersectionRatio >= 0.6) {
+        count(c)
+      }
+    }
+  }, {threshold: [0, 0.6]})
+
+  counters.forEach((c) => observer.observe(c.el))
+  reduceMotionProof.addEventListener('change', () => {
+    if (reduceMotionProof.matches) counters.forEach(finish)
+  })
+}
+
+
 // BACK TO TOP
 // The arrow fades in once the hero has scrolled completely out of view (its
 // bottom edge above the top of the screen). On pages without a hero, such as the
