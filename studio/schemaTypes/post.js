@@ -32,8 +32,10 @@ export const post = defineType({
       title: 'Web address',
       type: 'slug',
       description:
-        'Becomes the address of the post, for example /news/starry-safaris-tanzania/. Click Generate to make it from the title. Never change it after publishing, or old links to the post break.',
+        'The end of the post\'s web address, for example astrotourism.astro4dev.org/news/starry-safaris-tanzania/. Finish the title first, then click Generate. Once generated it is locked and cannot be edited, so links to the post never break.',
       options: {source: 'title', maxLength: 96},
+      // Locked as soon as it has a value (decided 29 Oct 2026)
+      readOnly: ({value}) => Boolean(value?.current),
       validation: (Rule) => Rule.required().error('Generate the web address from the title.'),
     }),
     defineField({
@@ -79,15 +81,6 @@ export const post = defineType({
         }),
       ],
       validation: (Rule) => Rule.required().error('Add a photo.'),
-    }),
-    defineField({
-      name: 'excerpt',
-      title: 'Short summary',
-      type: 'text',
-      rows: 3,
-      description:
-        'Optional. One or two sentences. Shown on the News page and to search engines, not on the homepage.',
-      validation: (Rule) => Rule.max(200).warning('Keep the summary to one or two sentences.'),
     }),
     defineField({
       name: 'body',
