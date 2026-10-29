@@ -13,13 +13,26 @@ const PROJECT_ID = 'gwz91d96'
 const DATASET = 'production'
 const API_VERSION = '2025-02-19'
 
+// fetch, tried up to three times. The connection to Sanity sometimes drops in
+// the middle of a build ("fetch failed"); a second try almost always works.
+async function fetchWithRetry(url, tries = 3) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fetch(url)
+    } catch (error) {
+      if (attempt >= tries) throw error
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
+    }
+  }
+}
+
 // Runs a GROQ query against Sanity's public query API and returns the result.
 async function sanityQuery(groq) {
   const url =
     `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data/query/${DATASET}` +
     `?query=${encodeURIComponent(groq)}`
 
-  const response = await fetch(url)
+  const response = await fetchWithRetry(url)
   if (!response.ok) {
     throw new Error(`Sanity returned ${response.status} ${response.statusText}`)
   }
@@ -126,7 +139,7 @@ async function fetchPillarPhotos(pillars) {
       for (const width of PHOTO_WIDTHS) {
         const name = `${pillarId(i)}-${id}-${width}.${format}`
         const url = `${photo.url}?w=${width}&fit=max&fm=${format}&q=${format === 'webp' ? 72 : 78}${rect}`
-        const response = await fetch(url)
+        const response = await fetchWithRetry(url)
         if (!response.ok) throw new Error(`Could not download the photo for "${pillar.name}" (${response.status}).`)
         files.push({name, data: Buffer.from(await response.arrayBuffer())})
         sources[format].push(`/${PHOTO_DIR}/${name} ${width}w`)
@@ -204,6 +217,114 @@ function renderImpactResults(results) {
           </li>`).join('')
 }
 
+// NEWS AND UPDATES (docs/news/news-design.md)
+// The three newest published posts. Their photos are downloaded at build time,
+// like the pillar photos, in two shapes: wide (15 by 8) for the desktop cards and
+// the first phone card, and square for the two small rows on phones. Both are cut
+// around the hotspot the editor set in the Studio.
+
+// The category codes stored in Sanity and their labels. Keep in step with
+// postCategories in studio/schemaTypes/post.js.
+const POST_CATEGORIES = {news: 'News', events: 'Events', 'oad-projects': 'OAD projects'}
+const NEWS_DIR = 'assets/images/news'
+const NEWS_SHAPES = {
+  wide: {ratio: 15 / 8, widths: [480, 820, 1240]},
+  square: {ratio: 1, widths: [192, 288]},
+}
+// Must match the news breakpoint in styles.css: below it, posts 2 and 3 use the square photo
+const NEWS_PHONE = 'not all and (min-width: 57.5em)'
+
+// The part of the photo to keep for a shape, in the original's pixels: inside
+// the editor's crop, as large as possible, and centred on the hotspot (moved
+// back inside the crop if centring would run off its edge).
+function cropForShape(photo, ratio) {
+  const {left = 0, top = 0, right = 0, bottom = 0} = photo.crop || {}
+  const area = {
+    x: left * photo.width,
+    y: top * photo.height,
+    w: (1 - left - right) * photo.width,
+    h: (1 - top - bottom) * photo.height,
+  }
+  const w = Math.min(area.w, area.h * ratio)
+  const h = w / ratio
+  const centreX = (photo.hotspot?.x ?? 0.5) * photo.width
+  const centreY = (photo.hotspot?.y ?? 0.5) * photo.height
+  const x = Math.min(Math.max(centreX - w / 2, area.x), area.x + area.w - w)
+  const y = Math.min(Math.max(centreY - h / 2, area.y), area.y + area.h - h)
+  return {x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h)}
+}
+
+// Downloads one post's photo in every shape, width and format. Widths bigger
+// than the kept part of the photo are skipped (never blown up), but the
+// smallest is always made. Returns the files to write and the srcset lists.
+async function fetchNewsPhoto(post) {
+  const photo = post.photo
+  if (!photo?.url) throw new Error(`News post "${post.title}" has no photo. Add one in the Studio.`)
+  const id = photo.assetId.split('-')[1].slice(0, 10)
+  const files = []
+  const shapes = {}
+  for (const [shape, {ratio, widths}] of Object.entries(NEWS_SHAPES)) {
+    const rect = cropForShape(photo, ratio)
+    const usable = widths.filter((w, i) => i === 0 || w <= rect.w)
+    shapes[shape] = {webp: [], jpg: [], width: usable.at(-1), height: Math.round(usable.at(-1) / ratio)}
+    for (const format of ['webp', 'jpg']) {
+      for (const width of usable) {
+        const height = Math.round(width / ratio)
+        const name = `${post.slug.replace(/[^a-z0-9-]/g, '')}-${id}-${shape}-${width}.${format}`
+        const url = `${photo.url}?rect=${rect.x},${rect.y},${rect.w},${rect.h}&w=${width}&h=${height}&fit=crop` +
+          `&fm=${format}&q=${format === 'webp' ? 72 : 78}`
+        const response = await fetchWithRetry(url)
+        if (!response.ok) throw new Error(`Could not download the photo for "${post.title}" (${response.status}).`)
+        files.push({name, data: Buffer.from(await response.arrayBuffer())})
+        shapes[shape][format].push(`/${NEWS_DIR}/${name} ${width}w`)
+      }
+    }
+  }
+  return {files, shapes}
+}
+
+// "2026-07-21" as "21 July 2026"
+function formatPostDate(date) {
+  return new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'})
+}
+
+// The photo for a card. Empty alt text: the title beside it already names the
+// post, and the photo is inside the card's link area (alt text stays required
+// in Sanity for the article pages). Posts after the first switch to the square
+// photo on phones.
+function renderNewsPhoto(shapes, square) {
+  const wide = shapes.wide
+  const sizes = '(min-width: 57.5em) 30vw, 100vw'
+  const phoneSources = square ? `
+              <source media="${NEWS_PHONE}" type="image/webp" srcset="${shapes.square.webp.join(', ')}" sizes="6rem">
+              <source media="${NEWS_PHONE}" srcset="${shapes.square.jpg.join(', ')}" sizes="6rem">` : ''
+  return `
+            <picture class="news-card__photo">${phoneSources}
+              <source type="image/webp" srcset="${wide.webp.join(', ')}" sizes="${sizes}">
+              <img src="${wide.jpg.at(-1).split(' ')[0]}" srcset="${wide.jpg.join(', ')}" sizes="${sizes}" width="${wide.width}" height="${wide.height}" alt="" loading="lazy" decoding="async">
+            </picture>`
+}
+
+// The cards. In the HTML the title comes before the category and date, so
+// screen readers hear the title first; the CSS shows the category and date
+// above it. The title link is stretched over the whole card by the CSS, so each
+// post is one link.
+function renderNewsCards(posts) {
+  return posts.map((post, i) => {
+    const category = POST_CATEGORIES[post.category]
+    if (!category) throw new Error(`News post "${post.title}" has an unknown category "${post.category}".`)
+    return `
+        <li class="news__item">
+          <article class="news-card${i === 0 ? ' news-card--lead' : ''}">${renderNewsPhoto(post.shapes, i > 0)}
+            <div class="news-card__text">
+              <h3 class="news-card__title"><a href="/news/${escapeHtml(post.slug)}/">${escapeHtml(post.title.trim())}</a></h3>
+              <p class="news-card__meta"><span class="news-card__category">${escapeHtml(category)}</span><span class="news-card__dot" aria-hidden="true">·</span><time datetime="${escapeHtml(post.publishedAt)}">${escapeHtml(formatPostDate(post.publishedAt))}</time></p>
+            </div>
+          </article>
+        </li>`
+  }).join('')
+}
+
 async function main() {
   const hero = await sanityQuery(
     '*[_id == "hero"][0]{headlineWord, headlineRest, subheading, affiliation}',
@@ -251,7 +372,28 @@ async function main() {
   }
   impactSection.buttonHref = buttonHref
 
-  const data = {hero, caseSection, pillarsSection, impactSection}
+  // News: the three newest published posts. Published only: the filter leaves
+  // out drafts (their ids start with "drafts."), on top of the public API never
+  // showing drafts to a request without a token. Same date: created later first.
+  const posts = await sanityQuery(
+    '*[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current)] | order(publishedAt desc, _createdAt desc)[0...3]' +
+      '{title, "slug": slug.current, publishedAt, category, "photo": mainImage{hotspot, crop, "url": asset->url, ' +
+      '"assetId": asset->_id, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}',
+  )
+  const newsFiles = []
+  for (const post of posts) {
+    const photo = await fetchNewsPhoto(post)
+    post.shapes = photo.shapes
+    newsFiles.push(...photo.files)
+  }
+  // No posts: the section is left out of the page altogether
+  const newsSection = {cards: renderNewsCards(posts), html: ''}
+  if (posts.length) {
+    const partial = fs.readFileSync(path.join(SITE_DIR, 'partials', 'news.html'), 'utf8').trimEnd()
+    newsSection.html = renderTemplate(partial, {newsSection})
+  }
+
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
@@ -265,6 +407,12 @@ async function main() {
   fs.mkdirSync(path.join(DIST_DIR, PHOTO_DIR), {recursive: true})
   for (const file of pillarPhotos.files) {
     fs.writeFileSync(path.join(DIST_DIR, PHOTO_DIR, file.name), file.data)
+  }
+
+  // The news photos downloaded from Sanity
+  fs.mkdirSync(path.join(DIST_DIR, NEWS_DIR), {recursive: true})
+  for (const file of newsFiles) {
+    fs.writeFileSync(path.join(DIST_DIR, NEWS_DIR, file.name), file.data)
   }
 
   // Every page at the top of site/ (index.html, 404.html, ...): insert the
