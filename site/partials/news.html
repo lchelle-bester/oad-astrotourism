@@ -1,0 +1,16 @@
+    <!-- News and updates (design in docs/news/news-design.md). build.js only puts
+         this section in the page when at least one post is published. The posts
+         come from Sanity; the wording here is fixed (decided 29 Oct 2026). The star
+         trails are a CSS background, so screen readers never meet them. -->
+    <section class="news" aria-labelledby="news-heading">
+      <div class="news__inner">
+        <div class="news__intro">
+          <p class="news__eyebrow">News and updates</p>
+          <h2 id="news-heading" class="news__heading">Latest from OAD</h2>
+        </div>
+        <ul class="news__list">{{{newsSection.cards}}}
+        </ul>
+        <!-- After the posts, as on phones; on desktop the grid places it beside the heading -->
+        <a class="pill-button news__button" href="/news/">See all updates <span class="pill-button__icon" aria-hidden="true">&rarr;</span></a>
+      </div>
+    </section>
