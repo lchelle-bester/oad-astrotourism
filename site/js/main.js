@@ -441,7 +441,7 @@ if (pillarsSection) {
     const box = stage.getBoundingClientRect()
     const length = trailPath.getTotalLength()
     let progress
-    if (isDesktop.matches) {
+    if (isDesktop.matches && !caseIsColumn.matches) {
       // The case's trail finishes when its stage's bottom (this stage's top)
       // passes 85% down the screen; this one starts there. The case draws its
       // whole length over its 800-unit-tall stage: use the same length per unit.
@@ -450,9 +450,13 @@ if (pillarsSection) {
       const scrolled = (window.innerHeight * 0.85 - box.top) / px
       progress = (scrolled * pace) / length
     } else {
-      // Phones: the tip follows a line 70% down the screen, as in The case
+      // Whenever The case is a single column (phones, and screens up to 1247px
+      // wide): the tip follows a line 70% down the screen, as in The case, so it
+      // starts exactly when The case's trail ends. From 920px the drawing is
+      // scaled to the stage, so its length is converted to screen pixels.
+      const scale = isDesktop.matches ? box.width / 1440 : 1
       const top = pillarsSection.getBoundingClientRect().top
-      progress = (window.innerHeight * 0.7 - top) / length
+      progress = (window.innerHeight * 0.7 - top) / (length * scale)
     }
     trailDrawn = Math.max(trailDrawn, Math.min(1, Math.max(0, progress)))
     trailMask.style.strokeDashoffset = String(1 - trailDrawn)
@@ -478,41 +482,39 @@ if (pillarsSection) {
 }
 
 
-// PROOF: THE HEADLINE FIGURE COUNTS UP
-// Only the big figure counts (decided 29 Oct 2026: the small numbers counted too
-// slowly beside it). The real final number is in the HTML, so screen readers,
-// search engines and anyone without JavaScript always get it. This only
-// animates over it, once:
+// PROOF: THE HEADLINE FIGURE ROLLS INTO PLACE
+// Only the big figure moves (decided 29 Oct 2026). Like an odometer: each digit
+// is a window onto a strip of digits that spins upwards and stops on its final
+// digit, blurred up and down while it moves. Digits on the left spin less and
+// land first. The real final number is in the HTML, so screen readers, search
+// engines and anyone without JavaScript always get it. This only animates over
+// it, once:
 // - if it is already on screen when the page loads it is left as it is, so
 //   nobody sees it jump back to zero
-// - otherwise it is set to zero while still off screen, then counts up (2s,
-//   fast at first, slowing at the end) once 60% of it is in view
-// - while counting, screen readers hear a hidden copy of the final number
-//   instead of every step, and the number keeps its final width so nothing
-//   beside it moves
+// - otherwise it is set to all zeros while still off screen, then rolls once
+//   60% of it is in view
+// - while rolling, screen readers hear a hidden copy of the final number, and
+//   the figure keeps its final width
 // With reduced motion nothing happens; turning it on mid-way finishes at once.
 
 const proofNumbers = [...document.querySelectorAll('.proof__headline-number')]
 const reduceMotionProof = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-if (proofNumbers.length && 'IntersectionObserver' in window && !reduceMotionProof.matches) {
-  const format = new Intl.NumberFormat('en-GB')
-  const COUNT_TIME = 2000
+if (proofNumbers.length && 'IntersectionObserver' in window && 'animate' in Element.prototype && !reduceMotionProof.matches) {
+  const ROLL_TIME = 1400     // the leftmost digit, in milliseconds
+  const ROLL_STAGGER = 140   // each digit to its right takes this much longer
+  const MAX_BLUR = 0.08      // strongest up-and-down blur, as a share of the text size
+  const SPACING = 1.25       // distance between digits on a strip, in em (matches the CSS)
+  const SVG = 'http://www.w3.org/2000/svg'
 
-  // Splits "€111,000+" into "€", 111000 and "+". Anything that is not one whole
-  // number with optional text either side is left alone.
-  const counters = proofNumbers.map((el) => {
-    const match = el.textContent.trim().match(/^(\D*)(\d[\d,]*)(\D*)$/)
-    if (!match) return null
-    return {el, final: el.textContent, prefix: match[1], value: Number(match[2].replace(/,/g, '')), suffix: match[3], state: 'new'}
-  }).filter(Boolean)
+  const counters = proofNumbers
+    .filter((el) => /\d/.test(el.textContent))
+    .map((el) => ({el, final: el.textContent, state: 'new'}))
 
-  const show = (c, n) => {
-    c.el.textContent = c.prefix + format.format(n) + c.suffix
-  }
-
-  // Hides the changing digits from screen readers and gives them the final
-  // number instead, and fixes the width at the final number's width
+  // Turns the figure into one box per character, all showing zeros. Each digit
+  // box holds a strip of digits counting up from 0 and ending on its final digit,
+  // and gets its own blur filter that only blurs up and down. The other
+  // characters (€ , +) stay still.
   function prepare(c) {
     c.el.style.minWidth = c.el.getBoundingClientRect().width + 'px'
     c.el.setAttribute('aria-hidden', 'true')
@@ -520,35 +522,96 @@ if (proofNumbers.length && 'IntersectionObserver' in window && !reduceMotionProo
     c.spoken.className = 'visually-hidden'
     c.spoken.textContent = c.final
     c.el.after(c.spoken)
-    show(c, 0)
+
+    // First one box per character showing the final text, to measure each
+    // digit's width, so every box keeps exactly the width it ends with
+    const boxes = [...c.final.trim()].map((ch) => {
+      const box = document.createElement('span')
+      box.className = 'proof__char'
+      box.textContent = ch
+      return box
+    })
+    c.el.replaceChildren(...boxes)
+
+    c.filters = document.createElementNS(SVG, 'svg')
+    c.filters.setAttribute('class', 'proof__roll-filters')
+    c.filters.setAttribute('aria-hidden', 'true')
+    c.filters.setAttribute('focusable', 'false')
+    c.columns = []
+    for (const box of boxes) {
+      const ch = box.textContent
+      if (!/\d/.test(ch)) continue
+      const i = c.columns.length
+      // The final digit's width, plus the extra room the CSS gives each side
+      box.style.width = `calc(${box.getBoundingClientRect().width}px + 0.3em)`
+      box.classList.add('proof__char--digit')
+      const strip = document.createElement('span')
+      strip.className = 'proof__strip'
+      const steps = 10 * (1 + Math.floor(i / 2)) + Number(ch) // more spins further right
+      for (let n = 0; n <= steps; n++) {
+        const digit = document.createElement('span')
+        digit.textContent = n % 10
+        strip.append(digit)
+      }
+      box.replaceChildren(strip)
+
+      const filter = document.createElementNS(SVG, 'filter')
+      filter.id = `proof-roll-blur-${i}`
+      filter.setAttribute('x', '-20%')
+      filter.setAttribute('y', '-10%')
+      filter.setAttribute('width', '140%')
+      filter.setAttribute('height', '120%')
+      const blur = document.createElementNS(SVG, 'feGaussianBlur')
+      blur.setAttribute('stdDeviation', '0 0')
+      filter.append(blur)
+      c.filters.append(filter)
+      strip.style.filter = `url(#${filter.id})`
+
+      c.columns.push({strip, steps, blur, duration: ROLL_TIME + i * ROLL_STAGGER})
+    }
+    document.body.append(c.filters)
     c.state = 'waiting'
   }
 
   function finish(c) {
     if (c.state === 'done') return
     c.state = 'done'
+    ;(c.columns || []).forEach((col) => col.animation && col.animation.cancel())
     c.el.textContent = c.final
     c.el.style.minWidth = ''
-    c.el.style.filter = ''
     c.el.removeAttribute('aria-hidden')
     if (c.spoken) c.spoken.remove()
+    if (c.filters) c.filters.remove()
     observer.unobserve(c.el)
   }
 
+  // Spins every strip up to its final digit, easing out, and sets each
+  // column's blur from how fast its strip moved since the last frame
   function count(c) {
     c.state = 'counting'
-    const start = performance.now()
+    const size = parseFloat(getComputedStyle(c.el).fontSize)
+    for (const col of c.columns) {
+      col.animation = col.strip.animate(
+        [{transform: 'translateY(0)'}, {transform: `translateY(${-col.steps * SPACING}em)`}],
+        {duration: col.duration, easing: 'cubic-bezier(0.2, 0.65, 0.25, 1)', fill: 'forwards'},
+      )
+      col.last = col.strip.getBoundingClientRect().top
+    }
+    let lastTime = performance.now()
     function step(now) {
       if (c.state !== 'counting') return
-      const t = Math.min((now - start) / COUNT_TIME, 1)
-      const eased = 1 - Math.pow(1 - t, 3) // ease out: fast at first, slowing at the end
-      show(c, Math.round(c.value * eased))
-      // Motion blur: as blurred as the number is fast, so the racing digits
-      // smear like a moving photo and the number lands sharp. The speed of this
-      // ease out falls with (1 - t) squared; at the start the blur is 0.04 of
-      // the text size (about 4px on desktop).
-      c.el.style.filter = `blur(${(0.04 * Math.pow(1 - t, 2)).toFixed(4)}em)`
-      if (t < 1) requestAnimationFrame(step)
+      const frames = Math.max((now - lastTime) / 16.7, 0.5) // speed per 60th of a second
+      lastTime = now
+      let moving = false
+      for (const col of c.columns) {
+        const top = col.strip.getBoundingClientRect().top
+        const speed = Math.abs(top - col.last) / frames
+        col.last = top
+        const amount = Math.min(speed * 0.3, MAX_BLUR * size)
+        col.blur.setAttribute('stdDeviation', `0 ${amount.toFixed(2)}`)
+        if (col.animation.playState !== 'finished') moving = true
+      }
+      if (moving) requestAnimationFrame(step)
       else finish(c)
     }
     requestAnimationFrame(step)
