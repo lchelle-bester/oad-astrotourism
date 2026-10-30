@@ -1940,26 +1940,54 @@ h3 {
    Contrast on teal (calculated): white 8.9:1, sand 4.6:1 (small bold labels
    only), yellow 5.5:1. */
 
+/* The height of proof's bottom wave, shared with the news section, which slides
+   up underneath it (see below). Phone: from a 390 x 60 drawing, never taller
+   than 72px. Desktop (from 920px): from a 1440 x 80 drawing, up to 1920 wide. */
+:root {
+  --proof-wave: min(100vw * 60 / 390, 4.5rem);
+}
+
+@media (min-width: 57.5em) {
+  :root {
+    --proof-wave: calc(min(100vw, 1920px) * 80 / 1440);
+  }
+}
+
 /* Phone first (reference 390 wide); the desktop rules below override these. */
 .proof {
   /* The phone ridge (390 x 80) stretched to the width, but never taller than
      96px, so it stays a gentle ridge on wide phones and tablets */
   --ridge: min(100vw * 80 / 390, 6rem);
   --ridge-image: url("/assets/images/proof/ridge-phone.svg");
-  /* The bottom edge (added 30 Oct 2026): a gentler wave, not a mirror of the
-     top, from a 390 x 60 drawing, never taller than 72px */
-  --ridge-bottom: min(100vw * 60 / 390, 4.5rem);
+  /* The bottom edge (added 30 Oct 2026): a gentler wave, not a mirror of the top */
+  --ridge-bottom: var(--proof-wave);
   --ridge-bottom-image: url("/assets/images/proof/ridge-bottom-phone.svg");
+  /* Above the news section, which slides up under the bottom wave */
+  position: relative;
+  z-index: 1;
   /* Four layers, top first: the top ridge (teal below its line, see-through
      above it), the bottom ridge (teal above its line, see-through below it),
      solid teal between them (overlapping each by 2px so no seam can show), and
-     the dark navy behind, which the pillars above and the news below share */
+     the dark navy behind */
   background:
     var(--ridge-image) left top / 100% var(--ridge) no-repeat,
     var(--ridge-bottom-image) left bottom / 100% var(--ridge-bottom) no-repeat,
     linear-gradient(var(--panel-teal), var(--panel-teal)) left calc(var(--ridge) - 2px) /
       100% calc(100% - var(--ridge) - var(--ridge-bottom) + 4px) no-repeat,
     var(--color-night);
+}
+
+/* When the news section follows, the navy behind proof only covers the top
+   ridge. Below the bottom wave proof is see-through, so the news section's
+   star trails, sliding up underneath, reach right up to the green edge
+   (30 Oct 2026). Without news the full navy stays. */
+.proof:has(+ .news) {
+  background:
+    var(--ridge-image) left top / 100% var(--ridge) no-repeat,
+    var(--ridge-bottom-image) left bottom / 100% var(--ridge-bottom) no-repeat,
+    linear-gradient(var(--panel-teal), var(--panel-teal)) left calc(var(--ridge) - 2px) /
+      100% calc(100% - var(--ridge) - var(--ridge-bottom) + 4px) no-repeat,
+    linear-gradient(var(--color-night), var(--color-night)) left top / 100% var(--ridge) no-repeat;
 }
 
 .proof__inner {
@@ -2114,7 +2142,6 @@ h3 {
   .proof {
     --ridge: calc(min(100vw, 1920px) * 120 / 1440);
     --ridge-image: url("/assets/images/proof/ridge-desktop.svg");
-    --ridge-bottom: calc(min(100vw, 1920px) * 80 / 1440);
     --ridge-bottom-image: url("/assets/images/proof/ridge-bottom-desktop.svg");
   }
 
@@ -2222,6 +2249,9 @@ h3 {
 .news {
   position: relative;
   overflow: clip; /* trails can start beyond the edges */
+  /* Slides up under proof's bottom wave, so the trails reach the green edge.
+     The content is pushed back down by the same amount (see .news__inner). */
+  margin-top: calc(-1 * var(--proof-wave));
   background: var(--color-night);
 }
 
@@ -2276,7 +2306,7 @@ h3 {
   position: relative; /* above the trails */
   max-width: 1920px;
   margin: 0 auto;
-  padding: 3.5rem var(--gutter) 3rem;
+  padding: calc(3.5rem + var(--proof-wave)) var(--gutter) 3rem;
 }
 
 /* The eyebrow and heading only as wide as their words, each with the navy
@@ -2465,7 +2495,7 @@ h3 {
       "intro button"
       "list list";
     column-gap: 2rem;
-    padding: calc(80 * var(--px)) var(--gutter) calc(110 * var(--px));
+    padding: calc(80 * var(--px) + var(--proof-wave)) var(--gutter) calc(110 * var(--px));
   }
 
   .news__intro {
