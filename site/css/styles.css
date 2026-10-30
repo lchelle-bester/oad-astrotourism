@@ -2238,21 +2238,17 @@ h3 {
   display: none;
 }
 
-/* The trails grow like a long exposure being taken (decided 30 Oct 2026):
-   every trail starts as nothing and lengthens along its circle at the same
-   rate as all the others (each path has pathLength 1, so the same dash
-   offset means the same share of every trail), over 30 seconds. They hold for
-   4 seconds, then shorten from their tail until they disappear at the star's
-   end, over 15 seconds (changed 30 Oct 2026 from a fade, which was too
-   obvious), and the exposure starts again: 49 seconds in all.
+/* The trails pulse like a long exposure that breathes (decided 30 Oct 2026,
+   after a grow-then-vanish cycle and a fade): every trail is at least half
+   drawn, grows along its circle to full length over 15 seconds, holds for 3,
+   shortens back to half over 15 seconds, holds for 3, and grows again. They
+   are never gone. All trails move together at the same share of their length
+   (each path has pathLength 1, so the same dash offset means the same share
+   of every trail), easing in and out of each turn.
    How the dash works: the pattern is one trail-length of line, then one of
-   gap. Offset 1 shows nothing, 0 shows the whole trail, -1 has slid the line
-   off the far end, so going from 0 to -1 eats the trail from its tail. -1 and
-   1 both show nothing, so the jump back to the start is invisible.
-   The page opens 12 seconds in, so the trails are already part drawn. The
-   animation pauses while the section is off screen (main.js adds
-   .news--paused). Without the animation (reduced motion) the trails are simply
-   drawn in full. */
+   gap. Offset 0 shows the whole trail, 0.5 shows its first half. The animation
+   pauses while the section is off screen (main.js adds .news--paused).
+   Without the animation (reduced motion) the trails are simply drawn in full. */
 .news__sky path {
   stroke-dasharray: 1 1;
   stroke-dashoffset: 0;
@@ -2260,7 +2256,7 @@ h3 {
 
 @media (prefers-reduced-motion: no-preference) {
   .news__sky path {
-    animation: news-trail 49s linear -12s infinite;
+    animation: news-trail 36s ease-in-out infinite;
   }
 
   .news--paused .news__sky path {
@@ -2269,10 +2265,11 @@ h3 {
 }
 
 @keyframes news-trail {
-  0% { stroke-dashoffset: 1; }
-  61.2% { stroke-dashoffset: 0; } /* grown, 30 of 49 seconds */
-  69.4% { stroke-dashoffset: 0; } /* held for 4 seconds */
-  100% { stroke-dashoffset: -1; } /* shrunk away over 15 seconds */
+  0% { stroke-dashoffset: 0.5; } /* half drawn */
+  41.7% { stroke-dashoffset: 0; } /* grown in full, 15 of 36 seconds */
+  50% { stroke-dashoffset: 0; } /* held for 3 seconds */
+  91.7% { stroke-dashoffset: 0.5; } /* back to half over 15 seconds */
+  100% { stroke-dashoffset: 0.5; } /* held for 3 seconds */
 }
 
 .news__inner {
