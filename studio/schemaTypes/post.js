@@ -1,5 +1,6 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {GenerateOnlySlugInput} from './components/GenerateOnlySlugInput'
+import {SubheadingH2, SubheadingH3} from './components/Subheadings'
 
 // A news post. Every post lives in the one News list in the Studio; the homepage
 // shows the three newest, and the News page (next phase) shows them all.
@@ -22,6 +23,17 @@ export function youtubeId(url) {
     /^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})(?:[?&#/].*)?$/,
   )
   return match ? match[1] : null
+}
+
+// The part of a Spotify link the player needs, such as "episode/4rOoJ6Egrf8K2IrywzwOMk",
+// or null if the link is not a Spotify one. Accepts open.spotify.com links for an
+// episode, show, track, album or playlist, also with a language prefix such as
+// /intl-de/ and with ?si=... on the end.
+export function spotifyPath(url) {
+  const match = String(url).match(
+    /^https?:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(episode|show|track|album|playlist)\/([A-Za-z0-9]{22})(?:[?#/].*)?$/,
+  )
+  return match ? `${match[1]}/${match[2]}` : null
 }
 
 export const post = defineType({
@@ -105,8 +117,8 @@ export const post = defineType({
           type: 'block',
           styles: [
             {title: 'Normal', value: 'normal'},
-            {title: 'Subheading', value: 'h2'},
-            {title: 'Smaller subheading', value: 'h3'},
+            {title: 'Subheading', value: 'h2', component: SubheadingH2},
+            {title: 'Smaller subheading', value: 'h3', component: SubheadingH3},
           ],
           lists: [
             {title: 'Bulleted list', value: 'bullet'},
@@ -156,7 +168,50 @@ export const post = defineType({
               type: 'string',
               description: 'Optional. Shown under the photo.',
             }),
+            defineField({
+              name: 'credit',
+              title: 'Credit',
+              type: 'string',
+              description: 'Optional. Who took the photo, for example "Photo: Jane Doe / OAD".',
+            }),
           ],
+        }),
+        // A Spotify episode, show, track, album or playlist (added 30 Oct 2026),
+        // for podcasts. Like YouTube, it will load only when the visitor presses
+        // play (to be built with the article pages).
+        defineArrayMember({
+          type: 'object',
+          name: 'spotify',
+          title: 'Spotify podcast',
+          fields: [
+            defineField({
+              name: 'url',
+              title: 'Spotify link',
+              type: 'url',
+              description: 'In Spotify, click Share, then Copy link to episode (or show). It looks like https://open.spotify.com/episode/...',
+              validation: (Rule) => [
+                Rule.required().error('Paste the Spotify link.'),
+                Rule.custom((url) => (!url || spotifyPath(url) ? true : 'This does not look like a Spotify episode, show, track, album or playlist link.')),
+              ],
+            }),
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              description: 'What it is, for example "Episode 12: Dark skies in Namibia". Screen readers announce it.',
+              validation: (Rule) => Rule.required().error('Add a title for the podcast.'),
+            }),
+            defineField({
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+              description: 'Optional. Shown under the player.',
+            }),
+          ],
+          preview: {
+            select: {title: 'title', url: 'url'},
+            prepare: ({title, url}) => ({title: title || 'Spotify podcast', subtitle: url ? `Spotify: ${url}` : 'No link yet'}),
+          },
         }),
         // A YouTube video inside the article (added 30 Oct 2026). On the site it
         // will show as the video's still image with a play button, and YouTube
