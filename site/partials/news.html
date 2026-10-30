@@ -1,8 +1,13 @@
     <!-- News and updates (design in docs/news/news-design.md). build.js only puts
          this section in the page when at least one post is published. The posts
-         come from Sanity; the wording here is fixed (decided 29 Oct 2026). The star
-         trails are a CSS background, so screen readers never meet them. -->
+         come from Sanity; the wording here is fixed (decided 29 Oct 2026). -->
     <section class="news" aria-labelledby="news-heading">
+      <!-- Decorative star trails, turning very slowly round their pole like a
+           long-exposure photo (the CSS does the turning). Hidden from screen readers. -->
+      <picture class="news__sky" aria-hidden="true">
+        <source media="(min-width: 57.5em)" srcset="/assets/images/news/trails-ring-desktop.svg">
+        <img src="/assets/images/news/trails-ring-phone.svg" alt="">
+      </picture>
       <div class="news__inner">
         <div class="news__intro">
           <p class="news__eyebrow">News and updates</p>

@@ -2211,11 +2211,50 @@ h3 {
 
 /* Phone first (version C): one big card, then two rows with square photos */
 .news {
-  --trails: url("/assets/images/news/trails-phone.svg");
-  background: var(--trails) right top / cover no-repeat, var(--color-night);
+  /* Where the star trails' pole (the point they all circle) sits, in design
+     units: the phone design is 390 wide, so one unit is the width / 390. The
+     ring drawing is a square centred on the pole, --ring units from centre
+     to edge. */
+  --u: calc(100cqw / 390);
+  --pole-x: 380;
+  --pole-y: -80;
+  --ring: 1010;
+  position: relative;
+  overflow: clip; /* the ring is far bigger than the section */
+  container-type: inline-size; /* lets 100cqw mean the section's width */
+  background: var(--color-night);
+}
+
+/* The star trails turn round their pole very slowly, like a long-exposure
+   photo of the night sky: clockwise, as the sky turns in the southern
+   hemisphere, a third of a turn every 15 minutes. The ring drawing is three
+   copies of one 120 degree slice, so after a third of a turn it looks exactly
+   as it started and the loop never jumps. Turning an image is done by the
+   graphics card, so it costs almost nothing. Reduced motion: it stays still. */
+.news__sky img {
+  position: absolute;
+  left: calc((var(--pole-x) - var(--ring)) * var(--u));
+  top: calc((var(--pole-y) - var(--ring)) * var(--u));
+  width: calc(2 * var(--ring) * var(--u));
+  height: calc(2 * var(--ring) * var(--u));
+  max-width: none;
+  animation: news-sky 900s linear infinite;
+}
+
+@keyframes news-sky {
+  to {
+    transform: rotate(120deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news__sky img {
+    animation: none;
+  }
 }
 
 .news__inner {
+  position: relative; /* above the trails */
   max-width: 1920px;
   margin: 0 auto;
   padding: 3.5rem var(--gutter) 3rem;
@@ -2391,8 +2430,13 @@ h3 {
    pixel (width / 1440, up to 1920 wide). From 920px, like the pillars and
    proof (provisional, to be measured). */
 @media (min-width: 57.5em) {
+  /* The desktop drawing is 1440 wide; its pole sits just above the section,
+     near the right */
   .news {
-    --trails: url("/assets/images/news/trails-desktop.svg");
+    --u: calc(100cqw / 1440);
+    --pole-x: 1260;
+    --pole-y: -140;
+    --ring: 1082;
   }
 
   .news__inner {
@@ -2410,10 +2454,16 @@ h3 {
     grid-area: intro;
   }
 
+  /* A little smaller than the shared pill on desktop (29 Oct 2026): 15px text
+     and a 36px circle at 1440, instead of 17 and 42 */
   .news__button {
+    --circle: max(2.25rem, 36 * var(--bpx));
     grid-area: button;
     align-self: end;
     margin: 0;
+    gap: calc(14 * var(--bpx));
+    padding: calc(6 * var(--bpx)) calc(6 * var(--bpx)) calc(6 * var(--bpx)) calc(22 * var(--bpx));
+    font-size: max(0.9375rem, 15 * var(--bpx));
   }
 
   .news__eyebrow {
