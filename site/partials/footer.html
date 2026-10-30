@@ -1,0 +1,14 @@
+  <!-- The footer, on every page. The contact block, link groups, link home and partner
+       band are built by build/build.js (renderFooter) from Sanity's site settings and
+       build/navigation.js; any part with no content is left out. -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__top">
+{{{footer.contact}}}
+{{{footer.nav}}}
+      </div>
+{{{footer.home}}}
+    </div>
+{{{footer.partners}}}
+    <p class="site-footer__legal">Copyright {{siteSettings.year}} &copy; IAU-OAD</p>
+  </footer>

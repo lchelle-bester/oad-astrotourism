@@ -17,6 +17,7 @@ The fonts are served from this site, not from Google, so visitors' browsers make
 |---|---|---|---|
 | `site/assets/images/logos/oad-*` (9 files) | OAD logo and symbol, header, footer and partner band | Official files from the "OAD Logo" folder, supplied by OAD. Renamed only, otherwise unaltered | OAD brand assets. To confirm with Ram or Joy |
 | `site/assets/images/case/` (contours-desktop.svg, contours-phone.svg, trail-phone-start/mid/end.svg), and the trail and waypoint drawing inside `site/index.html` | The case: contour lines, dotted trail, waypoint dots | Drawn for this site, from the approved design files `docs/case/case-trail-desktop.svg` and `case-trail-phone.svg` | Made for this project |
+| Partner logos in the footer (National Research Foundation with SARAO, Department of Science, Technology and Innovation, International Astronomical Union), uploaded in Sanity (Site settings) and downloaded at build time into `dist/assets/images/partners/` | The footer's "Our partners" band | Uploaded by L'chelle. **Original source of each file still to be recorded here** (the live astro4dev.org footer shows the same three partners). Never redrawn or recoloured | The partners' own logos, used with OAD's agreement. To confirm with Ram or Joy |
 
 Which file to use where is in `site/assets/images/logos/README.md`. The logo is never recoloured, redrawn or stretched.
 ## Video
@@ -37,3 +38,9 @@ How the hero files were made from OAD's original clip (8.7 s, 3832 x 2160, HEVC)
 5. Crossfaded the last 3 seconds into the start so the loop has no visible jump (10.6 s loop).
 6. Gentle sharpening to restore the crispness lost in steps 3 and 5.
 7. Encoded as WebM (VP9) and MP4 (H.264) at 1920 and 1280 wide, with the silent sound track removed.
+
+## Icons
+
+| Icon | Used for | Source | Licence |
+|---|---|---|---|
+| Facebook (`facebook-f`), Instagram, TikTok, YouTube, LinkedIn (`linkedin-in`) and X (`x-twitter`) brand icons | Social links in the footer | Font Awesome Free 6.5.2 (`@fortawesome/free-brands-svg-icons`), https://fontawesome.com. The SVG paths are copied into `build/social-icons.js`; nothing is loaded from Font Awesome's servers | Icons: CC BY 4.0, https://fontawesome.com/license/free. Credit given here |

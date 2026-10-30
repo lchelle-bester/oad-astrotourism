@@ -5,7 +5,7 @@
          the copy at the end of the header is for desktop. CSS hides one of them at each
          screen size, so keyboard and screen reader users only ever meet it once. -->
     <div class="oad-strip">
-      <a class="oad-link" href="https://astro4dev.org">Part of the Office of Astronomy for Development <span aria-hidden="true">↗</span></a>
+      <a class="oad-link" href="{{siteSettings.homeLinkUrl}}">{{siteSettings.homeLinkLabel}} <span aria-hidden="true">↗</span></a>
     </div>
 
     <a class="site-home" href="/">
@@ -53,6 +53,6 @@
     <!-- Shortened on desktop to make room for Donate (28 Oct 2026). Screen readers
          hear the full name too; the phone strip above keeps the full wording. -->
     <div class="oad-desktop">
-      <a class="oad-link" href="https://astro4dev.org">Part of the IAU <abbr title="Office of Astronomy for Development">OAD</abbr><span class="visually-hidden"> (Office of Astronomy for Development)</span> <span aria-hidden="true">↗</span></a>
+      <a class="oad-link" href="{{siteSettings.homeLinkUrl}}">Part of the IAU <abbr title="Office of Astronomy for Development">OAD</abbr><span class="visually-hidden"> (Office of Astronomy for Development)</span> <span aria-hidden="true">↗</span></a>
     </div>
   </header>
