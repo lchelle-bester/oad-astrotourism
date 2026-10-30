@@ -44,11 +44,17 @@ function shareInside(poleX, poleY, r, start, end, width, height) {
   return inside / 21
 }
 
-function draw({width, height, poleX, poleY, stars, seed, even}) {
+// sweep: degrees each trail covers (the exposure time) for this layout.
+// gap: the least distance, in design px, between the middles of two trails, so
+// stars are scattered evenly instead of clumping (0 for none). Gives up after
+// many tries if the section is full.
+function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, gap = 0}) {
   const rand = random(seed)
   const paths = []
   const arcs = []
-  while (paths.length < stars) {
+  const middles = []
+  let tries = 0
+  while (paths.length < stars && tries++ < 50000) {
     // A star anywhere around the section, also well beyond its edges (above
     // the top too), so trails enter from every side
     const x = -0.3 * width + rand() * 1.6 * width
@@ -60,9 +66,13 @@ function draw({width, height, poleX, poleY, stars, seed, even}) {
     // the section instead of piling them up in the far corner
     if (rand() > Math.min(1, even / r)) continue
     const end = Math.atan2(y - poleY, x - poleX)
-    const start = end - (SWEEP * Math.PI) / 180 // the star moves clockwise on screen
+    const start = end - (sweep * Math.PI) / 180 // the star moves clockwise on screen
     // Only trails that are mostly on the section are worth drawing
     if (shareInside(poleX, poleY, r, start, end, width, height) < 0.3) continue
+    // Keep trails apart: skip this one if its middle is too near another's
+    const middle = {x: poleX + r * Math.cos((start + end) / 2), y: poleY + r * Math.sin((start + end) / 2)}
+    if (middles.some((m) => Math.hypot(m.x - middle.x, m.y - middle.y) < gap)) continue
+    middles.push(middle)
     arcs.push({r, start, end})
     const sx = poleX + r * Math.cos(start)
     const sy = poleY + r * Math.sin(start)
@@ -109,15 +119,16 @@ function bestSky(layout) {
 }
 
 // even: the distance from the pole beyond which stars start being kept less
-// often (see draw)
+// often (see draw). Phones (30 Oct 2026): shorter trails (20 degrees) kept at
+// least 42px apart, because 40 long 30 degree trails looked like random strokes.
 const layouts = {
   // The drawings include the strip under proof's bottom wave (80 desktop, 60
   // phone design px), so trails reach the green edge. The pole (the centre the
   // trails circle) was moved a little down and slightly left on 30 Oct 2026:
-  // desktop from 1260,-60 to 1230,0, phone from 380,-20 to 372,20, then further down the same day to 1230,80 and 372,60; the phone then down and left again to 335,110, with 40 trails instead of 75 (same density as desktop) (in these
+  // desktop from 1260,-60 to 1230,0, phone from 380,-20 to 372,20, then further down the same day to 1230,80 and 372,60; the phone then down and left again to 335,110 (in these
   // drawings' coordinates, which start at the top of the wave strip).
   desktop: {width: 1440, height: 760, poleX: 1230, poleY: 80, stars: 130, even: 500},
-  phone: {width: 390, height: 890, poleX: 335, poleY: 110, stars: 40, even: 250},
+  phone: {width: 390, height: 890, poleX: 335, poleY: 110, sweep: 20, stars: 70, gap: 42, even: 150},
 }
 
 for (const [name, layout] of Object.entries(layouts)) {
