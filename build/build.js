@@ -342,7 +342,7 @@ function safeUrl(value, schemes = ['https:']) {
 async function fetchSiteSettings() {
   const raw = await sanityQuery(
     '*[_id == "siteSettings"][0]{contactEmail, homeLinkLabel, homeLinkUrl, socialLinks[]{platform, url}, ' +
-      'partners[]{name, url, "alt": logo.alt, "logo": logo.asset->{url, _id}}}',
+      'partners[]{name, url, "alt": logo.alt, "logo": logo.asset->{url, _id, "width": metadata.dimensions.width, "height": metadata.dimensions.height}}}',
   )
   if (!raw) console.warn('No published siteSettings document: the footer will leave out its contact details, social links and partners.')
   const settings = raw || {}
@@ -362,7 +362,10 @@ async function fetchSiteSettings() {
     if (!response.ok) throw new Error(`Could not download the logo for "${partner.name}" (${response.status}).`)
     const data = Buffer.from(await response.arrayBuffer())
     files.push({name, data})
-    partners.push({name: partner.name, alt: partner.alt || partner.name, src: `/${PARTNER_DIR}/${name}`, url: safeUrl(partner.url, ['https:', 'http:'])})
+    // The downloaded file is PARTNER_HEIGHT tall (or the original's height if smaller)
+    const height = Math.min(PARTNER_HEIGHT, partner.logo.height)
+    const width = Math.round((partner.logo.width * height) / partner.logo.height)
+    partners.push({name: partner.name, alt: partner.alt || partner.name, width, height, src: `/${PARTNER_DIR}/${name}`, url: safeUrl(partner.url, ['https:', 'http:'])})
   }
 
   return {
@@ -374,6 +377,89 @@ async function fetchSiteSettings() {
     partners,
     files,
   }
+}
+
+// THE FOOTER
+const NAVIGATION = require('./navigation')
+const SOCIAL_ICONS = require('./social-icons')
+const SOCIAL_NAMES = {facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok', youtube: 'YouTube', linkedin: 'LinkedIn', x: 'X'}
+
+// The footer's parts as HTML built here from escaped values. A part with no
+// content comes back as an empty string, so it is left out of the page.
+function renderFooter(settings) {
+  const e = escapeHtml
+
+  // Contact: heading, email, social icons
+  const social = settings.social.filter((link) => SOCIAL_ICONS[link.platform])
+  let contact = ''
+  if (settings.email || social.length) {
+    const email = settings.email
+      ? `
+          <p class="footer-contact__email"><a href="mailto:${e(settings.email)}">${e(settings.email)}</a></p>`
+      : ''
+    const icons = social.length
+      ? `
+          <ul class="footer-social">${social
+          .map((link) => {
+            const icon = SOCIAL_ICONS[link.platform]
+            return `
+            <li><a class="footer-social__link" href="${e(link.url)}" aria-label="OAD on ${SOCIAL_NAMES[link.platform]}"><svg viewBox="${icon.viewBox}" aria-hidden="true" focusable="false"><path fill="currentColor" d="${icon.path}"/></svg></a></li>`
+          })
+          .join('')}
+          </ul>`
+      : ''
+    contact = `        <div class="footer-contact">
+          <h2 class="footer-contact__heading">Contact us</h2>${email}${icons}
+        </div>`
+  }
+
+  // The site's sections. Every list is written visible: without JavaScript nothing
+  // is hidden. Sections with pages have both a link (desktop) and a button (phones,
+  // set up by main.js); CSS shows one of them.
+  const groups = NAVIGATION.map((section, i) => {
+    const id = `footer-group-${i}`
+    if (!section.pages) {
+      return `          <div class="footer-group footer-group--link">
+            <h2 class="footer-group__title"><a class="footer-group__link" href="${e(section.href)}">${e(section.title)}<span class="footer-group__arrow" aria-hidden="true">&rarr;</span></a></h2>
+          </div>`
+    }
+    return `          <div class="footer-group">
+            <h2 class="footer-group__title">
+              <a class="footer-group__link" href="${e(section.href)}">${e(section.title)}</a>
+              <button class="footer-group__toggle" type="button" aria-expanded="true" aria-controls="${id}">${e(section.title)}<span class="footer-group__sign" aria-hidden="true"></span></button>
+            </h2>
+            <ul class="footer-group__list" id="${id}">
+              <li class="footer-group__overview"><a href="${e(section.href)}">${e(section.overview)}</a></li>${section.pages
+                .map((page) => `
+              <li><a href="${e(page.href)}">${e(page.title)}</a></li>`)
+                .join('')}
+            </ul>
+          </div>`
+  }).join('\n')
+  const nav = `        <nav class="footer-nav" aria-label="Footer">
+${groups}
+        </nav>`
+
+  // The OAD symbol beside the link home, the same file as in the header. Empty alt
+  // text: the link's words already name the OAD, so a screen reader hears it once.
+  const home = `      <p class="footer-home"><a href="${e(settings.homeLinkUrl)}"><img class="footer-home__logo" src="/assets/images/logos/oad-symbol-colour-transparent-for-dark-bg-300.png" alt="" width="300" height="300" loading="lazy" decoding="async"><span>${e(settings.homeLinkLabel)} <span aria-hidden="true">&#8599;</span></span></a></p>`
+
+  // Partner logos: the band is left out if there are none
+  const partners = settings.partners.length
+    ? `    <section class="footer-partners" aria-labelledby="footer-partners-title">
+      <h2 class="footer-partners__title" id="footer-partners-title">Our partners</h2>
+      <ul class="footer-partners__list">${settings.partners
+        .map((partner) => {
+          const img = `<img src="${e(partner.src)}" alt="${e(partner.alt)}" width="${partner.width}" height="${partner.height}" loading="lazy" decoding="async">`
+          return `
+        <li>${partner.url ? `<a href="${e(partner.url)}">${img}</a>` : img}</li>`
+        })
+        .join('')}
+      </ul>
+    </section>`
+    : ''
+
+  return {contact, nav, home, partners}
 }
 
 async function main() {
@@ -446,7 +532,9 @@ async function main() {
 
   const siteSettings = await fetchSiteSettings()
 
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings}
+  const footer = renderFooter(siteSettings)
+
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.

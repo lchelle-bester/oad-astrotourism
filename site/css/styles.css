@@ -2863,8 +2863,19 @@ h3 {
   text-transform: uppercase;
 }
 
+/* The OAD symbol on the left, the words beside it, as in the header (added
+   30 Oct 2026). Same sizes as the header's logo: 44px on phones, 56px on desktop. */
 .site-footer .footer-home a {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
   color: var(--color-accent-soft);
+}
+
+.footer-home__logo {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: auto;
 }
 
 /* Not colour alone: hover and focus underline it too */
@@ -2994,6 +3005,10 @@ h3 {
     padding: 2rem 0;
     border-top: 1px solid var(--footer-line);
     font-size: 0.875rem;
+  }
+
+  .footer-home__logo {
+    width: 3.5rem;
   }
 
   .footer-partners {
