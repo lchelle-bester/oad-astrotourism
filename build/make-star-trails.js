@@ -48,7 +48,8 @@ function shareInside(poleX, poleY, r, start, end, width, height) {
 // gap: the least distance, in design px, between the middles of two trails, so
 // stars are scattered evenly instead of clumping (0 for none). Gives up after
 // many tries if the section is full.
-function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, gap = 0}) {
+// faint: multiplies every trail's opacity (1 as drawn, lower for a fainter sky).
+function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, gap = 0, faint = 1}) {
   const rand = random(seed)
   const paths = []
   const arcs = []
@@ -78,7 +79,7 @@ function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, ga
     const sy = poleY + r * Math.sin(start)
     // Most stars faint, a few bright: brightness skewed towards 0
     const b = rand() ** 3
-    const opacity = (0.1 + 0.4 * b).toFixed(2)
+    const opacity = ((0.1 + 0.4 * b) * faint).toFixed(2)
     const strokeWidth = (0.8 + 1.1 * b).toFixed(1)
     const tint = rand()
     const colour = tint < 0.7 ? '#ffffff' : tint < 0.9 ? '#cfe3ff' : '#d9b487'
@@ -119,8 +120,9 @@ function bestSky(layout) {
 }
 
 // even: the distance from the pole beyond which stars start being kept less
-// often (see draw). Phones (30 Oct 2026): shorter trails (20 degrees) kept at
-// least 42px apart, because 40 long 30 degree trails looked like random strokes.
+// often (see draw). Phones (30 Oct 2026): many faint trails (140, at 70% of the
+// opacity), like the desktop's web of overlapping arcs. Fewer trails, shorter
+// ones and spaced ones were tried and looked like random strokes.
 const layouts = {
   // The drawings include the strip under proof's bottom wave (80 desktop, 60
   // phone design px), so trails reach the green edge. The pole (the centre the
@@ -128,7 +130,7 @@ const layouts = {
   // desktop from 1260,-60 to 1230,0, phone from 380,-20 to 372,20, then further down the same day to 1230,80 and 372,60; the phone then down and left again to 335,110 (in these
   // drawings' coordinates, which start at the top of the wave strip).
   desktop: {width: 1440, height: 760, poleX: 1230, poleY: 80, stars: 130, even: 500},
-  phone: {width: 390, height: 890, poleX: 335, poleY: 110, sweep: 20, stars: 70, gap: 42, even: 150},
+  phone: {width: 390, height: 890, poleX: 335, poleY: 110, stars: 140, even: 250, faint: 0.7},
 }
 
 for (const [name, layout] of Object.entries(layouts)) {

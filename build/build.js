@@ -219,20 +219,20 @@ function renderImpactResults(results) {
 
 // NEWS AND UPDATES (docs/news/news-design.md)
 // The three newest published posts. Their photos are downloaded at build time,
-// like the pillar photos, in two shapes: wide (15 by 8) for the desktop cards and
-// the first phone card, and square for the two small rows on phones. Both are cut
-// around the hotspot the editor set in the Studio.
+// like the pillar photos, wide (15 by 8) for the desktop cards and the first
+// phone card, cut around the hotspot the editor set in the Studio. On phones
+// posts 2 and 3 show no photo (the CSS hides it, and as it is lazy-loaded the
+// phone never downloads it).
 
 // The category codes stored in Sanity and their labels. Keep in step with
 // postCategories in studio/schemaTypes/post.js.
 const POST_CATEGORIES = {news: 'News', events: 'Events', 'oad-projects': 'OAD projects'}
 const NEWS_DIR = 'assets/images/news'
+// One shape: wide (15 by 8). The square shape for the phone rows was dropped on
+// 30 Oct 2026, when the photos of posts 2 and 3 were taken off phones.
 const NEWS_SHAPES = {
   wide: {ratio: 15 / 8, widths: [480, 820, 1240]},
-  square: {ratio: 1, widths: [192, 288]},
 }
-// Must match the news breakpoint in styles.css: below it, posts 2 and 3 use the square photo
-const NEWS_PHONE = 'not all and (min-width: 57.5em)'
 
 // The part of the photo to keep for a shape, in the original's pixels: inside
 // the editor's crop, as large as possible, and centred on the hotspot (moved
@@ -290,16 +290,12 @@ function formatPostDate(date) {
 
 // The photo for a card. Empty alt text: the title beside it already names the
 // post, and the photo is inside the card's link area (alt text stays required
-// in Sanity for the article pages). Posts after the first switch to the square
-// photo on phones.
-function renderNewsPhoto(shapes, square) {
+// in Sanity for the article pages).
+function renderNewsPhoto(shapes) {
   const wide = shapes.wide
   const sizes = '(min-width: 57.5em) 30vw, 100vw'
-  const phoneSources = square ? `
-              <source media="${NEWS_PHONE}" type="image/webp" srcset="${shapes.square.webp.join(', ')}" sizes="6rem">
-              <source media="${NEWS_PHONE}" srcset="${shapes.square.jpg.join(', ')}" sizes="6rem">` : ''
   return `
-            <picture class="news-card__photo">${phoneSources}
+            <picture class="news-card__photo">
               <source type="image/webp" srcset="${wide.webp.join(', ')}" sizes="${sizes}">
               <img src="${wide.jpg.at(-1).split(' ')[0]}" srcset="${wide.jpg.join(', ')}" sizes="${sizes}" width="${wide.width}" height="${wide.height}" alt="" loading="lazy" decoding="async">
             </picture>`
@@ -315,7 +311,7 @@ function renderNewsCards(posts) {
     if (!category) throw new Error(`News post "${post.title}" has an unknown category "${post.category}".`)
     return `
         <li class="news__item">
-          <article class="news-card${i === 0 ? ' news-card--lead' : ''}">${renderNewsPhoto(post.shapes, i > 0)}
+          <article class="news-card${i === 0 ? ' news-card--lead' : ''}">${renderNewsPhoto(post.shapes)}
             <div class="news-card__text">
               <h3 class="news-card__title"><a href="/news/${escapeHtml(post.slug)}/">${escapeHtml(post.title.trim())}</a></h3>
               <p class="news-card__meta"><span class="news-card__category">${escapeHtml(category)}</span><span class="news-card__dot" aria-hidden="true">·</span><time datetime="${escapeHtml(post.publishedAt)}">${escapeHtml(formatPostDate(post.publishedAt))}</time></p>
