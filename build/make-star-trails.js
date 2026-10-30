@@ -1,4 +1,4 @@
-﻿// Draws the star trails behind the news section, like a long-exposure photo of
+// Draws the star trails behind the news section, like a long-exposure photo of
 // the night sky. Not part of the normal build: run it by hand only to remake the
 // drawings (node build/make-star-trails.js). It writes two partials,
 // site/partials/news-sky-desktop.html and news-sky-phone.html.
@@ -48,8 +48,11 @@ function shareInside(poleX, poleY, r, start, end, width, height) {
 // gap: the least distance, in design px, between the middles of two trails, so
 // stars are scattered evenly instead of clumping (0 for none). Gives up after
 // many tries if the section is full.
+// stack: two trails closer than this (px) to the same circle may not overlap,
+// so trails never pile up side by side into one bright band (0 for no check).
 // faint: multiplies every trail's opacity (1 as drawn, lower for a fainter sky).
-function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, gap = 0, faint = 1}) {
+// grid: rows and columns the section is split into to measure the spread.
+function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, gap = 0, stack = 0, faint = 1, grid: [rows, cols] = [3, 4]}) {
   const rand = random(seed)
   const paths = []
   const arcs = []
@@ -73,8 +76,14 @@ function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, ga
     // Keep trails apart: skip this one if its middle is too near another's
     const middle = {x: poleX + r * Math.cos((start + end) / 2), y: poleY + r * Math.sin((start + end) / 2)}
     if (middles.some((m) => Math.hypot(m.x - middle.x, m.y - middle.y) < gap)) continue
+    // and skip it if it would run alongside another trail on almost the same circle
+    // (both cover the same angle, so they overlap when their middles are less
+    // than one sweep apart; measured the short way round the circle)
+    const mid = (start + end) / 2
+    const apart = (o) => Math.abs(Math.atan2(Math.sin(mid - o.mid), Math.cos(mid - o.mid)))
+    if (arcs.some((o) => Math.abs(o.r - r) < stack && apart(o) < end - start)) continue
     middles.push(middle)
-    arcs.push({r, start, end})
+    arcs.push({r, start, end, mid})
     const sx = poleX + r * Math.cos(start)
     const sy = poleY + r * Math.sin(start)
     // Most stars faint, a few bright: brightness skewed towards 0
@@ -88,21 +97,20 @@ function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, ga
         `stroke="${colour}" stroke-opacity="${opacity}" stroke-width="${strokeWidth}" pathLength="1"/>`,
     )
   }
-  // Report how much line falls in each part of the section (3 rows by 4
-  // columns), to check the spread
-  const grid = Array.from({length: 3}, () => Array(4).fill(0))
+  // Measure how much line falls in each part of the section, to check the spread
+  const grid = Array.from({length: rows}, () => Array(cols).fill(0))
   for (const {r, start, end} of arcs) {
     for (let i = 0; i < 60; i++) {
       const a = start + ((end - start) * i) / 60
       const x = poleX + r * Math.cos(a)
       const y = poleY + r * Math.sin(a)
-      if (x >= 0 && x < width && y >= 0 && y < height) grid[Math.floor((y / height) * 3)][Math.floor((x / width) * 4)] += (r * (end - start)) / 60
+      if (x >= 0 && x < width && y >= 0 && y < height) grid[Math.floor((y / height) * rows)][Math.floor((x / width) * cols)] += (r * (end - start)) / 60
     }
   }
   const total = grid.flat().reduce((s, v) => s + v, 0)
   const shares = grid.map((row) => row.map((v) => (v / total) * 100))
   // Unevenness: how far the emptiest and fullest parts are from a fair share
-  const fair = 100 / 12
+  const fair = 100 / (rows * cols)
   const uneven = Math.max(...shares.flat().map((s) => Math.abs(s - fair)))
   return {markup: paths.join('\n          '), shares, uneven}
 }
@@ -110,7 +118,7 @@ function draw({width, height, poleX, poleY, stars, seed, even, sweep = SWEEP, ga
 // Tries many skies (seeds) and keeps the most evenly spread one
 function bestSky(layout) {
   let best = null
-  for (let seed = 1; seed <= 40; seed++) {
+  for (let seed = 1; seed <= (layout.seeds || 40); seed++) {
     const sky = draw({...layout, seed})
     if (!best || sky.uneven < best.uneven) best = {...sky, seed}
   }
@@ -122,7 +130,10 @@ function bestSky(layout) {
 // even: the distance from the pole beyond which stars start being kept less
 // often (see draw). Phones (30 Oct 2026): many faint trails (140, at 70% of the
 // opacity), like the desktop's web of overlapping arcs. Fewer trails, shorter
-// ones and spaced ones were tried and looked like random strokes.
+// ones and spaced ones were tried and looked like random strokes. Then trails
+// on almost the same circle were kept from overlapping (stack 9, gap 14) and
+// the spread measured in 24 parts instead of 12 (best of 120 skies), after
+// one band of stacked trails with a gap below it.
 const layouts = {
   // The drawings include the strip under proof's bottom wave (80 desktop, 60
   // phone design px), so trails reach the green edge. The pole (the centre the
@@ -130,7 +141,7 @@ const layouts = {
   // desktop from 1260,-60 to 1230,0, phone from 380,-20 to 372,20, then further down the same day to 1230,80 and 372,60; the phone then down and left again to 335,110 (in these
   // drawings' coordinates, which start at the top of the wave strip).
   desktop: {width: 1440, height: 760, poleX: 1230, poleY: 80, stars: 130, even: 500},
-  phone: {width: 390, height: 890, poleX: 335, poleY: 110, stars: 140, even: 250, faint: 0.7},
+  phone: {width: 390, height: 890, poleX: 335, poleY: 110, stars: 140, even: 250, faint: 0.7, stack: 9, gap: 14, grid: [8, 3], seeds: 120},
 }
 
 for (const [name, layout] of Object.entries(layouts)) {
