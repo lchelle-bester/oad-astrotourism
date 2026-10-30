@@ -13,6 +13,17 @@ export const postCategories = [
   {title: 'OAD projects', value: 'oad-projects'},
 ]
 
+// The video id (11 letters, numbers, - or _) from a YouTube link, or null if
+// the link is not a YouTube video. Accepts youtube.com/watch?v=..., youtu.be/...,
+// youtube.com/shorts/..., youtube.com/embed/... and youtube.com/live/....
+// The build will use the same rule to find the video.
+export function youtubeId(url) {
+  const match = String(url).match(
+    /^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})(?:[?&#/].*)?$/,
+  )
+  return match ? match[1] : null
+}
+
 export const post = defineType({
   name: 'post',
   title: 'News post',
@@ -146,6 +157,44 @@ export const post = defineType({
               description: 'Optional. Shown under the photo.',
             }),
           ],
+        }),
+        // A YouTube video inside the article (added 30 Oct 2026). On the site it
+        // will show as the video's still image with a play button, and YouTube
+        // is only contacted when someone presses play (decided 30 Oct 2026, for
+        // privacy and page weight). Built with the article pages.
+        defineArrayMember({
+          type: 'object',
+          name: 'youtube',
+          title: 'YouTube video',
+          fields: [
+            defineField({
+              name: 'url',
+              title: 'Video link',
+              type: 'url',
+              description: 'Paste the address of the video on YouTube, for example https://www.youtube.com/watch?v=...',
+              validation: (Rule) => [
+                Rule.required().error('Paste the YouTube link.'),
+                Rule.custom((url) => (!url || youtubeId(url) ? true : 'This does not look like a link to a YouTube video.')),
+              ],
+            }),
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              description: 'What the video is, for example "Starry Safaris tour, Tanzania". Screen readers announce it.',
+              validation: (Rule) => Rule.required().error('Add a title for the video.'),
+            }),
+            defineField({
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+              description: 'Optional. Shown under the video.',
+            }),
+          ],
+          preview: {
+            select: {title: 'title', url: 'url'},
+            prepare: ({title, url}) => ({title: title || 'YouTube video', subtitle: url ? `YouTube: ${url}` : 'No link yet'}),
+          },
         }),
       ],
     }),
