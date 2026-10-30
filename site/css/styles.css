@@ -2276,7 +2276,8 @@ h3 {
 }
 
 /* The star trails (drawn by build/make-star-trails.js), filling the section
-   from the top right corner. One drawing for phones, one for desktop. */
+   from the top right corner. Desktop only (from 920px): phones have the plain
+   navy, as the trails did not work on a small screen (decided 30 Oct 2026). */
 .news__sky {
   position: absolute;
   inset: 0;
@@ -2298,9 +2299,7 @@ h3 {
    How the dash works: the pattern is one trail-length of line, then one of
    gap. Offset 0 shows the whole trail, 0.5 shows its first half. The animation
    pauses while the section is off screen (main.js adds .news--paused).
-   Desktop only: on phones the trails are drawn in full and stay still
-   (decided 30 Oct 2026, too much motion beside the text on a small screen), as
-   they do everywhere with reduced motion. */
+   With reduced motion the trails are drawn in full and stay still. */
 .news__sky path {
   stroke-dasharray: 1 1;
   stroke-dashoffset: 0;
@@ -2496,10 +2495,6 @@ h3 {
 @media (min-width: 57.5em) {
   .news__sky--desktop {
     display: block;
-  }
-
-  .news__sky--phone {
-    display: none;
   }
 
   .news__inner {

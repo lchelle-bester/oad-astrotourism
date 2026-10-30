@@ -1,7 +1,7 @@
 // Draws the star trails behind the news section, like a long-exposure photo of
 // the night sky. Not part of the normal build: run it by hand only to remake the
-// drawings (node build/make-star-trails.js). It writes two partials,
-// site/partials/news-sky-desktop.html and news-sky-phone.html.
+// drawing (node build/make-star-trails.js). It writes the partial
+// site/partials/news-sky-desktop.html.
 //
 // How a real star-trail photo works, and so how this is drawn:
 // - every star turns round the same point, the pole (here just above the
@@ -128,20 +128,18 @@ function bestSky(layout) {
 }
 
 // even: the distance from the pole beyond which stars start being kept less
-// often (see draw). Phones (30 Oct 2026): many faint trails (140, at 70% of the
-// opacity), like the desktop's web of overlapping arcs. Fewer trails, shorter
-// ones and spaced ones were tried and looked like random strokes. Then trails
-// on almost the same circle were kept from overlapping (stack 9, gap 14) and
-// the spread measured in 24 parts instead of 12 (best of 120 skies), after
-// one band of stacked trails with a gap below it.
+// often (see draw).
+// Desktop only. Phones had their own sky (several versions on 30 Oct 2026),
+// but trails did not work on a small screen, so phones have plain navy. The
+// phone settings last used, if it is ever tried again: width 390, height 890,
+// poleX 335, poleY 110, stars 140, even 250, faint 0.7, stack 9, gap 14,
+// grid [8, 3], seeds 120.
 const layouts = {
-  // The drawings include the strip under proof's bottom wave (80 desktop, 60
-  // phone design px), so trails reach the green edge. The pole (the centre the
-  // trails circle) was moved a little down and slightly left on 30 Oct 2026:
-  // desktop from 1260,-60 to 1230,0, phone from 380,-20 to 372,20, then further down the same day to 1230,80 and 372,60; the phone then down and left again to 335,110 (in these
-  // drawings' coordinates, which start at the top of the wave strip).
+  // The drawing includes the strip under proof's bottom wave (80 design px),
+  // so trails reach the green edge. The pole (the centre the trails circle)
+  // was moved down and slightly left on 30 Oct 2026, from 1260,-60 to 1230,80
+  // (in this drawing's coordinates, which start at the top of the wave strip).
   desktop: {width: 1440, height: 760, poleX: 1230, poleY: 80, stars: 130, even: 500},
-  phone: {width: 390, height: 890, poleX: 335, poleY: 110, stars: 140, even: 250, faint: 0.7, stack: 9, gap: 14, grid: [8, 3], seeds: 120},
 }
 
 for (const [name, layout] of Object.entries(layouts)) {
