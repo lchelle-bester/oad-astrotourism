@@ -1872,7 +1872,8 @@ h3 {
    Each section places it with its own class (margins, grid area); the look
    lives only here. Sizes: phone 16px text and a 40px circle; desktop, from
    920px, 17px text and a 42px circle at 1440, growing with the screen (made
-   smaller than the proof design on 29 Oct 2026, which had 20 and 48). */
+   smaller than the proof design on 29 Oct 2026, which had 20 and 48). On
+   desktop proof and news both shrink it to 15px and 36px (30 Oct 2026). */
 .pill-button {
   --circle: 2.5rem;
   display: flex;
@@ -2220,8 +2221,13 @@ h3 {
     line-height: 1.45;
   }
 
+  /* Same size as the news button (15px text, 36px circle at 1440), changed 30 Oct 2026 */
   .proof__button {
+    --circle: max(2.25rem, 36 * var(--bpx));
     margin-top: calc(40 * var(--px));
+    gap: calc(14 * var(--bpx));
+    padding: calc(6 * var(--bpx)) calc(6 * var(--bpx)) calc(6 * var(--bpx)) calc(22 * var(--bpx));
+    font-size: max(0.9375rem, 15 * var(--bpx));
   }
 
   /* Each result: the number in its own column, the tag above the sentence beside
