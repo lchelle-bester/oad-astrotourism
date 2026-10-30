@@ -389,7 +389,7 @@ async function main() {
   // No posts: the section is left out of the page altogether
   const newsSection = {cards: renderNewsCards(posts), html: ''}
   if (posts.length) {
-    const partial = fs.readFileSync(path.join(SITE_DIR, 'partials', 'news.html'), 'utf8').trimEnd()
+    const partial = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'partials', 'news.html'), 'utf8').trimEnd())
     newsSection.html = renderTemplate(partial, {newsSection})
   }
 

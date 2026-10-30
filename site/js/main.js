@@ -661,6 +661,20 @@ if (proofNumbers.length && 'IntersectionObserver' in window && 'animate' in Elem
 }
 
 
+// NEWS: PAUSE THE STAR TRAILS OFF SCREEN
+// The trails grow by CSS animation. Redrawing them costs a little work every
+// frame, so they pause while the section is out of view (saves battery on
+// phones) and carry on from where they were when it comes back.
+
+const newsSection = document.querySelector('.news')
+
+if (newsSection && 'IntersectionObserver' in window) {
+  new IntersectionObserver((entries) => {
+    newsSection.classList.toggle('news--paused', !entries[0].isIntersecting)
+  }).observe(newsSection)
+}
+
+
 // BACK TO TOP
 // The arrow fades in once the hero has scrolled completely out of view (its
 // bottom edge above the top of the screen). On pages without a hero, such as the

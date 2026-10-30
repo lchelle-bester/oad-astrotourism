@@ -2213,55 +2213,68 @@ h3 {
 
 
 /* 10. NEWS AND UPDATES (design in docs/news/news-design.md)
-   The three newest posts on the dark navy, with star trails arcing behind from
-   the top right (a background drawing, so screen readers never meet it). Only
-   the photos and text blocks are solid navy, so the trails show in the gaps
-   but never behind words. Contrast on #0f1b2b (calculated): white 17.3:1,
-   sand 8.9:1, white at 70% 7.3:1, yellow 10.7:1. */
+   The three newest posts on the dark navy, with star trails behind (decorative,
+   hidden from screen readers). Only the photos and text blocks are solid navy,
+   so the trails show in the gaps but never behind words. Contrast on #0f1b2b
+   (calculated): white 17.3:1, sand 8.9:1, white at 70% 7.3:1, yellow 10.7:1. */
 
 /* Phone first (version C): one big card, then two rows with square photos */
 .news {
-  /* Where the star trails' pole (the point they all circle) sits, in design
-     units: the phone design is 390 wide, so one unit is the width / 390. The
-     ring drawing is a square centred on the pole, --ring units from centre
-     to edge. */
-  --u: calc(100cqw / 390);
-  --pole-x: 380;
-  --pole-y: -80;
-  --ring: 1010;
   position: relative;
-  overflow: clip; /* the ring is far bigger than the section */
-  container-type: inline-size; /* lets 100cqw mean the section's width */
+  overflow: clip; /* trails can start beyond the edges */
   background: var(--color-night);
 }
 
-/* The star trails turn round their pole very slowly, like a long-exposure
-   photo of the night sky: clockwise, as the sky turns in the southern
-   hemisphere, a third of a turn every 4 minutes (sped up on 30 Oct 2026 from
-   15 minutes, which was too slow to notice). The ring drawing is three
-   copies of one 120 degree slice, so after a third of a turn it looks exactly
-   as it started and the loop never jumps. Turning an image is done by the
-   graphics card, so it costs almost nothing. Reduced motion: it stays still. */
-.news__sky img {
+/* The star trails (drawn by build/make-star-trails.js), filling the section
+   from the top right corner. One drawing for phones, one for desktop. */
+.news__sky {
   position: absolute;
-  left: calc((var(--pole-x) - var(--ring)) * var(--u));
-  top: calc((var(--pole-y) - var(--ring)) * var(--u));
-  width: calc(2 * var(--ring) * var(--u));
-  height: calc(2 * var(--ring) * var(--u));
-  max-width: none;
-  animation: news-sky 240s linear infinite;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-@keyframes news-sky {
-  to {
-    transform: rotate(120deg);
+.news__sky--desktop {
+  display: none;
+}
+
+/* The trails grow like a long exposure being taken (decided 30 Oct 2026):
+   every trail starts as nothing and lengthens along its circle at the same
+   rate as all the others (each path has pathLength 1, so the same dash
+   offset means the same share of every trail), over 30 seconds. They hold for
+   6 seconds, fade out over 3, and the exposure starts again. The page opens 12
+   seconds in, so the trails are already part drawn. The animation pauses
+   while the section is off screen (main.js adds .news--paused). Without the
+   animation (reduced motion) the trails are simply drawn in full. */
+.news__sky path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .news__sky path {
+    animation: news-trail-grow 39s linear -12s infinite;
+  }
+
+  .news__sky g {
+    animation: news-trail-fade 39s linear -12s infinite;
+  }
+
+  .news--paused .news__sky path,
+  .news--paused .news__sky g {
+    animation-play-state: paused;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .news__sky img {
-    animation: none;
-  }
+@keyframes news-trail-grow {
+  0% { stroke-dashoffset: 1; }
+  77% { stroke-dashoffset: 0; } /* 30 of 39 seconds */
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes news-trail-fade {
+  0%, 92% { opacity: 1; } /* 36 of 39 seconds */
+  100% { opacity: 0; }
 }
 
 .news__inner {
@@ -2441,13 +2454,12 @@ h3 {
    pixel (width / 1440, up to 1920 wide). From 920px, like the pillars and
    proof (provisional, to be measured). */
 @media (min-width: 57.5em) {
-  /* The desktop drawing is 1440 wide; its pole sits just above the section,
-     near the right */
-  .news {
-    --u: calc(100cqw / 1440);
-    --pole-x: 1260;
-    --pole-y: -140;
-    --ring: 1082;
+  .news__sky--desktop {
+    display: block;
+  }
+
+  .news__sky--phone {
+    display: none;
   }
 
   .news__inner {
