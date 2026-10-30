@@ -1,4 +1,4 @@
-// Draws the star trails behind the news section, like a long-exposure photo of
+﻿// Draws the star trails behind the news section, like a long-exposure photo of
 // the night sky. Not part of the normal build: run it by hand only to remake the
 // drawings (node build/make-star-trails.js). It writes two partials,
 // site/partials/news-sky-desktop.html and news-sky-phone.html.
@@ -8,9 +8,13 @@
 //   section, near the right, as in the designer's drawing)
 // - every star was exposed for the same time, so every trail covers the same
 //   angle round the pole: trails near the pole are short, far ones long
-// - stars are scattered evenly over the sky, most faint, a few bright
-// The random numbers come from a fixed seed, so the drawing is the same every
-// time the script is run.
+// - stars are scattered over the sky, most faint, a few bright
+// Because far trails are long, a plain even scatter piles lines up in the
+// corner furthest from the pole, so far stars are kept less often. Stars are
+// also placed beyond the edges (above the top too), so trails enter from every
+// side. The script tries 40 skies and keeps the one whose lines are spread most
+// evenly over the section (it prints the spread). The random numbers come from
+// fixed seeds, so the drawing is the same every time the script is run.
 
 const fs = require('node:fs')
 const path = require('node:path')
@@ -28,18 +32,38 @@ function random(seed) {
 
 const SWEEP = 30 // degrees each trail covers (the "exposure time")
 
-function draw({width, height, poleX, poleY, stars, seed}) {
+// How much of an arc lies inside the drawing, as a share of the arc (0 to 1)
+function shareInside(poleX, poleY, r, start, end, width, height) {
+  let inside = 0
+  for (let i = 0; i <= 20; i++) {
+    const a = start + ((end - start) * i) / 20
+    const x = poleX + r * Math.cos(a)
+    const y = poleY + r * Math.sin(a)
+    if (x >= 0 && x <= width && y >= 0 && y <= height) inside++
+  }
+  return inside / 21
+}
+
+function draw({width, height, poleX, poleY, stars, seed, even}) {
   const rand = random(seed)
   const paths = []
+  const arcs = []
   while (paths.length < stars) {
-    // A star anywhere in the sky, also a little beyond the edges so trails can
-    // enter from outside
-    const x = -0.15 * width + rand() * 1.3 * width
-    const y = rand() * 1.1 * height
+    // A star anywhere around the section, also well beyond its edges (above
+    // the top too), so trails enter from every side
+    const x = -0.3 * width + rand() * 1.6 * width
+    const y = -0.5 * height + rand() * 1.6 * height
     const r = Math.hypot(x - poleX, y - poleY)
-    if (r < 40) continue
+    if (r < 30) continue
+    // Far from the pole every trail is long, so stars there are kept less
+    // often (chance falls with distance): this spreads the lines evenly over
+    // the section instead of piling them up in the far corner
+    if (rand() > Math.min(1, even / r)) continue
     const end = Math.atan2(y - poleY, x - poleX)
     const start = end - (SWEEP * Math.PI) / 180 // the star moves clockwise on screen
+    // Only trails that are mostly on the section are worth drawing
+    if (shareInside(poleX, poleY, r, start, end, width, height) < 0.3) continue
+    arcs.push({r, start, end})
     const sx = poleX + r * Math.cos(start)
     const sy = poleY + r * Math.sin(start)
     // Most stars faint, a few bright: brightness skewed towards 0
@@ -53,12 +77,42 @@ function draw({width, height, poleX, poleY, stars, seed}) {
         `stroke="${colour}" stroke-opacity="${opacity}" stroke-width="${strokeWidth}" pathLength="1"/>`,
     )
   }
-  return paths.join('\n          ')
+  // Report how much line falls in each part of the section (3 rows by 4
+  // columns), to check the spread
+  const grid = Array.from({length: 3}, () => Array(4).fill(0))
+  for (const {r, start, end} of arcs) {
+    for (let i = 0; i < 60; i++) {
+      const a = start + ((end - start) * i) / 60
+      const x = poleX + r * Math.cos(a)
+      const y = poleY + r * Math.sin(a)
+      if (x >= 0 && x < width && y >= 0 && y < height) grid[Math.floor((y / height) * 3)][Math.floor((x / width) * 4)] += (r * (end - start)) / 60
+    }
+  }
+  const total = grid.flat().reduce((s, v) => s + v, 0)
+  const shares = grid.map((row) => row.map((v) => (v / total) * 100))
+  // Unevenness: how far the emptiest and fullest parts are from a fair share
+  const fair = 100 / 12
+  const uneven = Math.max(...shares.flat().map((s) => Math.abs(s - fair)))
+  return {markup: paths.join('\n          '), shares, uneven}
 }
 
+// Tries many skies (seeds) and keeps the most evenly spread one
+function bestSky(layout) {
+  let best = null
+  for (let seed = 1; seed <= 40; seed++) {
+    const sky = draw({...layout, seed})
+    if (!best || sky.uneven < best.uneven) best = {...sky, seed}
+  }
+  console.log(best.shares.map((row) => row.map((v) => String(Math.round(v)).padStart(3)).join(' ')).join('\n'),
+    `(% of the line in each part, seed ${best.seed})`)
+  return best.markup
+}
+
+// even: the distance from the pole beyond which stars start being kept less
+// often (see draw)
 const layouts = {
-  desktop: {width: 1440, height: 680, poleX: 1260, poleY: -140, stars: 110, seed: 11},
-  phone: {width: 390, height: 830, poleX: 380, poleY: -80, stars: 60, seed: 7},
+  desktop: {width: 1440, height: 680, poleX: 1260, poleY: -140, stars: 120, even: 500},
+  phone: {width: 390, height: 830, poleX: 380, poleY: -80, stars: 70, even: 600},
 }
 
 for (const [name, layout] of Object.entries(layouts)) {
@@ -66,7 +120,7 @@ for (const [name, layout] of Object.entries(layouts)) {
   fs.writeFileSync(file,
     `      <!-- Star trails (${name}), made by build/make-star-trails.js. Do not edit by hand. -->\n` +
     `      <svg class="news__sky news__sky--${name}" viewBox="0 0 ${layout.width} ${layout.height}" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" focusable="false">\n` +
-    `        <g fill="none" stroke-linecap="round">\n          ${draw(layout)}\n        </g>\n` +
+    `        <g fill="none" stroke-linecap="round">\n          ${bestSky(layout)}\n        </g>\n` +
     `      </svg>\n`)
   console.log('wrote', path.relative(process.cwd(), file))
 }
