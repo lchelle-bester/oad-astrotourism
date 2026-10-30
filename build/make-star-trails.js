@@ -114,10 +114,10 @@ const layouts = {
   // The drawings include the strip under proof's bottom wave (80 desktop, 60
   // phone design px), so trails reach the green edge. The pole (the centre the
   // trails circle) was moved a little down and slightly left on 30 Oct 2026:
-  // desktop from 1260,-60 to 1230,0, phone from 380,-20 to 372,20 (in these
+  // desktop from 1260,-60 to 1230,0, phone from 380,-20 to 372,20, then further down the same day to 1230,80 and 372,60; the phone then down and left again to 335,110, with 40 trails instead of 75 (same density as desktop) (in these
   // drawings' coordinates, which start at the top of the wave strip).
-  desktop: {width: 1440, height: 760, poleX: 1230, poleY: 0, stars: 130, even: 500},
-  phone: {width: 390, height: 890, poleX: 372, poleY: 20, stars: 75, even: 250},
+  desktop: {width: 1440, height: 760, poleX: 1230, poleY: 80, stars: 130, even: 500},
+  phone: {width: 390, height: 890, poleX: 335, poleY: 110, stars: 40, even: 250},
 }
 
 for (const [name, layout] of Object.entries(layouts)) {
