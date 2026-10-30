@@ -382,6 +382,9 @@ async function fetchSiteSettings() {
 // THE FOOTER
 const NAVIGATION = require('./navigation')
 const SOCIAL_ICONS = require('./social-icons')
+// The same donation page as the Donate link in the header (site/partials/header.html).
+// Not yet confirmed with Ram and Joy (see the decisions log, 28 Oct 2026).
+const DONATE_URL = 'https://iau.org/Iau/Fundraising/Donate_Now.aspx?WebsiteKey=9e4eaea2-b0d6-4c4b-bd18-913a208b91be'
 const SOCIAL_NAMES = {facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok', youtube: 'YouTube', linkedin: 'LinkedIn', x: 'X'}
 
 // The footer's parts as HTML built here from escaped values. A part with no
@@ -389,9 +392,14 @@ const SOCIAL_NAMES = {facebook: 'Facebook', instagram: 'Instagram', tiktok: 'Tik
 function renderFooter(settings) {
   const e = escapeHtml
 
-  // Contact: heading, email, social icons
+  // Contact: heading, email, social icons, then the Donate button (added
+  // 30 Oct 2026). The button always shows; the heading only when there is an
+  // email address or a social link under it.
   const social = settings.social.filter((link) => SOCIAL_ICONS[link.platform])
-  let contact = ''
+  const donate = `
+          <p class="footer-donate"><a href="${e(DONATE_URL)}">Donate<span class="visually-hidden"> (on the IAU website)</span></a></p>`
+  let contact = `        <div class="footer-contact">${donate}
+        </div>`
   if (settings.email || social.length) {
     const email = settings.email
       ? `
@@ -409,7 +417,7 @@ function renderFooter(settings) {
           </ul>`
       : ''
     contact = `        <div class="footer-contact">
-          <h2 class="footer-contact__heading">Contact us</h2>${email}${icons}
+          <h2 class="footer-contact__heading">Contact us</h2>${email}${icons}${donate}
         </div>`
   }
 
