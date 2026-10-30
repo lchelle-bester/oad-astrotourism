@@ -321,6 +321,61 @@ function renderNewsCards(posts) {
   }).join('')
 }
 
+// SITE SETTINGS (the footer's contact details, social links and partner logos)
+const PARTNER_DIR = 'assets/images/partners'
+const PARTNER_HEIGHT = 104 // twice the tallest display height (52px on desktop)
+
+// A link from Sanity is only used if it is a full https address (or, where
+// allowed, a mailto one). Anything else (javascript:, relative, a typo) is dropped.
+function safeUrl(value, schemes = ['https:']) {
+  try {
+    const url = new URL(String(value))
+    return schemes.includes(url.protocol) ? url.href : null
+  } catch {
+    return null
+  }
+}
+
+// Reads and cleans the site settings, and downloads the partner logos. Never
+// throws because the settings are missing: the footer then leaves out whatever
+// has no content (no social row, no partners band) and the build carries on.
+async function fetchSiteSettings() {
+  const raw = await sanityQuery(
+    '*[_id == "siteSettings"][0]{contactEmail, homeLinkLabel, homeLinkUrl, socialLinks[]{platform, url}, ' +
+      'partners[]{name, url, "alt": logo.alt, "logo": logo.asset->{url, _id}}}',
+  )
+  if (!raw) console.warn('No published siteSettings document: the footer will leave out its contact details, social links and partners.')
+  const settings = raw || {}
+
+  const social = (settings.socialLinks || [])
+    .map((link) => ({platform: link.platform, url: safeUrl(link.url)}))
+    .filter((link) => link.platform && link.url)
+
+  const partners = []
+  const files = []
+  for (const partner of settings.partners || []) {
+    if (!partner.logo?.url || !partner.name) continue
+    const id = partner.logo._id.split('-')[1].slice(0, 10)
+    const name = `${partner.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40)}-${id}.png`
+    // PNG keeps the transparent background. fit=max never enlarges past the original.
+    const response = await fetchWithRetry(`${partner.logo.url}?h=${PARTNER_HEIGHT}&fit=max&fm=png`)
+    if (!response.ok) throw new Error(`Could not download the logo for "${partner.name}" (${response.status}).`)
+    const data = Buffer.from(await response.arrayBuffer())
+    files.push({name, data})
+    partners.push({name: partner.name, alt: partner.alt || partner.name, src: `/${PARTNER_DIR}/${name}`, url: safeUrl(partner.url, ['https:', 'http:'])})
+  }
+
+  return {
+    year: new Date().getFullYear(),
+    email: /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(settings.contactEmail || '') ? settings.contactEmail : '',
+    homeLinkLabel: settings.homeLinkLabel || 'Part of the IAU Office of Astronomy for Development',
+    homeLinkUrl: safeUrl(settings.homeLinkUrl) || 'https://astro4dev.org/',
+    social,
+    partners,
+    files,
+  }
+}
+
 async function main() {
   const hero = await sanityQuery(
     '*[_id == "hero"][0]{headlineWord, headlineRest, subheading, affiliation}',
@@ -389,7 +444,9 @@ async function main() {
     newsSection.html = renderTemplate(partial, {newsSection})
   }
 
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection}
+  const siteSettings = await fetchSiteSettings()
+
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
@@ -411,6 +468,12 @@ async function main() {
     fs.writeFileSync(path.join(DIST_DIR, NEWS_DIR, file.name), file.data)
   }
 
+  // The partner logos downloaded from Sanity
+  fs.mkdirSync(path.join(DIST_DIR, PARTNER_DIR), {recursive: true})
+  for (const file of siteSettings.files) {
+    fs.writeFileSync(path.join(DIST_DIR, PARTNER_DIR, file.name), file.data)
+  }
+
   // Every page at the top of site/ (index.html, 404.html, ...): insert the
   // partials, then fill the placeholders, overwriting the copies in dist/.
   const pages = fs.readdirSync(DIST_DIR).filter((name) => name.endsWith('.html'))
@@ -421,6 +484,7 @@ async function main() {
   }
 
   console.log(`Built ${pages.join(', ')} with hero:`, hero.headlineWord, hero.headlineRest)
+  console.log(`Site settings: ${siteSettings.social.length} social links, ${siteSettings.partners.length} partner logos`)
 }
 
 // Only run the build when this file is started directly (node build/build.js),
