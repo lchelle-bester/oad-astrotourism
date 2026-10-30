@@ -705,3 +705,40 @@ if (toTop) {
   window.addEventListener('resize', updateToTop)
   updateToTop()
 }
+
+
+// FOOTER
+// On phones (below 64em, the same width as the footer's CSS) the sections that
+// have pages under them fold open. Each title is a button with aria-expanded,
+// and aria-controls names the list it opens; "hidden" on the list is what hides
+// it (a hidden element is also skipped by Tab and by screen readers). The
+// HTML is written with every list open, so without JavaScript nothing is hidden:
+// the script only closes them when it starts, on a phone. At desktop width it
+// opens them all again and removes .site-footer--folding, which is what makes the
+// CSS show the buttons and the overview links.
+
+const siteFooter = document.querySelector('.site-footer')
+
+if (siteFooter) {
+  const footerToggles = siteFooter.querySelectorAll('.footer-group__toggle')
+  const footerIsPhone = window.matchMedia('not all and (min-width: 64em)')
+
+  function setFooterGroup(toggle, open) {
+    toggle.setAttribute('aria-expanded', String(open))
+    document.getElementById(toggle.getAttribute('aria-controls')).hidden = !open
+  }
+
+  // Runs once at start and again whenever the window crosses 64em. More than one
+  // section can be open at once; all start closed on a phone.
+  function layoutFooter() {
+    siteFooter.classList.toggle('site-footer--folding', footerIsPhone.matches)
+    footerToggles.forEach((toggle) => setFooterGroup(toggle, !footerIsPhone.matches))
+  }
+
+  footerToggles.forEach((toggle) => {
+    toggle.addEventListener('click', () => setFooterGroup(toggle, toggle.getAttribute('aria-expanded') !== 'true'))
+  })
+
+  footerIsPhone.addEventListener('change', layoutFooter)
+  layoutFooter()
+}

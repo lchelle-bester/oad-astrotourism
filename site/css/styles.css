@@ -402,7 +402,7 @@ h3 {
     min-height: 2.125rem;
     padding: 0 var(--gutter);
     background: var(--color-night);
-    font-size: min(0.8125rem, 3.8vw);   /* 13px, a little smaller on very narrow phones */
+    font-size: min(0.8125rem, 3.6vw);   /* 13px, a little smaller on very narrow phones (the wording now includes "IAU", 30 Oct 2026) */
     line-height: 1.4;
     white-space: nowrap;                /* keeps the arrow on the same line */
   }
@@ -2649,4 +2649,376 @@ h3 {
 /* Sand on this navy is 8.9:1 */
 .not-found__home {
   color: var(--color-accent-soft);
+}
+
+
+/* 12. FOOTER (design in docs/footer/footer-design.md)
+   On every page, after the main content. Brand navy, so it reads as a step
+   down from the darker page above. The markup comes from build/build.js
+   (renderFooter); a part with no content is left out of the HTML.
+   Phone layout first (provisional, the fold-open sections come next), then the
+   desktop columns from 64em (1024px, provisional, to be assessed once built).
+   Colours checked: white 80% on navy 8.6:1, sand 6.4:1, yellow 7.7:1, the dark
+   navy on the light band 15.6:1. */
+.site-footer {
+  --footer-line: rgb(255 255 255 / 0.18);
+  --footer-link: rgb(255 255 255 / 0.8);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.site-footer a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Hover: yellow (7.7:1 on the navy). Focus: a 3px white outline, as everywhere on dark. */
+@media (hover: hover) {
+  .site-footer a:hover {
+    color: var(--color-accent);
+  }
+}
+
+.site-footer a:focus-visible,
+.site-footer button:focus-visible {
+  outline: 3px solid var(--white);
+  outline-offset: 3px;
+  color: var(--color-accent);
+}
+
+.site-footer__inner {
+  padding: 2.75rem var(--gutter) 0;
+}
+
+.site-footer h2 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Contact */
+.footer-contact__heading {
+  font-size: 1.375rem;
+  line-height: 1.2;
+}
+
+.footer-contact__email {
+  margin: 0.875rem 0 0;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.footer-contact__email a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 1px border in white at 45% is 3.8:1 on the navy, enough for a UI part (3:1) */
+.footer-social__link {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  border-radius: 50%;
+  transition: color 0.2s ease-out, border-color 0.2s ease-out;
+}
+
+.footer-social__link svg {
+  height: 1.0625rem;
+  width: auto;
+}
+
+.site-footer .footer-social__link:focus-visible {
+  border-color: var(--color-accent);
+}
+
+@media (hover: hover) {
+  .footer-social__link:hover {
+    border-color: var(--color-accent);
+  }
+}
+
+/* The sections, phone layout (below 64em). Each section is a row with a thin
+   line under it. A section with pages is a row that folds open: its title is a
+   button (set up by main.js, which adds .site-footer--folding on phones). A
+   section with no pages is a plain link with an arrow. Without JavaScript the
+   titles stay links, every list is open and nobody is locked out of a link. */
+.footer-nav {
+  margin-top: 2rem;
+  border-top: 1px solid var(--footer-line);
+}
+
+.footer-group {
+  border-bottom: 1px solid var(--footer-line);
+}
+
+.footer-group__title {
+  font-size: 1.0625rem;
+  line-height: 1.3;
+}
+
+.footer-group__link,
+.footer-group__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 0;
+}
+
+/* The button looks like the link beside it: no button chrome */
+.footer-group__toggle {
+  display: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* The + and - are drawn by CSS and hidden from screen readers (aria-hidden in the
+   HTML): the button's aria-expanded is what they hear */
+.footer-group__sign {
+  flex: none;
+  width: 1rem;
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+}
+
+.footer-group__sign::before {
+  content: "+";
+}
+
+.footer-group__toggle[aria-expanded="true"] .footer-group__sign::before {
+  content: "\2212"; /* the minus sign */
+}
+
+.footer-group__overview {
+  display: none;
+}
+
+/* With JavaScript on a phone: the button replaces the link, and the list starts
+   with an overview link to the section's own page */
+.site-footer--folding .footer-group__toggle {
+  display: flex;
+}
+
+.site-footer--folding .footer-group__title:has(.footer-group__toggle) .footer-group__link {
+  display: none;
+}
+
+.site-footer--folding .footer-group__overview {
+  display: list-item;
+}
+
+.footer-group__list {
+  margin: 0;
+  padding: 0 0 1.125rem;
+  list-style: none;
+  color: var(--footer-link);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.footer-group__list li + li {
+  margin-top: 0.75rem;
+}
+
+/* The overview link is hidden unless the section is folding, and a hidden item
+   must not push the first page down */
+.footer-group__list .footer-group__overview + li {
+  margin-top: 0;
+}
+
+.site-footer--folding .footer-group__list .footer-group__overview + li {
+  margin-top: 0.75rem;
+}
+
+/* The link home: 36px under the last line on phones */
+.footer-home {
+  margin: 2.25rem 0 0;
+  padding: 0 0 2rem;
+  color: var(--color-accent-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.site-footer .footer-home a {
+  color: var(--color-accent-soft);
+}
+
+/* Not colour alone: hover and focus underline it too */
+.site-footer .footer-home a:hover,
+.site-footer .footer-home a:focus-visible {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Partners: a light band the full width of the window */
+.footer-partners {
+  padding: 1.875rem var(--gutter);
+  background: #f2f3f5;
+  color: var(--color-night);
+}
+
+.site-footer .footer-partners h2 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.footer-partners__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.375rem 1.75rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-partners__list img {
+  display: block;
+  height: 2.125rem;
+  width: auto;
+}
+
+/* The navy outline shows on the light band (white would not): 11.2:1 */
+.site-footer .footer-partners a:focus-visible {
+  outline-color: var(--brand-navy);
+  color: inherit;
+}
+
+.site-footer__legal {
+  margin: 0;
+  padding: 1.5rem var(--gutter) 2rem;
+  color: rgb(255 255 255 / 0.78);
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+/* Desktop: contact on the left, the four sections beside it as columns.
+   The left column is 1.6 parts and each section 1 part, with 40px between, as in
+   the design (the sum written out so the gaps are counted once). */
+@media (min-width: 64em) {
+  .site-footer {
+    --footer-gap: 2.5rem;
+  }
+
+  .site-footer__inner {
+    padding-top: 4.5rem;
+  }
+
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: calc((100% - 4 * var(--footer-gap)) * 1.6 / 5.6) 1fr;
+    column-gap: var(--footer-gap);
+    padding-bottom: 3.5rem;
+  }
+
+  .footer-contact__heading {
+    font-size: 1.5rem;
+  }
+
+  /* Columns: no rows, lines or arrows, every list open, the section name a plain
+     link. (main.js removes .site-footer--folding at this width, and these rules
+     do not depend on it.) */
+  .footer-nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--footer-gap);
+    margin-top: 0;
+    border-top: 0;
+  }
+
+  .footer-group {
+    border-bottom: 0;
+  }
+
+  .footer-group__link {
+    display: inline;
+    width: auto;
+    padding: 0;
+  }
+
+  .site-footer .footer-group__toggle,
+  .site-footer .footer-group__overview,
+  .footer-group__arrow {
+    display: none;
+  }
+
+  .site-footer .footer-group__title:has(.footer-group__toggle) .footer-group__link {
+    display: inline;
+  }
+
+  .footer-group__list {
+    padding: 1rem 0 0;
+    font-size: 0.9375rem;
+  }
+
+  .footer-group__list li + li {
+    margin-top: 0.6875rem;
+  }
+
+  .footer-group__list .footer-group__overview + li {
+    margin-top: 0;
+  }
+
+  .footer-group__list[hidden] {
+    display: block;
+  }
+
+  .footer-home {
+    margin-top: 0;
+    padding: 2rem 0;
+    border-top: 1px solid var(--footer-line);
+    font-size: 0.875rem;
+  }
+
+  .footer-partners {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-block: 1.875rem;
+  }
+
+  .site-footer .footer-partners h2 {
+    font-size: 1.375rem;
+  }
+
+  .footer-partners__list {
+    flex-wrap: nowrap;
+    gap: 4.5rem;
+    margin: 0;
+  }
+
+  .footer-partners__list img {
+    height: 3.25rem;
+  }
+
+  .site-footer__legal {
+    padding-top: 1.5rem;
+  }
 }
