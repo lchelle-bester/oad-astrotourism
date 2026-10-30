@@ -952,7 +952,7 @@ h3 {
   }
 
   .case__heading {
-    font-size: 1.5625rem;
+    font-size: 1.375rem; /* 25px before 30 Oct 2026, made smaller */
     line-height: 1.15;
   }
 
@@ -973,11 +973,11 @@ h3 {
 
   .case__value {
     margin-bottom: 0.625rem;
-    font-size: 4.5rem;
+    font-size: 3.75rem; /* 72px before 30 Oct 2026; the dot and trail pieces below follow its middle (30px) */
   }
 
   .case__label {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 
   .case__source {
@@ -997,13 +997,13 @@ h3 {
 
   .case__intro::before {
     top: calc(-1 * var(--pad-top));
-    bottom: calc(-1 * (var(--list-gap) + 36px));
+    bottom: calc(-1 * (var(--list-gap) + 30px));
     background-image: url("/assets/images/case/trail-phone-start.svg");
   }
 
   .case__stat::after {
-    top: 36px;
-    bottom: -36px;
+    top: 30px;
+    bottom: -30px;
   }
 
   .case__stat:last-child::after {
@@ -1018,7 +1018,7 @@ h3 {
     position: absolute;
     z-index: 1;
     left: -52px;
-    top: 20px;
+    top: 14px;
     width: 32px;
     height: 32px;
     border: 2px solid rgb(249 196 52 / 0.35);
@@ -1082,29 +1082,29 @@ h3 {
 
   .case__stat:nth-child(1) {
     left: calc(1044 / 1440 * 100%);
-    top: calc(120 / 800 * 100%);
+    top: calc(129 / 800 * 100%); /* 120 before 30 Oct 2026: moved down 9 so the smaller number stays level with its dot */
   }
 
   /* Sits in the gap between two bends of the trail; must not touch the line */
   .case__stat:nth-child(2) {
     left: calc(600 / 1440 * 100%);
-    top: calc(360 / 800 * 100%);
+    top: calc(369 / 800 * 100%);
     width: calc(420 * var(--px));
   }
 
   .case__stat:nth-child(3) {
     left: calc(1044 / 1440 * 100%);
-    top: calc(566 / 800 * 100%);
+    top: calc(575 / 800 * 100%);
   }
 
   .case__value {
     margin-bottom: calc(11 * var(--px));
-    font-size: calc(104 * var(--px));
+    font-size: calc(86 * var(--px)); /* 104 before 30 Oct 2026 */
   }
 
   /* Labels and sources never go below 16px and 12px, so they stay readable */
   .case__label {
-    font-size: max(1rem, 18.5 * var(--px));
+    font-size: max(1rem, 16 * var(--px)); /* 18.5 before 30 Oct 2026 */
   }
 
   .case__source {
@@ -1566,8 +1566,14 @@ h3 {
    This section has its own switching point, lower than the header's 1248px:
    side by side works down to 920px (measured 27 Oct 2026). */
 @media not all and (min-width: 57.5em) {
+  /* Made more compact on 30 Oct 2026 so the whole section, with any pillar
+     open, fits on a 390 x 844 phone screen (it was 925 to 1017px tall) */
   .pillars--ring {
-    padding: 1.75rem var(--gutter) 3rem;
+    padding: 1.25rem var(--gutter) 1.5rem;
+  }
+
+  .pillars--ring .pillars__heading {
+    font-size: 1.625rem;
   }
 
   .pillars--ring .pillars__stage {
@@ -1585,6 +1591,10 @@ h3 {
     letter-spacing: 0.12em;
   }
 
+  .pillars--ring .pillars__helper {
+    margin-top: 0.5rem;
+  }
+
   .pillars__helper--phone {
     font-size: 0.9375rem;
   }
@@ -1593,15 +1603,16 @@ h3 {
     display: none !important;
   }
 
-  /* About 98% of a phone's width (the circle nearly fills it), capped for tablets */
+  /* About 77% of a phone's width (300px at 390; it was 98%, 383px, until
+     30 Oct 2026), capped for tablets */
   .pillars__ring {
-    --ring: min(98.2vw, 32rem);
+    --ring: min(77vw, 26rem);
     width: var(--ring);
-    margin: 1.125rem calc(50% - var(--ring) / 2) 0;
+    margin: 0.75rem calc(50% - var(--ring) / 2) 0;
   }
 
   .pillar-tab__label {
-    font-size: 3.9cqw; /* 15px when the ring box is 383px */
+    font-size: max(0.6875rem, 4.2cqw); /* 12.6px when the ring box is 300px, never below 11px */
   }
 
   .pillars__centre {
@@ -1610,7 +1621,7 @@ h3 {
 
   /* Kept compact so the ring and the card sit close together */
   .pillars--ring .pillars__cards {
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     border-radius: 16px;
   }
 
@@ -1621,15 +1632,15 @@ h3 {
   }
 
   .pillars--ring .pillar-card__photo {
-    height: 96px;
+    height: 72px; /* 96 before 30 Oct 2026 */
   }
 
   .pillars--ring .pillar-card__body {
-    padding: 1.125rem 1.25rem 0.75rem;
+    padding: 0.875rem 1.125rem 0.5rem;
   }
 
   .pillars--ring .pillar-card__name {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .pillars--ring .pillar-card__text {
@@ -1638,12 +1649,13 @@ h3 {
   }
 
   .pillars--ring .pillar-card__find {
-    margin-top: 0.875rem;
+    margin-top: 0.625rem;
+    margin-bottom: 0.375rem;
   }
 
   .pillars__pager {
-    margin: 0 1.25rem 0.75rem;
-    padding-top: 0.5rem;
+    margin: 0 1.125rem 0.375rem;
+    padding-top: 0.25rem;
   }
 }
 
