@@ -2128,7 +2128,8 @@ h3 {
       "main results"
       "button results";
     column-gap: calc(76 * var(--px));
-    padding: calc(140 * var(--px)) var(--gutter) calc(28 * var(--px) + var(--ridge-bottom));
+    /* Made less tall on 30 Oct 2026 (top 140 and bottom 28 before) */
+    padding: calc(104 * var(--px)) var(--gutter) calc(8 * var(--px) + var(--ridge-bottom));
   }
 
   .proof__main {
@@ -2186,7 +2187,7 @@ h3 {
       "number label";
     column-gap: calc(28 * var(--px));
     row-gap: 0;
-    padding: calc(24 * var(--px)) 0;
+    padding: calc(18 * var(--px)) 0; /* 24 before 30 Oct 2026 */
   }
 
   .proof__result-number {
@@ -2236,7 +2237,8 @@ h3 {
 
 /* The star trails turn round their pole very slowly, like a long-exposure
    photo of the night sky: clockwise, as the sky turns in the southern
-   hemisphere, a third of a turn every 15 minutes. The ring drawing is three
+   hemisphere, a third of a turn every 4 minutes (sped up on 30 Oct 2026 from
+   15 minutes, which was too slow to notice). The ring drawing is three
    copies of one 120 degree slice, so after a third of a turn it looks exactly
    as it started and the loop never jumps. Turning an image is done by the
    graphics card, so it costs almost nothing. Reduced motion: it stays still. */
@@ -2247,7 +2249,7 @@ h3 {
   width: calc(2 * var(--ring) * var(--u));
   height: calc(2 * var(--ring) * var(--u));
   max-width: none;
-  animation: news-sky 900s linear infinite;
+  animation: news-sky 240s linear infinite;
 }
 
 @keyframes news-sky {
