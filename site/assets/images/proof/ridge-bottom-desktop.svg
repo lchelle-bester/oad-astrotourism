@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 80" width="1440" height="80" preserveAspectRatio="none">
+<!-- Bottom edge of the teal proof band (desktop). Teal above the line, the news section's dark navy below it. A gentler wave than the top edge, not a mirror of it. Stretch to full width. -->
+<path d="M0,0 L0,30 C220,52 400,58 590,44 C780,30 920,24 1100,38 C1250,50 1360,46 1440,36 L1440,0 Z" fill="#1a524b"/>
+</svg>

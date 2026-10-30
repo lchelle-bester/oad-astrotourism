@@ -1946,19 +1946,26 @@ h3 {
      96px, so it stays a gentle ridge on wide phones and tablets */
   --ridge: min(100vw * 80 / 390, 6rem);
   --ridge-image: url("/assets/images/proof/ridge-phone.svg");
-  /* Three layers, top first: the ridge drawing (teal below its line, see-through
-     above it), solid teal for the rest of the band (starting 2px under the
-     ridge's bottom so no seam can show), and the pillars' dark navy behind */
+  /* The bottom edge (added 30 Oct 2026): a gentler wave, not a mirror of the
+     top, from a 390 x 60 drawing, never taller than 72px */
+  --ridge-bottom: min(100vw * 60 / 390, 4.5rem);
+  --ridge-bottom-image: url("/assets/images/proof/ridge-bottom-phone.svg");
+  /* Four layers, top first: the top ridge (teal below its line, see-through
+     above it), the bottom ridge (teal above its line, see-through below it),
+     solid teal between them (overlapping each by 2px so no seam can show), and
+     the dark navy behind, which the pillars above and the news below share */
   background:
     var(--ridge-image) left top / 100% var(--ridge) no-repeat,
-    linear-gradient(var(--panel-teal), var(--panel-teal)) left calc(var(--ridge) - 2px) / 100% 100% no-repeat,
+    var(--ridge-bottom-image) left bottom / 100% var(--ridge-bottom) no-repeat,
+    linear-gradient(var(--panel-teal), var(--panel-teal)) left calc(var(--ridge) - 2px) /
+      100% calc(100% - var(--ridge) - var(--ridge-bottom) + 4px) no-repeat,
     var(--color-night);
 }
 
 .proof__inner {
   max-width: 1920px;
   margin: 0 auto;
-  padding: calc(var(--ridge) + 0.25rem) var(--gutter) 2.5rem;
+  padding: calc(var(--ridge) + 0.25rem) var(--gutter) calc(1.5rem + var(--ridge-bottom));
 }
 
 .proof__eyebrow {
@@ -2107,6 +2114,8 @@ h3 {
   .proof {
     --ridge: calc(min(100vw, 1920px) * 120 / 1440);
     --ridge-image: url("/assets/images/proof/ridge-desktop.svg");
+    --ridge-bottom: calc(min(100vw, 1920px) * 80 / 1440);
+    --ridge-bottom-image: url("/assets/images/proof/ridge-bottom-desktop.svg");
   }
 
   /* Left column: the heading and headline figure, with the button under them.
@@ -2119,7 +2128,7 @@ h3 {
       "main results"
       "button results";
     column-gap: calc(76 * var(--px));
-    padding: calc(140 * var(--px)) var(--gutter) calc(52 * var(--px));
+    padding: calc(140 * var(--px)) var(--gutter) calc(28 * var(--px) + var(--ridge-bottom));
   }
 
   .proof__main {
