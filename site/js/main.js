@@ -71,6 +71,17 @@ if (header && nav && menuButton && main) {
 
   // Widening the window to the desktop header resets the phone menu
   window.matchMedia('(min-width: 77.5em)').addEventListener('change', () => setMenu(false))
+
+  // The phone menu button stays fixed while the page scrolls. Once the logo
+  // row has scrolled away it gets a navy circle behind it, so it shows over
+  // whatever is underneath.
+  const homeLink = header.querySelector('.site-home')
+  function updateMenuButton() {
+    const pastHeader = homeLink ? homeLink.getBoundingClientRect().bottom < 0 : window.scrollY > 100
+    menuButton.classList.toggle('menu-button--floating', pastHeader)
+  }
+  window.addEventListener('scroll', updateMenuButton, {passive: true})
+  updateMenuButton()
 }
 
 

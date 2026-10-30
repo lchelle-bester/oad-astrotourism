@@ -428,19 +428,39 @@ h3 {
   }
 
   /* 44 x 44 so it is easy to tap. The bars are 22px wide, so the button sits
-     11px further right than the gutter to line the bars up with the text edge. */
+     11px further right than the gutter to line the bars up with the text edge.
+     It stays fixed in this spot while the page scrolls (decided 30 Oct 2026),
+     so the menu can always be reached: below the 34px strip, centred on the
+     68px logo row. Once the header has scrolled away, main.js adds
+     .menu-button--floating, which puts a dark navy circle behind the bars so
+     they show over photos and the teal band (white on it 17.3:1). */
   .menu-button {
+    position: fixed;
+    top: calc(2.125rem + 0.75rem);
+    right: calc(var(--gutter) - 0.6875rem);
+    z-index: 1;
     display: grid;
     place-content: center;
     gap: 0.4375rem;
     width: 2.75rem;
     height: 2.75rem;
-    margin-left: auto;
-    margin-right: calc(var(--gutter) - 0.6875rem);
     padding: 0;
     border: 0;
-    background: none;
+    border-radius: 50%;
+    background: transparent;
     cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+
+  .menu-button--floating {
+    background: rgb(15 27 43 / 0.9);
+    box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 0.35);
+  }
+
+  /* While the menu is open the button sits on the menu's own navy */
+  .site-header.is-menu-open .menu-button {
+    background: transparent;
+    box-shadow: none;
   }
 
   .menu-button__bar {
