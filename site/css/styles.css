@@ -2453,12 +2453,13 @@ h3 {
 /* Phones and tablets: posts 2 and 3 become text-only rows, the category and
    date above the title, with no photo (changed 30 Oct 2026 from a 96px square
    photo beside the text). The photo is lazy-loaded, so while it is hidden the
-   phone never downloads it. No separator lines between rows (removed 30 Oct
-   2026: they looked like part of the star trails); the space alone separates
-   them. Long titles wrap; they are never cut off. */
+   phone never downloads it. A thin line above each row (taken out while
+   phones had star trails, back on 30 Oct 2026 once the trails were removed).
+   Long titles wrap; they are never cut off. */
 @media not all and (min-width: 57.5em) {
   .news__item + .news__item {
     padding: 1rem 0;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
   }
 
   .news__item:first-child {
