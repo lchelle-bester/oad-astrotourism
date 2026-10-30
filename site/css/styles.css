@@ -2005,7 +2005,7 @@ h3 {
 
 .proof__heading {
   margin: 0.625rem 0 0;
-  font-size: 1.875rem;
+  font-size: 1.625rem; /* 30px before 30 Oct 2026, made smaller */
   line-height: 1.12;
 }
 
@@ -2018,7 +2018,7 @@ h3 {
 .proof__headline-number {
   display: block;
   font-family: var(--font-heading);
-  font-size: min(4.25rem, 19vw);
+  font-size: min(3.5rem, 16vw); /* 68px before 30 Oct 2026 */
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.045em;
@@ -2066,7 +2066,7 @@ h3 {
 .proof__headline-label {
   display: block;
   margin-top: 0.75rem;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -2107,7 +2107,7 @@ h3 {
   grid-area: number;
   align-self: baseline;
   font-family: var(--font-heading);
-  font-size: 2.75rem;
+  font-size: 2.25rem; /* 44px before 30 Oct 2026 */
   font-weight: 600;
   line-height: 1;
 }
@@ -2126,7 +2126,7 @@ h3 {
 
 .proof__result-label {
   grid-area: label;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   line-height: 1.4;
 }
 
@@ -2179,7 +2179,7 @@ h3 {
 
   .proof__heading {
     margin-top: calc(10 * var(--px));
-    font-size: max(1.75rem, 40 * var(--px));
+    font-size: max(1.625rem, 34 * var(--px)); /* 40 before 30 Oct 2026 */
     line-height: 1.12;
   }
 
@@ -2188,12 +2188,12 @@ h3 {
   }
 
   .proof__headline-number {
-    font-size: calc(112 * var(--px));
+    font-size: calc(92 * var(--px)); /* 112 before 30 Oct 2026 */
   }
 
   .proof__headline-label {
     margin-top: calc(18 * var(--px));
-    font-size: max(1.0625rem, 21 * var(--px));
+    font-size: max(1rem, 18 * var(--px)); /* 21 before 30 Oct 2026 */
     line-height: 1.45;
   }
 
@@ -2210,7 +2210,7 @@ h3 {
      it. The paragraph around the number and sentence steps aside (display:
      contents) so both can sit in the grid; the reading order is unchanged. */
   .proof__result {
-    grid-template-columns: calc(132 * var(--px)) 1fr;
+    grid-template-columns: calc(84 * var(--px)) 1fr; /* 132 before 30 Oct 2026, narrower for the smaller numbers */
     grid-template-areas:
       "number tag"
       "number label";
@@ -2221,7 +2221,7 @@ h3 {
 
   .proof__result-number {
     align-self: center;
-    font-size: calc(76 * var(--px));
+    font-size: calc(60 * var(--px)); /* 76 before 30 Oct 2026 */
   }
 
   .proof__result-tag {
@@ -2235,7 +2235,7 @@ h3 {
   .proof__result-label {
     grid-area: label;
     align-self: start;
-    font-size: max(1.0625rem, 22 * var(--px));
+    font-size: max(1rem, 18 * var(--px)); /* 22 before 30 Oct 2026 */
     line-height: 1.35;
   }
 }
