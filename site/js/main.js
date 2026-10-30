@@ -76,11 +76,20 @@ if (header && nav && menuButton && main) {
   // row has scrolled away it gets a navy circle behind it, so it shows over
   // whatever is underneath.
   const homeLink = header.querySelector('.site-home')
+  // At the bottom of the page the button goes away (30 Oct 2026), so it never
+  // sits on top of the footer: once the footer's top edge has scrolled up past
+  // the middle of the screen. (Not the button itself: on a phone the page ends
+  // before the footer's top can reach the button.) The footer has the site's
+  // links anyway.
+  const pageFooter = document.querySelector('.site-footer')
   function updateMenuButton() {
     const pastHeader = homeLink ? homeLink.getBoundingClientRect().bottom < 0 : window.scrollY > 100
     menuButton.classList.toggle('menu-button--floating', pastHeader)
+    const atFooter = pageFooter ? pageFooter.getBoundingClientRect().top < window.innerHeight / 2 : false
+    menuButton.classList.toggle('menu-button--away', atFooter && !isOpen(menuButton))
   }
   window.addEventListener('scroll', updateMenuButton, {passive: true})
+  window.addEventListener('resize', updateMenuButton)
   updateMenuButton()
 }
 

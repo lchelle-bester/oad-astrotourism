@@ -449,12 +449,21 @@ h3 {
     border-radius: 50%;
     background: transparent;
     cursor: pointer;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
   }
 
   .menu-button--floating {
     background: rgb(15 27 43 / 0.9);
     box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 0.35);
+  }
+
+  /* Gone once the footer reaches it (main.js adds the class, 30 Oct 2026).
+     visibility: hidden also takes it out of the Tab order while it is gone. */
+  .menu-button--away {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s, visibility 0s 0.2s;
   }
 
   /* While the menu is open the button sits on the menu's own navy */
@@ -2853,8 +2862,8 @@ h3 {
 
 /* The link home: 36px under the last line on phones */
 .footer-home {
-  margin: 2.25rem 0 0;
-  padding: 0 0 2rem;
+  margin: 1.5rem 0 0;
+  padding: 0 0 1.5rem;
   color: var(--color-accent-soft);
   font-size: 0.75rem;
   font-weight: 600;
@@ -2864,9 +2873,11 @@ h3 {
 }
 
 /* The OAD symbol on the left, the words beside it, as in the header (added
-   30 Oct 2026). Same sizes as the header's logo: 44px on phones, 56px on desktop. */
+   30 Oct 2026). 56px on phones, 72px on desktop (made bigger, with less space around it). */
+/* flex, not inline-flex: an inline box leaves a gap under it for letter descenders */
 .site-footer .footer-home a {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: 1rem;
   color: var(--color-accent-soft);
@@ -2874,7 +2885,7 @@ h3 {
 
 .footer-home__logo {
   flex-shrink: 0;
-  width: 2.75rem;
+  width: 3.5rem;
   height: auto;
 }
 
@@ -3002,13 +3013,13 @@ h3 {
 
   .footer-home {
     margin-top: 0;
-    padding: 2rem 0;
+    padding: 1.25rem 0;
     border-top: 1px solid var(--footer-line);
     font-size: 0.875rem;
   }
 
   .footer-home__logo {
-    width: 3.5rem;
+    width: 4.5rem;
   }
 
   .footer-partners {
