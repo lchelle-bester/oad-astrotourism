@@ -4,7 +4,7 @@ import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 
 // Content types that only ever have one document
-const singletonTypes = new Set(['hero', 'caseSection', 'pillarsSection', 'impactSection'])
+const singletonTypes = new Set(['hero', 'caseSection', 'pillarsSection', 'impactSection', 'siteSettings'])
 // The only actions an editor gets on those documents (no delete, no duplicate)
 const singletonActions = new Set(['publish', 'discardChanges', 'restore'])
 
@@ -37,6 +37,11 @@ export default defineConfig({
               .title('Impact (proof)')
               .id('impactSection')
               .child(S.document().schemaType('impactSection').documentId('impactSection')),
+            S.divider(),
+            S.listItem()
+              .title('Site settings (footer)')
+              .id('siteSettings')
+              .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
             S.divider(),
             // Every news post, newest first (two posts on the same date: the one
             // created later first)
