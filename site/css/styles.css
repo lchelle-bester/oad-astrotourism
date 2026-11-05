@@ -2414,13 +2414,11 @@ h3 {
 
 /* The title link, stretched over the whole card by its ::after, so the photo
    and date are clickable too while each post is still a single link. Yellow
-   and underlined on hover and keyboard focus (not shown by colour alone); the
-   focus ring goes round the whole card. */
+   on hover and keyboard focus (no underline, changed 30 Oct 2026); the focus
+   ring goes round the whole card. */
 .news-card__title a {
   color: var(--color-text);
   text-decoration: none;
-  text-underline-offset: 0.15em;
-  text-decoration-thickness: 0.06em;
 }
 
 .news-card__title a::after {
@@ -2430,10 +2428,11 @@ h3 {
   border-radius: 14px;
 }
 
+/* Yellow on hover and keyboard focus, no underline (L'chelle, 30 Oct 2026). Keyboard
+   focus also gets the ring round the whole card (below), so it is not colour alone. */
 .news-card__title a:hover,
 .news-card__title a:focus-visible {
   color: var(--color-accent);
-  text-decoration-line: underline;
 }
 
 .news-card__title a:focus-visible {
