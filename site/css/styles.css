@@ -2889,7 +2889,7 @@ h3 {
    readers still hear what the logos are. */
 .footer-partners {
   padding: 1.875rem var(--gutter);
-  background: #f2f3f5;
+  background: #ffffff; /* was #f2f3f5 until 30 Oct 2026: pure white, so the white box round a logo file does not show */
   color: var(--color-night);
 }
 
