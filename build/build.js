@@ -447,7 +447,7 @@ ${groups}
   // Partner logos: the band is left out if there are none
   const partners = settings.partners.length
     ? `    <section class="footer-partners" aria-labelledby="footer-partners-title">
-      <h2 class="footer-partners__title" id="footer-partners-title">Our partners</h2>
+      <h2 class="visually-hidden" id="footer-partners-title">Our partners</h2>
       <ul class="footer-partners__list">${settings.partners
         .map((partner) => {
           const img = `<img src="${e(partner.src)}" alt="${e(partner.alt)}" width="${partner.width}" height="${partner.height}" loading="lazy" decoding="async">`

@@ -672,7 +672,7 @@ h3 {
        screen pixels per picture pixel. Used to pin the word to the mountains.
        The hero is exactly 100svh tall, so svh stands in for its height. */
     --s: max(100cqw / 1920, 100svh / 1082);
-    --word-size: clamp(6rem, 15vw, 22rem);
+    --word-size: clamp(5.75rem, 14.4vw, 21.125rem); /* 4% smaller on 30 Oct 2026 (was clamp(6rem, 15vw, 22rem)) */
     /* The word's baseline, from the bottom of the hero. The peaks under the word
        reach about 186 picture pixels at every screen shape (measured from the
        cut-out). The baseline is set so they always cover 17.6% of the capital
@@ -743,8 +743,9 @@ h3 {
     --uw: calc(min(100cqw, 480px) / 390);
     --u: min(var(--uw), (100svh - 4.5rem) / 768);
     /* 61px on the mock-up, smaller if needed so the word always fits on one line
-       (it is 5.68em wide at this letter-spacing) */
-    --word-size: min(61 * var(--uw), (100cqw - 2 * var(--gutter)) / 5.68);
+       (it is 5.68em wide at this letter-spacing). Both made 4% smaller on
+       30 Oct 2026, so it no longer quite fills the line */
+    --word-size: calc(0.96 * min(61 * var(--uw), (100cqw - 2 * var(--gutter)) / 5.68));
   }
 
   /* The video area: the top 650 mock-up pixels */
@@ -823,9 +824,13 @@ h3 {
 
   /* Baseline on the highest peak (y 528 on the mock-up). The box top is
      0.845em above the baseline (1 - 0.155, from the font measurement). */
+  /* Centred across the screen (30 Oct 2026): since the word was made 4% smaller
+     it no longer fills the line, so it sits in the middle instead of at the left */
   .hero__word {
     position: absolute;
-    left: calc(var(--gutter) - 1px);
+    left: 0;
+    right: 0;
+    text-align: center;
     top: calc(528 * var(--u) - 0.845 * var(--word-size));
     font-size: var(--word-size);
     letter-spacing: -0.05em;
@@ -2876,17 +2881,13 @@ h3 {
   text-underline-offset: 4px;
 }
 
-/* Partners: a light band the full width of the window */
+/* Partners: a light band the full width of the window. The heading "Our partners"
+   is no longer shown (30 Oct 2026, L'chelle); it stays in the HTML, hidden, so screen
+   readers still hear what the logos are. */
 .footer-partners {
   padding: 1.875rem var(--gutter);
   background: #f2f3f5;
   color: var(--color-night);
-}
-
-.site-footer .footer-partners h2 {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  line-height: 1.2;
 }
 
 .footer-partners__list {
@@ -2894,7 +2895,7 @@ h3 {
   flex-wrap: wrap;
   align-items: center;
   gap: 1.375rem 1.75rem;
-  margin: 1.25rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -3007,10 +3008,6 @@ h3 {
     justify-content: space-between;
     gap: 2rem;
     padding-block: 1.875rem;
-  }
-
-  .site-footer .footer-partners h2 {
-    font-size: 1.375rem;
   }
 
   .footer-partners__list {
