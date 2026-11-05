@@ -85,15 +85,27 @@ If an article fits two, choose the one that is its main subject. If you are unsu
 | Link | a `markDefs` entry `{"_type": "link", "_key": "k1", "href": "https://..."}`, and the span's `marks` holds `"k1"` |
 | Bulleted list item | block with `listItem: "bullet"`, `level: 1`, `style: "normal"` |
 | Numbered list item | block with `listItem: "number"`, `level: 1`, `style: "normal"` |
+| Quotation (a blockquote, or a pulled quote) | block with `style: "blockquote"` (below) |
 | Photo inside the article | image block (below) |
-| YouTube video | youtube block (below) |
+| Two or three photos shown side by side | imageRow block (below) |
+| A button-styled link ("Register now") | button block (below) |
+| YouTube video or playlist | youtube block (below) |
 | Spotify podcast, episode or playlist | spotify block (below) |
 
 The article title is the page's main heading, so never put a level 1 heading in `body`.
 
 Link addresses must start with `https://`, `http://` or `mailto:`, or with `/` for a page on this site. Keep links pointing where the original points. Do not turn a link into plain text or the other way round.
 
-Do not use the `style` values `blockquote` or `h1` and do not add other marks (underline, code, highlights): they do not exist in the schema. Put the text in a normal paragraph and report it.
+Do not use the `style` value `h1` and do not add other marks (underline, code, highlights): they do not exist in the schema. Put the text in a normal paragraph and report it.
+
+### A quotation
+
+A quotation is a normal block with `"style": "blockquote"`. Bold, italic and links work inside it as in any paragraph. If the original shows who said it on the line after the quote, put that in the next normal paragraph, word for word. Do not merge the two, and do not add an attribution that is not in the article.
+
+```json
+{"_type": "block", "_key": "q1w2e3", "style": "blockquote", "markDefs": [],
+ "children": [{"_type": "span", "_key": "r4t5y6", "text": "The quoted words.", "marks": []}]}
+```
 
 ### A photo inside the article
 
@@ -105,7 +117,37 @@ Do not use the `style` values `blockquote` or `h1` and do not add other marks (u
 
 `alt` is required here too, with the same rules as above. `caption` is optional: use the article's caption word for word, or leave it out. `credit` is optional: add it (as `Photo: Name / Organisation`) only if the article gives one, and never put the credit in the caption.
 
-### A YouTube video
+### Photos side by side
+
+Use this only where the original shows two or three photos in a row (a gallery row, a collage of two or three). Each photo has the same fields as a single photo: alt text (required), caption and credit (optional). The order in the array is left to right. For more than three photos in a gallery, make several rows of two or three in the order shown, or single photos, and list it in your report.
+
+```json
+{"_type": "imageRow", "_key": "u7i8o9",
+ "images": [
+   {"_type": "image", "_key": "a1", "asset": {"_type": "reference", "_ref": "image-<id>-<width>x<height>-<format>"}, "alt": "What the first photo shows"},
+   {"_type": "image", "_key": "a2", "asset": {"_type": "reference", "_ref": "image-<id>-<width>x<height>-<format>"}, "alt": "What the second photo shows", "credit": "Photo: Name / Organisation"}
+ ]}
+```
+
+A row needs at least two and at most three images. Never use a one-photo row: use a single photo block.
+
+### A button
+
+Use this only where the original clearly shows a button (a link styled as a button, such as "Register now" or "Download the guide"). An ordinary link stays a link inside a paragraph.
+
+```json
+{"_type": "button", "_key": "p0o9i8",
+ "label": "Register now", "url": "https://example.org/register",
+ "colour": "yellow", "align": "left"}
+```
+
+- `label`: the button's words, exactly as on the blog.
+- Where it goes: for a web address outside the site, use `url` (a full `https://` address). For a page of this site, use `page` with one of the site's page addresses instead (`/`, `/news/`, `/funding/`, `/projects/impact/`, `/projects/map/`, `/projects/directory/`, `/projects/theory-of-change/`, `/projects/survey-report/`, `/projects/case-studies/`, `/resources/guidelines/`, `/resources/online-course/`, `/resources/community/`, `/resources/which-resource/`, `/resources/the-three-resources/`). Give one of the two, never both. A link to astro4dev.org is an outside address.
+- `colour`: one of `yellow`, `sand`, `white`, `teal`, `terracotta`. Use `yellow` unless the article clearly gives the button another colour that is in this list.
+- `align`: `left`, `center` or `right`. Use `left` unless the original centres or right-aligns it.
+- Report every button you made, so L'chelle can check it.
+
+### A YouTube video or playlist
 
 ```json
 {"_type": "youtube", "_key": "j1k2l3",
@@ -113,7 +155,8 @@ Do not use the `style` values `blockquote` or `h1` and do not add other marks (u
  "title": "What the video is", "caption": "Optional caption"}
 ```
 
-- `url` must be a YouTube video address: `youtube.com/watch?v=...`, `youtu.be/...`, `youtube.com/shorts/...`, `youtube.com/embed/...` or `youtube.com/live/...`, with an 11-character video id. If the article embeds a video by its embed address, convert it to the normal `https://www.youtube.com/watch?v=ID` form.
+- `url` is a YouTube video or a YouTube playlist. A playlist link looks like `https://www.youtube.com/playlist?list=PL...`; an embedded playlist (`youtube.com/embed/videoseries?list=...`) must be converted to that form. The playlist address has to be the playlist page itself: a video address that also contains `list=` counts as that one video.
+- A video `url` must be a YouTube video address: `youtube.com/watch?v=...`, `youtu.be/...`, `youtube.com/shorts/...`, `youtube.com/embed/...` or `youtube.com/live/...`, with an 11-character video id. If the article embeds a video by its embed address, convert it to the normal `https://www.youtube.com/watch?v=ID` form.
 - `title` is required (screen readers read it). Use the video's real title, from the page or from the surrounding article text. If you cannot find it, write a short plain description and report it.
 - Put the block where the video sits in the article.
 
@@ -131,7 +174,7 @@ Do not use the `style` values `blockquote` or `h1` and do not add other marks (u
 
 ### Things the schema cannot hold
 
-Tables, buttons, forms, Vimeo, SoundCloud or social media embeds, PDFs shown inline, image galleries and sliders, and raw HTML are not supported. Do not invent a way to include them. Keep the article's text around them, add a plain link paragraph only if the original has a link, and list every such omission in your report.
+Tables, forms, Vimeo, SoundCloud or social media embeds, PDFs shown inline, sliders and galleries of more than three photos in one block, and raw HTML are not supported. Do not invent a way to include them. Keep the article's text around them, add a plain link paragraph only if the original has a link, and list every such omission in your report.
 
 ## Checks before you save a post
 

@@ -1,6 +1,16 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {GenerateOnlySlugInput} from './components/GenerateOnlySlugInput'
-import {SubheadingH2, SubheadingH3} from './components/Subheadings'
+import {SubheadingH2, SubheadingH3, QuoteStyle} from './components/Subheadings'
+import {ButtonColourInput} from './components/ButtonColourInput'
+import {ButtonPreview} from './components/ButtonPreview'
+import {ImageRowPreview} from './components/ImageRowPreview'
+import {buttonAlignments, buttonColours} from './buttonColours'
+import {sitePages} from './sitePages'
+import ImageIcon from '@sanity/icons/Image'
+import ImagesIcon from '@sanity/icons/Images'
+import LaunchIcon from '@sanity/icons/Launch'
+import MicrophoneIcon from '@sanity/icons/Microphone'
+import PlayIcon from '@sanity/icons/Play'
 
 // A news post. Every post lives in the one News list in the Studio; the homepage
 // shows the three newest, and the News page (next phase) shows them all.
@@ -22,7 +32,30 @@ export function youtubeId(url) {
   const match = String(url).match(
     /^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})(?:[?&#/].*)?$/,
   )
+  // "videoseries" (youtube.com/embed/videoseries?list=...) is the playlist player,
+  // and is also exactly 11 letters, so it must not be taken for a video id
+  return match && match[1] !== 'videoseries' ? match[1] : null
+}
+
+// A YouTube playlist link (added 30 Oct 2026): youtube.com/playlist?list=...,
+// youtube.com/watch?list=... with no video in it, or youtube.com/embed/videoseries?list=....
+// Returns the playlist id, or null. A link to one video that also carries a list=
+// (youtube.com/watch?v=...&list=...) is treated as the single video, not the playlist:
+// to embed the playlist, paste the address of the playlist page itself.
+export function youtubePlaylistId(url) {
+  if (youtubeId(url)) return null
+  const match = String(url).match(
+    /^https?:\/\/(?:www\.|m\.)?youtube\.com\/(?:playlist|watch|embed\/videoseries)\?(?:.*&)?list=([\w-]{13,64})(?:&.*)?$/,
+  )
   return match ? match[1] : null
+}
+
+// What a YouTube link points to: {kind: 'video' or 'playlist', id}, or null.
+export function youtubeSource(url) {
+  const video = youtubeId(url)
+  if (video) return {kind: 'video', id: video}
+  const playlist = youtubePlaylistId(url)
+  return playlist ? {kind: 'playlist', id: playlist} : null
 }
 
 // The part of a Spotify link the player needs, such as "episode/4rOoJ6Egrf8K2IrywzwOMk",
@@ -110,7 +143,8 @@ export const post = defineType({
       name: 'body',
       title: 'Article',
       type: 'array',
-      description: 'The post itself. Use Subheading to break up long posts.',
+      description:
+        'The post itself. Use Subheading to break up long posts and Quote for a quotation. The + button adds photos, rows of photos side by side, buttons, videos and podcasts.',
       validation: (Rule) => Rule.required().error('Write the article.'),
       of: [
         defineArrayMember({
@@ -119,6 +153,8 @@ export const post = defineType({
             {title: 'Normal', value: 'normal'},
             {title: 'Subheading', value: 'h2', component: SubheadingH2},
             {title: 'Smaller subheading', value: 'h3', component: SubheadingH3},
+            // Added 30 Oct 2026: a quotation. Bold, italic and links still work inside it.
+            {title: 'Quote', value: 'blockquote', component: QuoteStyle},
           ],
           lists: [
             {title: 'Bulleted list', value: 'bullet'},
@@ -152,7 +188,8 @@ export const post = defineType({
         }),
         defineArrayMember({
           type: 'image',
-          title: 'Photo',
+          title: 'Single photo',
+          icon: ImageIcon,
           options: {hotspot: true},
           fields: [
             defineField({
@@ -183,6 +220,7 @@ export const post = defineType({
           type: 'object',
           name: 'spotify',
           title: 'Spotify podcast',
+          icon: MicrophoneIcon,
           fields: [
             defineField({
               name: 'url',
@@ -213,30 +251,35 @@ export const post = defineType({
             prepare: ({title, url}) => ({title: title || 'Spotify podcast', subtitle: url ? `Spotify: ${url}` : 'No link yet'}),
           },
         }),
-        // A YouTube video inside the article (added 30 Oct 2026). On the site it
-        // will show as the video's still image with a play button, and YouTube
-        // is only contacted when someone presses play (decided 30 Oct 2026, for
-        // privacy and page weight). Built with the article pages.
+        // A YouTube video or playlist inside the article (video added 30 Oct 2026,
+        // playlists the same day). On the site it will be click to load: a still
+        // image with a play button for a video, a plain play card for a playlist (a
+        // playlist has no still image without a YouTube key), and YouTube is only
+        // contacted when someone presses play (decided 30 Oct 2026, for privacy
+        // and page weight). The data name stays "youtube", so existing posts keep
+        // working. Built with the article pages.
         defineArrayMember({
           type: 'object',
           name: 'youtube',
-          title: 'YouTube video',
+          title: 'YouTube video or playlist',
+          icon: PlayIcon,
           fields: [
             defineField({
               name: 'url',
-              title: 'Video link',
+              title: 'YouTube link',
               type: 'url',
-              description: 'Paste the address of the video on YouTube, for example https://www.youtube.com/watch?v=...',
+              description:
+                'Paste the address of a video (https://www.youtube.com/watch?v=...) or of a playlist (https://www.youtube.com/playlist?list=...). A video link that also has "list=" in it is treated as that one video: for the whole playlist, paste the playlist page address.',
               validation: (Rule) => [
                 Rule.required().error('Paste the YouTube link.'),
-                Rule.custom((url) => (!url || youtubeId(url) ? true : 'This does not look like a link to a YouTube video.')),
+                Rule.custom((url) => (!url || youtubeSource(url) ? true : 'This does not look like a link to a YouTube video or playlist.')),
               ],
             }),
             defineField({
               name: 'title',
               title: 'Title',
               type: 'string',
-              description: 'What the video is, for example "Starry Safaris tour, Tanzania". Screen readers announce it.',
+              description: 'What the video or playlist is, for example "Starry Safaris tour, Tanzania". Screen readers announce it.',
               validation: (Rule) => Rule.required().error('Add a title for the video.'),
             }),
             defineField({
@@ -248,7 +291,133 @@ export const post = defineType({
           ],
           preview: {
             select: {title: 'title', url: 'url'},
-            prepare: ({title, url}) => ({title: title || 'YouTube video', subtitle: url ? `YouTube: ${url}` : 'No link yet'}),
+            prepare: ({title, url}) => {
+              const source = url ? youtubeSource(url) : null
+              const kind = source?.kind === 'playlist' ? 'YouTube playlist' : 'YouTube video'
+              return {title: title || kind, subtitle: url ? `${kind}: ${url}` : 'No link yet'}
+            },
+          },
+        }),
+        // Photos side by side (added 30 Oct 2026, decided: a simple row, not a
+        // layout picker): two or three photos at equal width, in the order they
+        // are dragged (left to right). On phones they will stack.
+        defineArrayMember({
+          type: 'object',
+          name: 'imageRow',
+          title: 'Photos side by side',
+          icon: ImagesIcon,
+          components: {preview: ImageRowPreview},
+          fields: [
+            defineField({
+              name: 'images',
+              title: 'Photos',
+              type: 'array',
+              description:
+                'Two or three photos, shown side by side at the same size. Drag them to change which is on the left. Each needs alt text.',
+              options: {layout: 'grid'},
+              validation: (Rule) => [
+                Rule.required().min(2).error('A row needs at least two photos. For one photo use Single photo.'),
+                Rule.max(3).error('At most three photos fit side by side.'),
+              ],
+              of: [
+                defineArrayMember({
+                  type: 'image',
+                  options: {hotspot: true},
+                  fields: [
+                    defineField({
+                      name: 'alt',
+                      title: 'Alt text',
+                      type: 'string',
+                      description: 'What the photo shows, for people who cannot see it.',
+                      validation: (Rule) => Rule.required().error('Add alt text for the photo.'),
+                    }),
+                    defineField({
+                      name: 'caption',
+                      title: 'Caption',
+                      type: 'string',
+                      description: 'Optional. Shown under this photo.',
+                    }),
+                    defineField({
+                      name: 'credit',
+                      title: 'Credit',
+                      type: 'string',
+                      description: 'Optional. Who took the photo, for example "Photo: Jane Doe / OAD".',
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: {images: 'images'},
+            prepare: ({images}) => ({
+              images: images || [],
+              subtitle: `${(images || []).length} photos side by side`,
+            }),
+          },
+        }),
+        // A button (added 30 Oct 2026): words, where it goes, a brand colour chosen
+        // from swatches (text colour follows automatically) and where it sits.
+        defineArrayMember({
+          type: 'object',
+          name: 'button',
+          title: 'Button',
+          icon: LaunchIcon,
+          components: {preview: ButtonPreview},
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Button text',
+              type: 'string',
+              description: 'The words on the button, for example "Apply for funding".',
+              validation: (Rule) => [
+                Rule.required().error('Add the words for the button.'),
+                Rule.max(40).warning('Short button text reads better.'),
+              ],
+            }),
+            defineField({
+              name: 'page',
+              title: 'Goes to: a page on this site',
+              type: 'string',
+              description: 'Pick a page of this site. Or leave this empty and use the web address below.',
+              options: {list: sitePages},
+            }),
+            defineField({
+              name: 'url',
+              title: 'Goes to: or a web address outside the site',
+              type: 'url',
+              description: 'Only if the button goes outside this site. A full address, starting with https://',
+              validation: (Rule) => Rule.uri({scheme: ['https', 'http']}).error('Add the full address, starting with https://'),
+            }),
+            defineField({
+              name: 'colour',
+              title: 'Colour',
+              type: 'string',
+              description: 'Click a colour. The words on the button turn dark or white by themselves so they stay easy to read.',
+              options: {list: buttonColours.map(({title, value}) => ({title, value}))},
+              components: {input: ButtonColourInput},
+              initialValue: 'yellow',
+              validation: (Rule) => Rule.required().error('Choose a colour.'),
+            }),
+            defineField({
+              name: 'align',
+              title: 'Where it sits',
+              type: 'string',
+              options: {list: buttonAlignments, layout: 'radio', direction: 'horizontal'},
+              initialValue: 'left',
+              validation: (Rule) => Rule.required().error('Choose where the button sits.'),
+            }),
+          ],
+          validation: (Rule) =>
+            Rule.custom((button) => {
+              if (!button) return true
+              if (button.page && button.url) return 'Choose a page or a web address, not both.'
+              if (!button.page && !button.url) return 'Choose a page of this site, or add a web address.'
+              return true
+            }),
+          preview: {
+            select: {title: 'label', page: 'page', url: 'url', colour: 'colour', align: 'align'},
+            prepare: ({title, page, url, colour, align}) => ({title, subtitle: page || url, colour, align}),
           },
         }),
       ],
