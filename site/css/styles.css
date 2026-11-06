@@ -94,6 +94,14 @@
                                     panels and phone menu (decisions log, 24 Oct 2026).
                                     White on it 17.3:1, sand 8.9:1 */
 
+  /* The article pages' paper (6 Nov 2026), NOT in the CI palette, with the text
+     colours used on it. Contrast on the paper (calculated): navy #1e3551 10.9:1,
+     ink 13.7:1, grey 6.2:1, teal 7.8:1. Terracotta is only 4.2:1: decoration and
+     large text on the paper, never small text. */
+  --color-paper: #f6efe5;
+  --color-ink:   #13243a;
+  --color-grey:  #4b5a6e;
+
   /* Coloured panels. Text on them is white.
      terracotta 4.8:1 and teal 8.9:1 pass AA for normal text.
      SAGE is only 3.8:1: large text and graphics only, until we decide how to handle it. */
@@ -3510,4 +3518,272 @@ a.news-pager__link:focus-visible {
 
 .news-page .news-feature__text .news-card__meta {
   font-size: 0.75rem;
+}
+
+
+/* 14. ARTICLE PAGE (design "B: light paper", docs/news-page/news-page-design.md)
+   /news/<slug>/. A dark band with the header, the breadcrumb, the title and the
+   date, then the article on the paper colour. Step d: the text blocks and the end
+   row. The main photo, photos, videos and buttons come in the next steps. The
+   headings use Space Grotesk 600 and the text Barlow 400 and 600, the fonts
+   already loaded; italic is the browser's slanted version of Barlow 400, as there
+   is no italic font file (adding one would be a new download). */
+
+.article {
+  background: var(--color-paper);
+}
+
+.article__head,
+.article__content {
+  width: min(100% - 2 * var(--gutter), 1312px);
+  margin-inline: auto;
+}
+
+/* The header sits on top of the page, so the band starts below it. The bottom
+   padding is small for now: the main photo (next step) will overlap it. */
+.article__band {
+  padding: 8.375rem 0 3rem; /* header 102px tall + 32px */
+  background: var(--color-night);
+}
+
+.breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.breadcrumb a {
+  color: var(--color-accent-soft);
+}
+
+.breadcrumb__slash {
+  margin-left: 0.5rem;
+  color: rgb(255 255 255 / 0.6);
+}
+
+.article__title {
+  max-width: 1100px;
+  margin: 1.75rem 0 0;
+  font-size: clamp(1.875rem, 1.32rem + 2.29vw, 3.375rem); /* 30px at 390, 54px at 1440 */
+  line-height: 1.15;
+}
+
+.article__meta {
+  margin: 1.75rem 0 0;
+  color: rgb(255 255 255 / 0.7);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.article__category {
+  color: var(--color-accent-soft);
+}
+
+.article__dot {
+  margin: 0 0.625rem;
+  color: rgb(255 255 255 / 0.35);
+}
+
+/* THE PAPER */
+.article__paper {
+  padding-bottom: 5rem;
+  background: var(--color-paper);
+  color: var(--brand-navy);
+}
+
+/* The yellow focus ring is invisible on the paper (1.4:1): navy instead */
+.article__paper :focus-visible {
+  outline-color: var(--brand-navy);
+}
+
+.article__body {
+  padding-top: 2.5rem;
+}
+
+/* Every text block is at most 960px wide, aligned with the left edge */
+.article__body > p,
+.article__body > h2,
+.article__body > h3,
+.article__body > ul,
+.article__body > ol,
+.article__body > blockquote {
+  max-width: 960px;
+}
+
+.article__body p {
+  margin: 0 0 1.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+.article__body p.article__lead {
+  color: var(--color-ink);
+  font-size: 1.1875rem;
+  line-height: 1.6;
+}
+
+.article__body strong {
+  font-weight: 600;
+}
+
+.article__body h2,
+.article__body h3 {
+  margin: 2.75rem 0 1.125rem;
+  color: var(--color-ink);
+}
+
+.article__body h2 {
+  font-size: 1.625rem;
+}
+
+.article__body h3 {
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+
+/* The first thing in the article needs no space above */
+.article__body > :first-child {
+  margin-top: 0;
+}
+
+.article__body a,
+.article__end a {
+  color: var(--brand-teal);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.article__body a:hover,
+.article__body a:focus-visible,
+.article__end a:hover,
+.article__end a:focus-visible {
+  color: var(--color-ink);
+  text-decoration-thickness: 2px;
+}
+
+/* Lists: terracotta dots (decoration, 4.2:1 is enough), numbers in navy */
+.article__body ul,
+.article__body ol {
+  margin: 0 0 1.75rem;
+  padding: 0;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+.article__body ul {
+  list-style: none;
+}
+
+.article__body ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.article__body ul > li::before {
+  content: "";
+  position: absolute;
+  top: 0.65em;
+  left: 0.25rem;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand-terracotta);
+}
+
+.article__body ol {
+  padding-left: 1.75rem;
+}
+
+.article__body ol > li::marker {
+  color: var(--brand-navy);
+  font-weight: 600;
+}
+
+.article__body li {
+  margin-bottom: 0.5rem;
+}
+
+.article__body li > ul,
+.article__body li > ol {
+  margin: 0.5rem 0 0;
+}
+
+/* The quote: a teal bar and Space Grotesk. The paragraph after it (who said it)
+   is an ordinary paragraph. */
+.article__body blockquote {
+  margin: 2.5rem 0;
+  padding-left: 1.75rem;
+  border-left: 4px solid var(--brand-teal);
+}
+
+.article__body blockquote p {
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* THE END ROW: a thin line, then "Filed under" and the way back */
+.article__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-top: 4.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgb(30 53 81 / 0.18);
+}
+
+.article__filed {
+  margin: 0;
+  color: var(--color-grey);
+  font-size: 0.9375rem;
+}
+
+.article__back {
+  font-weight: 600;
+}
+
+/* From 920px, the phone layout's switch: the larger text sizes of the design */
+@media (min-width: 57.5em) {
+  .article__band {
+    padding-top: 10rem; /* header 104px tall + 56px */
+  }
+
+  .article__body {
+    padding-top: 4rem;
+  }
+
+  .article__body p,
+  .article__body ul,
+  .article__body ol {
+    font-size: 1.25rem;
+  }
+
+  .article__body p.article__lead {
+    font-size: 1.4375rem;
+  }
+
+  .article__body h2 {
+    margin-top: 3.75rem;
+    font-size: 2.125rem;
+  }
+
+  .article__body h3 {
+    margin-top: 3.75rem;
+    font-size: 1.75rem;
+  }
+
+  .article__body blockquote p {
+    font-size: 1.625rem;
+  }
 }

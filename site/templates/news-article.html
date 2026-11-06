@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{page.title}} | Astrotourism</title>
+  <meta name="description" content="{{page.description}}">
+  <link rel="preload" href="/assets/fonts/space-grotesk-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+{{> header}}
+
+  <!-- One template for every article (design "B: light paper", docs/news-page/news-page-design.md).
+       build/news-article.js fills it in once for each post. The wording here is fixed. -->
+  <main id="main" class="article">
+    <div class="article__band">
+      <div class="article__head">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <ol class="breadcrumb__list">
+            <li><a href="/news/">News</a> <span class="breadcrumb__slash" aria-hidden="true">/</span></li>
+            <li><a href="{{page.categoryUrl}}">{{page.categoryLabel}}</a></li>
+          </ol>
+        </nav>
+        <h1 class="article__title">{{page.title}}</h1>
+        <p class="article__meta"><span class="article__category">{{page.categoryLabel}}</span><span class="article__dot" aria-hidden="true">·</span><time datetime="{{page.date}}">{{page.dateText}}</time></p>
+      </div>
+    </div>
+
+    <div class="article__paper">
+      <div class="article__content">
+        <div class="article__body">
+{{{page.body}}}
+        </div>
+
+        <div class="article__end">
+          <p class="article__filed">Filed under <a href="{{page.categoryUrl}}">{{page.categoryLabel}}</a></p>
+          <a class="article__back" href="/news/"><span aria-hidden="true">&larr;</span> All news</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+{{> footer}}
+
+{{> to-top}}
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

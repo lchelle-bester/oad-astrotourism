@@ -5,6 +5,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 const crypto = require('node:crypto')
 const {renderNewsListPages} = require('./news-pages')
+const {renderArticle} = require('./news-article')
 
 const ROOT = path.join(__dirname, '..')
 const SITE_DIR = path.join(ROOT, 'site')
@@ -627,8 +628,21 @@ async function main() {
   }
 
   console.log(`Built ${pages.join(', ')} with hero:`, hero.headlineWord, hero.headlineRest)
+  // One page per post. Blocks the renderer does not draw yet (photos, buttons, videos,
+  // podcasts: steps e to g of Phase 7) are counted here so nothing goes missing unseen.
+  const articleTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'news-article.html'), 'utf8'))
+  const notDrawn = {}
+  for (const post of allPosts) {
+    const {file, page, skipped} = renderArticle(post, {escapeHtml, safeUrl, formatPostDate, POST_CATEGORIES})
+    const target = path.join(DIST_DIR, file)
+    fs.mkdirSync(path.dirname(target), {recursive: true})
+    fs.writeFileSync(target, renderTemplate(articleTemplate, {...data, page}))
+    for (const [type, count] of Object.entries(skipped)) notDrawn[type] = (notDrawn[type] || 0) + count
+  }
+
   pruneCache()
-  console.log(`News: ${allPosts.length} published posts, ${listPages.length} list pages`)
+  console.log(`News: ${allPosts.length} published posts, ${listPages.length} list pages, ${allPosts.length} article pages`)
+  if (Object.keys(notDrawn).length) console.log('Not drawn yet in articles:', JSON.stringify(notDrawn))
   console.log(`Site settings: ${siteSettings.social.length} social links, ${siteSettings.partners.length} partner logos`)
 }
 
