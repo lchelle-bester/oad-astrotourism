@@ -3611,7 +3611,7 @@ a.news-pager__link:focus-visible {
    the cap times its shape, and its height follows from that. The shadow lifts it
    off the page. The credit underneath is small grey text. */
 .article__photo {
-  --cap: 520px;
+  --cap: 420px; /* was 520 on 6 Nov 2026 (L'chelle: too big) */
   position: relative;
   margin: -6rem 0 0;
 }
@@ -3858,7 +3858,7 @@ a.news-pager__link:focus-visible {
   }
 
   .article__photo {
-    --cap: 720px;
+    --cap: 520px; /* was 720 on 6 Nov 2026 (L'chelle: way too big) */
     margin-top: -13.25rem; /* 212px */
   }
 
