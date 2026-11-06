@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{page.title}}</title>
+  <meta name="description" content="{{page.description}}">
+  <link rel="preload" href="/assets/fonts/space-grotesk-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+{{> header}}
+
+  <!-- One template for every list page of the News section (the News page, its
+       later pages and the category pages). build/news-pages.js fills it in once
+       for each page. The wording here is fixed (decided 6 Nov 2026). -->
+  <main id="main" class="news-page">
+    <div class="news-page__head">
+      <p class="news-page__eyebrow">News and updates</p>
+      <h1 class="news-page__title">News</h1>
+      <p class="news-page__intro">{{page.intro}}</p>
+      {{{page.filter}}}
+    </div>
+
+    <div class="news-page__body">{{{page.featured}}}
+      {{{page.cards}}}
+      {{{page.empty}}}{{{page.pager}}}
+    </div>
+  </main>
+
+{{> footer}}
+
+{{> to-top}}
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

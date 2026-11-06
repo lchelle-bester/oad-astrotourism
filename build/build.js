@@ -3,6 +3,7 @@
 
 const fs = require('node:fs')
 const path = require('node:path')
+const {renderNewsListPages} = require('./news-pages')
 
 const ROOT = path.join(__dirname, '..')
 const SITE_DIR = path.join(ROOT, 'site')
@@ -230,8 +231,11 @@ const POST_CATEGORIES = {news: 'News', events: 'Events', 'oad-projects': 'OAD pr
 const NEWS_DIR = 'assets/images/news'
 // One shape: wide (15 by 8). The square shape for the phone rows was dropped on
 // 30 Oct 2026, when the photos of posts 2 and 3 were taken off phones.
+// feature (16 by 10) is the big photo of the newest post on the News page
+// (6 Nov 2026); phones show it cropped to 4 by 3 by the CSS.
 const NEWS_SHAPES = {
   wide: {ratio: 15 / 8, widths: [480, 820, 1240]},
+  feature: {ratio: 16 / 10, widths: [640, 960, 1400]},
 }
 
 // The part of the photo to keep for a shape, in the original's pixels: inside
@@ -291,13 +295,14 @@ function formatPostDate(date) {
 // The photo for a card. Empty alt text: the title beside it already names the
 // post, and the photo is inside the card's link area (alt text stays required
 // in Sanity for the article pages).
-function renderNewsPhoto(shapes) {
-  const wide = shapes.wide
-  const sizes = '(min-width: 57.5em) 30vw, 100vw'
+// The defaults are the homepage card; the News page's featured post passes its
+// own shape, class and sizes.
+function renderNewsPhoto(shapes, {shape = 'wide', className = 'news-card__photo', sizes = '(min-width: 57.5em) 30vw, 100vw', lazy = true} = {}) {
+  const photo = shapes[shape]
   return `
-            <picture class="news-card__photo">
-              <source type="image/webp" srcset="${wide.webp.join(', ')}" sizes="${sizes}">
-              <img src="${wide.jpg.at(-1).split(' ')[0]}" srcset="${wide.jpg.join(', ')}" sizes="${sizes}" width="${wide.width}" height="${wide.height}" alt="" loading="lazy" decoding="async">
+            <picture class="${className}">
+              <source type="image/webp" srcset="${photo.webp.join(', ')}" sizes="${sizes}">
+              <img src="${photo.jpg.at(-1).split(' ')[0]}" srcset="${photo.jpg.join(', ')}" sizes="${sizes}" width="${photo.width}" height="${photo.height}" alt=""${lazy ? ' loading="lazy"' : ''} decoding="async">
             </picture>`
 }
 
@@ -305,15 +310,18 @@ function renderNewsPhoto(shapes) {
 // screen readers hear the title first; the CSS shows the category and date
 // above it. The title link is stretched over the whole card by the CSS, so each
 // post is one link.
-function renderNewsCards(posts) {
+// The homepage section is the default. The News page passes its own list item
+// class, no "lead" card (every card keeps its photo on phones there) and h2
+// titles (its h1 is the page title).
+function renderNewsCards(posts, {itemClass = 'news__item', lead = true, level = 3} = {}) {
   return posts.map((post, i) => {
     const category = POST_CATEGORIES[post.category]
     if (!category) throw new Error(`News post "${post.title}" has an unknown category "${post.category}".`)
     return `
-        <li class="news__item">
-          <article class="news-card${i === 0 ? ' news-card--lead' : ''}">${renderNewsPhoto(post.shapes)}
+        <li class="${itemClass}">
+          <article class="news-card${lead && i === 0 ? ' news-card--lead' : ''}">${renderNewsPhoto(post.shapes)}
             <div class="news-card__text">
-              <h3 class="news-card__title"><a href="/news/${escapeHtml(post.slug)}/">${escapeHtml(post.title.trim())}</a></h3>
+              <h${level} class="news-card__title"><a href="/news/${escapeHtml(post.slug)}/">${escapeHtml(post.title.trim())}</a></h${level}>
               <p class="news-card__meta"><span class="news-card__category">${escapeHtml(category)}</span><span class="news-card__dot" aria-hidden="true">·</span><time datetime="${escapeHtml(post.publishedAt)}">${escapeHtml(formatPostDate(post.publishedAt))}</time></p>
             </div>
           </article>
@@ -509,20 +517,23 @@ async function main() {
   }
   impactSection.buttonHref = buttonHref
 
-  // News: the three newest published posts. Published only: the filter leaves
-  // out drafts (their ids start with "drafts."), on top of the public API never
-  // showing drafts to a request without a token. Same date: created later first.
-  const posts = await sanityQuery(
-    '*[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current)] | order(publishedAt desc, _createdAt desc)[0...3]' +
-      '{title, "slug": slug.current, publishedAt, category, "photo": mainImage{hotspot, crop, "url": asset->url, ' +
+  // News: every published post, fetched once and used by the homepage (the
+  // three newest), the News page and its category pages, and the article pages.
+  // Published only: the filter leaves out drafts (their ids start with "drafts."),
+  // on top of the public API never showing drafts to a request without a token.
+  // Same date: created later first. The body is fetched now for the article pages.
+  const allPosts = await sanityQuery(
+    '*[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current)] | order(publishedAt desc, _createdAt desc)' +
+      '{title, "slug": slug.current, publishedAt, category, body, "photo": mainImage{alt, credit, hotspot, crop, "url": asset->url, ' +
       '"assetId": asset->_id, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}',
   )
   const newsFiles = []
-  for (const post of posts) {
+  for (const post of allPosts) {
     const photo = await fetchNewsPhoto(post)
     post.shapes = photo.shapes
     newsFiles.push(...photo.files)
   }
+  const posts = allPosts.slice(0, 3)
   // No posts: the section is left out of the page altogether
   const newsSection = {cards: renderNewsCards(posts), html: ''}
   if (posts.length) {
@@ -534,14 +545,15 @@ async function main() {
 
   const footer = renderFooter(siteSettings)
 
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer}
+  // newsCurrent marks "News" in the header on the News section's pages
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: ''}}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
   fs.rmSync(DIST_DIR, {recursive: true, force: true})
   fs.cpSync(SITE_DIR, DIST_DIR, {
     recursive: true,
-    filter: (source) => !source.startsWith(path.join(SITE_DIR, 'partials')),
+    filter: (source) => !source.startsWith(path.join(SITE_DIR, 'partials')) && !source.startsWith(path.join(SITE_DIR, 'templates')),
   })
 
   // The pillar photos downloaded from Sanity
@@ -571,7 +583,19 @@ async function main() {
     fs.writeFileSync(page, renderTemplate(html, data))
   }
 
+  // The News section's list pages: one template, filled in once per page
+  const listTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'news-list.html'), 'utf8'))
+  const listPages = renderNewsListPages(allPosts, {
+    escapeHtml, renderNewsCards, renderNewsPhoto, formatPostDate, POST_CATEGORIES,
+  })
+  for (const {file, page} of listPages) {
+    const target = path.join(DIST_DIR, file)
+    fs.mkdirSync(path.dirname(target), {recursive: true})
+    fs.writeFileSync(target, renderTemplate(listTemplate, {...data, page, nav: {newsCurrent: ' aria-current="page"'}}))
+  }
+
   console.log(`Built ${pages.join(', ')} with hero:`, hero.headlineWord, hero.headlineRest)
+  console.log(`News: ${allPosts.length} published posts, ${listPages.length} list pages`)
   console.log(`Site settings: ${siteSettings.social.length} social links, ${siteSettings.partners.length} partner logos`)
 }
 
