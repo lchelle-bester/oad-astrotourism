@@ -1437,7 +1437,7 @@ h3 {
    until 6 Nov 2026); each pillar keeps the colour it had, so terracotta and sage
    are gone with Promotion & Awareness and Publications. */
 .pillar-tab:nth-child(1) { --a: 0deg;   --fill: var(--brand-yellow); --ink: var(--color-night); }
-.pillar-tab:nth-child(2) { --a: 90deg;  --fill: var(--brand-sand);   --ink: var(--color-night); }
+.pillar-tab:nth-child(2) { --a: 90deg;  --fill: var(--brand-terracotta); --ink: var(--white); } /* Training: terracotta (sand until 6 Nov 2026); white on it 4.8:1 */
 .pillar-tab:nth-child(3) { --a: 180deg; --fill: var(--brand-teal);   --ink: var(--white); }
 .pillar-tab:nth-child(4) { --a: 270deg; --fill: var(--brand-navy);   --ink: var(--white); }
 
@@ -1762,7 +1762,7 @@ h3 {
      pillar name stays white, because teal, navy and terracotta are too dark to
      read as text here. The bar changes colour with the pillar. */
   .pillars[data-open="0"] { --accent: var(--brand-yellow); }
-  .pillars[data-open="1"] { --accent: var(--brand-sand); }
+  .pillars[data-open="1"] { --accent: var(--brand-terracotta); }
   .pillars[data-open="2"] { --accent: var(--brand-teal); }
   .pillars[data-open="3"] { --accent: var(--brand-navy); }
 
