@@ -176,8 +176,7 @@ function renderMore(post, h) {
     <section class="news news--more" aria-labelledby="more-heading">
       <div class="news__inner">
         <div class="news__intro">
-          <p class="news__eyebrow">Keep reading</p>
-          <h2 id="more-heading" class="news__heading">More from OAD</h2>
+          <h2 id="more-heading" class="news__heading">Keep reading</h2>
         </div>
         <ul class="news__list">${h.renderNewsCards(picks)}
         </ul>

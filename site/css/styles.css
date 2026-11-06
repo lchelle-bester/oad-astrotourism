@@ -4170,6 +4170,11 @@ a.news-pager__link:focus-visible {
   padding: 5.5rem var(--gutter) 6rem;
 }
 
+/* No eyebrow above the heading (6 Nov 2026), so no space for one */
+.news--more .news__heading {
+  margin-top: 0;
+}
+
 /* A smaller See all updates pill than the homepage's (6 Nov 2026): 14px text and a
    32px circle on desktop, 14px and 34px on phones (the homepage has 15 and 36, 16 and 40) */
 .news--more .news__button {
