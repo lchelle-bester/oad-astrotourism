@@ -7,7 +7,7 @@
    5. Header
    6. Hero
    7. The case
-   8. The six pillars
+   8. The four pillars
    9. Page not found (404)
    ========================================================================== */
 
@@ -1179,9 +1179,9 @@ h3 {
 }
 
 
-/* 8. THE SIX PILLARS (design in docs/pillars/pillars-design.md)
+/* 8. THE FOUR PILLARS (six until 6 Nov 2026; design in docs/pillars/pillars-design.md)
    Without JavaScript: a plain list of cards. main.js adds .pillars--ring and
-   turns it into the ring of six segments (tabs) with one card (the open panel).
+   turns it into the ring of four segments (tabs) with one card (the open panel).
    Segment colours belong to the positions round the circle, not to the pillars.
    Colours clockwise from the top (changed 27 Oct 2026): terracotta, yellow,
    sand, teal, navy, sage. Label contrast (calculated): #0f1b2b on yellow
@@ -1506,7 +1506,7 @@ h3 {
   letter-spacing: 0.14em;
 }
 
-/* The card in ring mode: one box, the six panels stacked in the same grid cell
+/* The card in ring mode: one box, the four panels stacked in the same grid cell
    (so the box keeps the height of the tallest and never jumps), only the open
    one visible. The pager sits at the bottom. */
 .pillars--ring .pillars__cards {

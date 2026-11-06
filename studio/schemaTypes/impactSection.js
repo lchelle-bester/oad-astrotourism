@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {sitePages} from './sitePages.mjs'
 
-// "Proof": the teal band after the six pillars (design in docs/proof/).
+// "Proof": the teal band after the four pillars (design in docs/proof/).
 // One headline figure, exactly three results and a link to the full outcomes.
 // There is only one, so it is a single document.
 export const impactSection = defineType({
