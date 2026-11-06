@@ -266,9 +266,9 @@ if (caseSection) {
 }
 
 
-// THE SIX PILLARS
-// The page arrives as a plain list of six cards (what visitors without JavaScript
-// see). This turns it into the ring: six segments acting as tabs, and one card
+// THE FOUR PILLARS
+// The page arrives as a plain list of cards (what visitors without JavaScript
+// see). This turns it into the ring: one segment per pillar acting as a tab, and one card
 // beside the ring (below it on phones) showing the open pillar.
 // Tabs: only the open segment is a Tab stop; the arrow keys move round the circle
 // (wrapping at the ends), Home and End go to the first and last.
@@ -312,8 +312,8 @@ if (pillarsSection) {
     cards.forEach((card, j) => card.classList.toggle('is-open', j === open))
     pillarsSection.dataset.open = String(open) // the colour bar on desktop follows it
     dots.forEach((dot, j) => dot.classList.toggle('is-open', j === open))
-    steps[0].setAttribute('aria-label', `Previous pillar: ${names[(open + 5) % 6]}`)
-    steps[1].setAttribute('aria-label', `Next pillar: ${names[(open + 1) % 6]}`)
+    steps[0].setAttribute('aria-label', `Previous pillar: ${names[(open + tabs.length - 1) % tabs.length]}`)
+    steps[1].setAttribute('aria-label', `Next pillar: ${names[(open + 1) % tabs.length]}`)
     if (moveFocus) tabs[open].focus()
     draw()
   }
@@ -355,16 +355,17 @@ if (pillarsSection) {
     const card = toUnits(px, box, cards[open].parentElement.getBoundingClientRect())
     const cardLeft = card.left - BAR_GAP
     const clampY = (y) => Math.min(card.bottom - 40, Math.max(card.top + 40, y))
-    const angle = open * 60
+    const angle = (open * 360) / tabs.length // 0, 90, 180 or 270 with four pillars
     const start = at(OUTER + POP, angle)
-    // Segments facing the text (top, upper right, lower right): straight across
-    if (angle <= 120) {
+    // Segments facing the text (top, right, bottom): straight across
+    if (angle <= 180) {
       return `M${xy(start)} L${cardLeft.toFixed(1)},${clampY(start.y).toFixed(1)}`
     }
-    // The far side: out a little, round the outside of the ring to the 60 or
-    // 120 degree point, then straight across, so the line never crosses the ring
-    const target = angle === 300 ? 60 : 120
-    const clockwise = angle === 300 ? 1 : 0
+    // The far side (the left segment): out a little, round the outside of the ring
+    // clockwise over the top to the 0 degree point, then straight across, so the
+    // line never crosses the ring
+    const target = 0
+    const clockwise = 1
     const out = at(AROUND, angle)
     const end = at(AROUND, target)
     const r = (AROUND * k).toFixed(1)
@@ -411,7 +412,7 @@ if (pillarsSection) {
       const px = box.width / 1440
       drawingScale.setAttribute('transform', `scale(${px})`)
       // The open pillar's text block runs from the top of the helper line
-      // ("Six pillars that feed into each other...") to the bottom of the ring
+      // ("Four pillars that feed into each other...") to the bottom of the ring
       // (its outer edge is 16 of the ring box's 640 above the box's bottom)
       const helper = pillarsSection.querySelector('.pillars__helper--wide').getBoundingClientRect()
       const ringRect = ring.getBoundingClientRect()

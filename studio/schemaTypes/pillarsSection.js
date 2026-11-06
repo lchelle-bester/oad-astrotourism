@@ -1,20 +1,21 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {sitePages} from './sitePages'
 
-// "What we do": OAD's six pillars as a ring of segments (design in docs/pillars/).
-// One document holding exactly six pillars. Their order in the list is their order
+// "What we do": OAD's four pillars as a ring of segments (design in docs/pillars/;
+// six until 6 Nov 2026, when Promotion & Awareness and Publications were removed).
+// One document holding exactly four pillars. Their order in the list is their order
 // round the circle, clockwise from the top. The segment colours belong to the
 // positions and live in the site's CSS, so reordering never changes the colours.
 export const pillarsSection = defineType({
   name: 'pillarsSection',
-  title: 'What we do (six pillars)',
+  title: 'What we do (four pillars)',
   type: 'document',
   fields: [
     defineField({
       name: 'eyebrow',
       title: 'Eyebrow',
       type: 'string',
-      description: 'The small line above the heading, for example "Six pillars".',
+      description: 'The small line above the heading, for example "Four pillars".',
       validation: (Rule) => Rule.required().error('Add the eyebrow.'),
     }),
     defineField({
@@ -28,7 +29,7 @@ export const pillarsSection = defineType({
       name: 'helper',
       title: 'Helper line (computer)',
       type: 'string',
-      description: 'Under the heading on larger screens, for example "Six pillars that feed into each other. Click one on the circle to see what it involves."',
+      description: 'Under the heading on larger screens, for example "Four pillars that feed into each other. Click one on the circle to see what it involves."',
       validation: (Rule) => [
         Rule.required().error('Add the helper line.'),
         Rule.max(120).warning('A shorter helper line reads better.'),
@@ -49,10 +50,10 @@ export const pillarsSection = defineType({
       title: 'Pillars',
       type: 'array',
       description:
-        'Exactly six, in order round the circle, clockwise from the top. Drag to reorder. The colours stay with the positions.',
+        'Exactly four, in order round the circle, clockwise from the top. Drag to reorder. The colours stay with the positions.',
       validation: (Rule) => [
-        Rule.required().error('Add the six pillars.'),
-        Rule.length(6).error('The circle has exactly six pillars.'),
+        Rule.required().error('Add the four pillars.'),
+        Rule.length(4).error('The circle has exactly four pillars.'),
       ],
       of: [
         defineArrayMember({
@@ -168,7 +169,7 @@ export const pillarsSection = defineType({
   ],
   preview: {
     prepare() {
-      return {title: 'What we do (six pillars)'}
+      return {title: 'What we do (four pillars)'}
     },
   },
 })

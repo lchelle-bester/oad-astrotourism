@@ -1416,7 +1416,7 @@ h3 {
   position: absolute;
   left: calc(50% + 34.6875% * sin(var(--a)));
   top: calc(50% - 34.6875% * cos(var(--a)));
-  width: 25%;
+  width: 30%; /* 25% with six segments; four wider ones give the names more room */
   transform: translate(-50%, -50%);
   color: var(--ink);
   font-weight: 600;
@@ -1425,13 +1425,13 @@ h3 {
   text-align: center;
 }
 
-/* Positions clockwise from the top: angle, colour, label colour */
-.pillar-tab:nth-child(1) { --a: 0deg;   --fill: var(--brand-terracotta); --ink: var(--white); }
-.pillar-tab:nth-child(2) { --a: 60deg;  --fill: var(--brand-yellow);     --ink: var(--color-night); }
-.pillar-tab:nth-child(3) { --a: 120deg; --fill: var(--brand-sand);       --ink: var(--color-night); }
-.pillar-tab:nth-child(4) { --a: 180deg; --fill: var(--brand-teal);       --ink: var(--white); }
-.pillar-tab:nth-child(5) { --a: 240deg; --fill: var(--brand-navy);       --ink: var(--white); }
-.pillar-tab:nth-child(6) { --a: 300deg; --fill: var(--brand-sage);       --ink: var(--color-night); }
+/* Positions clockwise from the top: angle, colour, label colour. Four pillars (six
+   until 6 Nov 2026); each pillar keeps the colour it had, so terracotta and sage
+   are gone with Promotion & Awareness and Publications. */
+.pillar-tab:nth-child(1) { --a: 0deg;   --fill: var(--brand-yellow); --ink: var(--color-night); }
+.pillar-tab:nth-child(2) { --a: 90deg;  --fill: var(--brand-sand);   --ink: var(--color-night); }
+.pillar-tab:nth-child(3) { --a: 180deg; --fill: var(--brand-teal);   --ink: var(--white); }
+.pillar-tab:nth-child(4) { --a: 270deg; --fill: var(--brand-navy);   --ink: var(--white); }
 
 /* Hover (only on devices with a real pointer, so taps do not leave it stuck):
    lift 6 of 640 and brighten a little */
@@ -1753,12 +1753,10 @@ h3 {
      and navy are faint against the page (1.9:1 and 1.4:1). The
      pillar name stays white, because teal, navy and terracotta are too dark to
      read as text here. The bar changes colour with the pillar. */
-  .pillars[data-open="0"] { --accent: var(--brand-terracotta); }
-  .pillars[data-open="1"] { --accent: var(--brand-yellow); }
-  .pillars[data-open="2"] { --accent: var(--brand-sand); }
-  .pillars[data-open="3"] { --accent: var(--brand-teal); }
-  .pillars[data-open="4"] { --accent: var(--brand-navy); }
-  .pillars[data-open="5"] { --accent: var(--brand-sage); }
+  .pillars[data-open="0"] { --accent: var(--brand-yellow); }
+  .pillars[data-open="1"] { --accent: var(--brand-sand); }
+  .pillars[data-open="2"] { --accent: var(--brand-teal); }
+  .pillars[data-open="3"] { --accent: var(--brand-navy); }
 
   .pillars--ring .pillars__cards::before {
     content: "";

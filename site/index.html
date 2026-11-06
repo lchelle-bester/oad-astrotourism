@@ -108,7 +108,7 @@
       </div>
     </section>
 
-    <!-- What we do: the six pillars (design in docs/pillars/pillars-design.md). Without
+    <!-- What we do: the four pillars (design in docs/pillars/pillars-design.md). Without
          JavaScript this is a plain list of cards. main.js turns it into the ring of
          segments (a set of tabs) with one card beside it. Words, links and photos come
          from Sanity; shapes, colours, trail and connector are fixed here and in the CSS. -->
@@ -145,7 +145,7 @@
         <div class="pillars__cards">{{{pillarsSection.cards}}}
           <div class="pillars__pager" hidden>
             <button class="pillars__step" type="button" data-step="-1"><span aria-hidden="true">&larr;</span> Previous</button>
-            <span class="pillars__dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="pillars__dots" aria-hidden="true">{{{pillarsSection.dots}}}</span>
             <button class="pillars__step" type="button" data-step="1">Next <span aria-hidden="true">&rarr;</span></button>
           </div>
         </div>

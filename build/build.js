@@ -84,8 +84,9 @@ function insertPartials(template) {
   })
 }
 
-// THE SIX PILLARS
-// The ring's six segment shapes (fixed design, from docs/pillars/pillars-ring.svg).
+// THE FOUR PILLARS (six until 6 Nov 2026)
+// The ring's segment shapes, drawn by build/make-pillars-ring.js (the original six-segment
+// drawing is kept in docs/pillars/pillars-ring.svg).
 const RING_POINTS = [...fs.readFileSync(path.join(__dirname, 'pillars-ring.svg'), 'utf8')
   .matchAll(/<polygon id="segment-(\d)"[^>]* points="([^"]+)"/g)]
   .sort((a, b) => a[1] - b[1])
@@ -517,16 +518,17 @@ async function main() {
     throw new Error('"The case" needs exactly three published statistics. Check it in the Studio.')
   }
 
-  // The six pillars, in order round the circle (Sanity enforces exactly six)
+  // The four pillars, in order round the circle (Sanity enforces exactly four)
   const pillarsSection = await sanityQuery(
     '*[_id == "pillarsSection"][0]{eyebrow, heading, helper, helperPhone, pillars[]{name, description, links[]{label, page, url}, ' +
       '"photo": photo{alt, credit, hotspot, crop, "url": asset->url, "assetId": asset->_id, ' +
       '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}}',
   )
-  if (!pillarsSection || !Array.isArray(pillarsSection.pillars) || pillarsSection.pillars.length !== 6) {
-    throw new Error('"What we do" needs exactly six published pillars. Check it in the Studio.')
+  if (!pillarsSection || !Array.isArray(pillarsSection.pillars) || pillarsSection.pillars.length !== RING_POINTS.length) {
+    throw new Error(`"What we do" needs exactly ${RING_POINTS.length} published pillars (the ring has ${RING_POINTS.length} segments). Check it in the Studio.`)
   }
   pillarsSection.tabs = renderPillarTabs(pillarsSection.pillars)
+  pillarsSection.dots = pillarsSection.pillars.map(() => '<i></i>').join('')
   const pillarPhotos = await fetchPillarPhotos(pillarsSection.pillars)
   pillarsSection.cards = renderPillarCards(pillarsSection.pillars, pillarPhotos.photos)
 
