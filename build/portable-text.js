@@ -38,7 +38,9 @@ function renderSpans(block, h) {
     if (marks.includes('em')) html = `<em>${html}</em>`
     for (const mark of marks) {
       const def = defs.get(mark)
-      if (def && def._type === 'link') {
+      // A link over only a space has no words for a screen reader to read (an editor can
+      // drag a link over a trailing space), so it is left as plain text
+      if (def && def._type === 'link' && (child.text || '').trim()) {
         const href = safeLink(def.href, h.safeUrl)
         if (href) html = `<a href="${h.escapeHtml(href)}">${html}</a>`
       }
@@ -57,6 +59,10 @@ function renderPortableText(body, h) {
   const skipped = {}
   const text = []
   const lists = [] // the lists that are open, outermost first: 'ul' or 'ol'
+  // An article that uses only "Smaller subheading" (h3) and never "Subheading" (h2) would
+  // jump from the title (h1) to a level 3 heading, which skips a level for screen reader
+  // users. Its smaller headings are then written as h2 with the same look (found 6 Nov 2026).
+  const hasH2 = (body || []).some((b) => b && b._type === 'block' && b.style === 'h2')
 
   const closeList = () => out.push(`</li></${lists.pop()}>`)
 
@@ -94,7 +100,8 @@ function renderPortableText(body, h) {
     if (style === 'blockquote') {
       out.push(`<blockquote><p>${inner}</p></blockquote>`)
     } else if (HEADINGS[style]) {
-      out.push(`<${HEADINGS[style]}>${inner}</${HEADINGS[style]}>`)
+      if (HEADINGS[style] === 'h3' && !hasH2) out.push(`<h2 class="article__minor">${inner}</h2>`)
+      else out.push(`<${HEADINGS[style]}>${inner}</${HEADINGS[style]}>`)
     } else {
       out.push(`<p>${inner}</p>`)
     }

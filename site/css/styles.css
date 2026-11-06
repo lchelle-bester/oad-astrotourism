@@ -3669,6 +3669,9 @@ a.news-pager__link:focus-visible {
 
 .article__body {
   padding-top: 2.5rem;
+  /* A long web address in the text (some articles print them in full) breaks onto the
+     next line instead of pushing the page wider than a phone (found 6 Nov 2026) */
+  overflow-wrap: anywhere;
 }
 
 /* A PHOTO IN THE TEXT: full width, its own shape, 12px corners, with the caption
@@ -3772,6 +3775,12 @@ a.news-pager__link:focus-visible {
 }
 
 .article__body h3 {
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+
+/* A small subheading written as h2 (see build/portable-text.js) looks like an h3 */
+.article__body h2.article__minor {
   font-size: 1.375rem;
   line-height: 1.25;
 }
@@ -4324,7 +4333,8 @@ a.news-pager__link:focus-visible {
     font-size: 2.125rem;
   }
 
-  .article__body h3 {
+  .article__body h3,
+  .article__body h2.article__minor {
     margin-top: 3.75rem;
     font-size: 1.75rem;
   }
