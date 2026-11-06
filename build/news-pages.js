@@ -150,7 +150,7 @@ function renderPager(key, current, total) {
           ${numbers.join('\n          ')}
           <li>${older}</li>
         </ul>
-        <div class="news-pager__phone">
+        <div class="news-pager__phone${current > 1 && current < total ? ' news-pager__phone--both' : ''}">
           <p class="news-pager__summary">Page ${current} of ${total}</p>
           ${phoneLinks}
         </div>
