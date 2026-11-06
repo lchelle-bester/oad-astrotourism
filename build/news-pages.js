@@ -62,7 +62,7 @@ function renderFeature(post, h) {
           <p class="news-feature__eyebrow">Latest</p>
           <h2 class="news-feature__title"><a href="/news/${h.escapeHtml(post.slug)}/">${h.escapeHtml(post.title.trim())}</a></h2>
           <p class="news-card__meta"><span class="news-card__category">${h.escapeHtml(category)}</span><span class="news-card__dot" aria-hidden="true">·</span><time datetime="${h.escapeHtml(post.publishedAt)}">${h.escapeHtml(h.formatPostDate(post.publishedAt))}</time></p>
-          <span class="news-feature__more" aria-hidden="true">Read the story <span class="news-feature__arrow">&rarr;</span></span>
+          <span class="news-feature__more" aria-hidden="true">Read more <span class="news-feature__arrow">&rarr;</span></span>
         </div>
       </article>`
 }

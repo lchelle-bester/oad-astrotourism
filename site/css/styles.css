@@ -3063,7 +3063,7 @@ h3 {
 }
 
 .news-page__head {
-  padding-top: 8.875rem; /* header 102px tall + 40px */
+  padding-top: 7.625rem; /* header 102px tall + 20px */
 }
 
 .news-page__title {
@@ -3074,7 +3074,7 @@ h3 {
 
 .news-page__intro {
   max-width: 35rem;
-  margin: 1.25rem 0 0;
+  margin: 0.75rem 0 0;
   color: rgb(255 255 255 / 0.75);
   font-size: 1.0625rem;
   line-height: 1.55;
@@ -3084,8 +3084,8 @@ h3 {
    line and the row scrolls sideways (a little padding keeps the focus ring
    from being cut off). */
 .news-filter {
-  margin-top: 2.5rem;
-  padding-bottom: 2.5rem;
+  margin-top: 1.5rem;
+  padding-bottom: 1.5rem;
   border-bottom: 1px solid rgb(255 255 255 / 0.12);
 }
 
@@ -3127,7 +3127,7 @@ h3 {
 }
 
 .news-page__body {
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
 
 /* THE FEATURED POST (page 1 of a list). The title is the only link, stretched
@@ -3210,7 +3210,7 @@ h3 {
   outline-offset: 6px;
 }
 
-/* "Read the story" is decoration (the title is the link): a yellow circle with
+/* "Read more" is decoration (the title is the link): a yellow circle with
    a navy arrow, dark on yellow 10.7:1 */
 .news-feature__more {
   display: flex;
@@ -3356,7 +3356,7 @@ a.news-pager__link:focus-visible {
    1100). Gaps: 56px between rows, 96px between columns. */
 @media (min-width: 57.5em) {
   .news-page__head {
-    padding-top: 11rem; /* header 104px tall + 72px */
+    padding-top: 8.5rem; /* header 104px tall + 32px */
   }
 
   .news-page__title {
@@ -3369,10 +3369,6 @@ a.news-pager__link:focus-visible {
 
   .news-filter__list {
     gap: 0.75rem;
-  }
-
-  .news-page__body {
-    margin-top: 3rem;
   }
 
   .news-feature {
@@ -3419,4 +3415,30 @@ a.news-pager__link:focus-visible {
   .news-feature:hover .news-feature__arrow {
     transform: none;
   }
+}
+
+/* News page (6 Nov 2026, L'chelle): square-cornered photos, and a smaller category
+   and date line with more room under the photo. Scoped to the News page; the
+   homepage cards keep their rounded photos. */
+.news-page .news-card__photo img,
+.news-page .news-feature__photo img {
+  border-radius: 0;
+}
+
+.news-page .news-feature__title a::after,
+.news-page .news-card__title a::after {
+  border-radius: 0;
+}
+
+.news-page .news-card__text {
+  padding-top: 1.25rem;
+}
+
+.news-page .news-card__meta {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+}
+
+.news-page .news-feature__text .news-card__meta {
+  font-size: 0.75rem;
 }
