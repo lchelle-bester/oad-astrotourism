@@ -3385,7 +3385,7 @@ a.news-pager__link:focus-visible {
    1100). Gaps: 56px between rows, 96px between columns. */
 @media (min-width: 57.5em) {
   .news-page {
-    padding-bottom: 7.5rem; /* 120px of space, then the footer */
+    padding-bottom: 4.5rem; /* 72px of space, then the footer (was 120, 6 Nov 2026) */
   }
 
   .news-page__head {
