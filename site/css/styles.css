@@ -3539,10 +3539,11 @@ a.news-pager__link:focus-visible {
   margin-inline: auto;
 }
 
-/* The header sits on top of the page, so the band starts below it. The bottom
-   padding is small for now: the main photo (next step) will overlap it. */
+/* The header sits on top of the page, so the band starts below it. The long
+   bottom padding is where the main photo overlaps the band (120px on phones,
+   260px on desktop; the photo pulls up 96px and 212px). */
 .article__band {
-  padding: 8.375rem 0 3rem; /* header 102px tall + 32px */
+  padding: 8.375rem 0 7.5rem; /* header 102px tall + 32px */
   background: var(--color-night);
 }
 
@@ -3590,8 +3591,10 @@ a.news-pager__link:focus-visible {
   color: rgb(255 255 255 / 0.35);
 }
 
-/* THE PAPER */
+/* THE PAPER. display: flow-root keeps the photo's negative margin from dragging
+   the whole paper up over the band: only the photo overlaps. */
 .article__paper {
+  display: flow-root;
   padding-bottom: 5rem;
   background: var(--color-paper);
   color: var(--brand-navy);
@@ -3602,8 +3605,103 @@ a.news-pager__link:focus-visible {
   outline-color: var(--brand-navy);
 }
 
+/* THE MAIN PHOTO: pulled up over the band, at its own shape (the editor's crop),
+   centred. It is never taller than --cap (720px on desktop, 520px on phones, so a
+   portrait flyer stays on screen): its width is the smaller of the full width and
+   the cap times its shape, and its height follows from that. The shadow lifts it
+   off the page. The credit underneath is small grey text. */
+.article__photo {
+  --cap: 520px;
+  position: relative;
+  margin: -6rem 0 0;
+}
+
+.article__photo img,
+.article-photo img {
+  display: block;
+  width: min(100%, calc(var(--cap) * var(--ratio)));
+  height: auto;
+  margin-inline: auto;
+}
+
+.article__photo img {
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgb(15 27 43 / 0.35);
+}
+
+/* The credit and the captions are as wide as their photo, so they line up with it */
+.article__photo-credit {
+  width: min(100%, calc(var(--cap) * var(--ratio)));
+  margin: 0.875rem auto 0;
+  color: var(--color-grey);
+  font-size: 0.9375rem;
+}
+
 .article__body {
   padding-top: 2.5rem;
+}
+
+/* A PHOTO IN THE TEXT: full width, its own shape, 12px corners, with the caption
+   on the left and the credit on the right (whichever is missing is left out).
+   The same height cap as the main photo. */
+.article-photo {
+  --cap: 520px;
+  margin: 2.5rem 0;
+}
+
+.article-photo img {
+  border-radius: 12px;
+}
+
+.article-photo__caption {
+  width: min(100%, calc(var(--cap) * var(--ratio)));
+  margin-inline: auto;
+}
+
+.article-photo__caption,
+.article-row__caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-top: 0.75rem;
+  color: var(--color-grey);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.article-photo__caption__credit,
+.article-row__caption__credit {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* PHOTOS SIDE BY SIDE: equal columns, 20px apart. On phones they stack, each
+   3 by 2 around its focus point, 10px apart. */
+.article-row {
+  display: grid;
+  gap: 0.625rem;
+  margin: 2.5rem 0;
+}
+
+.article-row__item {
+  margin: 0;
+}
+
+.article-row__item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  height: auto;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.article-row__caption {
+  font-size: 0.875rem;
 }
 
 /* Every text block is at most 960px wide, aligned with the left edge */
@@ -3756,7 +3854,42 @@ a.news-pager__link:focus-visible {
 /* From 920px, the phone layout's switch: the larger text sizes of the design */
 @media (min-width: 57.5em) {
   .article__band {
-    padding-top: 10rem; /* header 104px tall + 56px */
+    padding: 10rem 0 16.25rem; /* header 104px tall + 56px; 260px at the bottom */
+  }
+
+  .article__photo {
+    --cap: 720px;
+    margin-top: -13.25rem; /* 212px */
+  }
+
+  .article__photo img {
+    border-radius: 16px;
+  }
+
+  .article-photo {
+    --cap: 720px;
+    margin: 3.5rem 0;
+  }
+
+  .article-row {
+    gap: 1.25rem;
+    margin: 3.5rem 0;
+  }
+
+  .article-row--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .article-row--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .article-row--2 .article-row__item img {
+    aspect-ratio: 3 / 2;
+  }
+
+  .article-row--3 .article-row__item img {
+    aspect-ratio: 1 / 1;
   }
 
   .article__body {

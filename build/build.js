@@ -319,6 +319,67 @@ async function fetchNewsPhoto(post) {
   return {files, shapes}
 }
 
+// THE PHOTOS ON ARTICLE PAGES (Phase 7, step e, 6 Nov 2026): the main photo, single
+// photos and photos in a row. Like the card photos they are downloaded at build time,
+// WebP with a JPG fallback, never enlarged past the original, and served from this site.
+// ratio null: the photo's own shape (the editor's crop, no hotspot cut); a ratio
+// (such as 3 / 2): cut to that shape around the hotspot. Returns the image as the page
+// needs it, and adds the files to write to `files`.
+async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null}) {
+  if (!photo || !photo.url || !photo.assetId) return null
+  const id = photo.assetId.split('-')[1].slice(0, 10)
+  let rect
+  if (ratio) {
+    rect = cropForShape(photo, ratio)
+  } else {
+    const {left = 0, top = 0, right = 0, bottom = 0} = photo.crop || {}
+    rect = {
+      x: Math.round(left * photo.width),
+      y: Math.round(top * photo.height),
+      w: Math.round((1 - left - right) * photo.width),
+      h: Math.round((1 - top - bottom) * photo.height),
+    }
+  }
+  const shape = rect.w / rect.h
+  const usable = widths.filter((w, i) => i === 0 || w <= rect.w)
+  const image = {
+    webp: [], jpg: [], width: usable.at(-1), height: Math.round(usable.at(-1) / shape),
+    ratio: shape,
+    alt: (photo.alt || '').trim(), caption: (photo.caption || '').trim(), credit: (photo.credit || '').trim(),
+    position: `${Math.round((photo.hotspot?.x ?? 0.5) * 100)}% ${Math.round((photo.hotspot?.y ?? 0.5) * 100)}%`,
+  }
+  for (const format of ['webp', 'jpg']) {
+    for (const width of usable) {
+      const height = Math.round(width / shape)
+      const url = `${photo.url}?rect=${rect.x},${rect.y},${rect.w},${rect.h}&w=${width}` +
+        (ratio ? `&h=${height}&fit=crop` : '&fit=max') + `&fm=${format}&q=${format === 'webp' ? 72 : 78}`
+      const hash = crypto.createHash('sha1').update(url).digest('hex').slice(0, 8)
+      const name = `${post.slug.replace(/[^a-z0-9-]/g, '')}-${id}-${tag.replace(/[^a-z0-9-]/gi, '')}-${width}-${hash}.${format}`
+      files.push({name, data: await downloadCached(url, post.title, hash, format)})
+      image[format].push(`/${NEWS_DIR}/${name} ${width}w`)
+    }
+  }
+  image.src = image.jpg.at(-1).split(' ')[0]
+  return image
+}
+
+// Every photo one article needs: the main photo and each photo in its text, found by
+// the block's key. A row of three is cut square, a row of two 3 by 2.
+async function fetchArticleImages(post, files) {
+  const images = {main: await fetchArticleImage(post.photo, post, files, {tag: 'main', widths: [800, 1312, 2000]}), byKey: {}}
+  for (const block of post.body || []) {
+    if (block._type === 'image') {
+      images.byKey[block._key] = await fetchArticleImage(block, post, files, {tag: `photo-${block._key}`, widths: [800, 1312, 2000]})
+    } else if (block._type === 'imageRow') {
+      const ratio = (block.images || []).length === 3 ? 1 : 3 / 2
+      for (const photo of block.images || []) {
+        images.byKey[photo._key] = await fetchArticleImage(photo, post, files, {tag: `row-${photo._key}`, widths: [480, 960], ratio})
+      }
+    }
+  }
+  return images
+}
+
 // "2026-07-21" as "21 July 2026"
 function formatPostDate(date) {
   return new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'})
@@ -557,7 +618,13 @@ async function main() {
   // Same date: created later first. The body is fetched now for the article pages.
   const allPosts = await sanityQuery(
     '*[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current)] | order(publishedAt desc, _createdAt desc)' +
-      '{title, "slug": slug.current, publishedAt, category, body, "photo": mainImage{alt, credit, hotspot, crop, "url": asset->url, ' +
+      '{title, "slug": slug.current, publishedAt, category, ' +
+      // The article: every photo (and every photo in a row) gets its address and size
+      'body[]{..., _type == "image" => {"url": asset->url, "assetId": asset->_id, ' +
+      '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}, ' +
+      '_type == "imageRow" => {images[]{..., "url": asset->url, "assetId": asset->_id, ' +
+      '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}}, ' +
+      '"photo": mainImage{alt, credit, hotspot, crop, "url": asset->url, ' +
       '"assetId": asset->_id, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}',
   )
   const newsFiles = []
@@ -565,6 +632,7 @@ async function main() {
     const photo = await fetchNewsPhoto(post)
     post.shapes = photo.shapes
     newsFiles.push(...photo.files)
+    post.images = await fetchArticleImages(post, newsFiles)
   }
   const posts = allPosts.slice(0, 3)
   // No posts: the section is left out of the page altogether

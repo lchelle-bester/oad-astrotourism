@@ -6,8 +6,9 @@
 //
 // Step d of Phase 7 handles the text blocks: paragraphs (the first one is the
 // lead), subheadings, quotes, bulleted and numbered lists, bold, italic and
-// links. Photos, rows of photos, buttons, YouTube and Spotify come in the next
-// steps; until then they are skipped and counted (the build prints how many).
+// links. Photos and rows of photos are drawn by functions news-article.js passes in
+// (step e). Buttons, YouTube and Spotify come in the next steps; until then they are
+// skipped and counted (the build prints how many).
 
 const HEADINGS = {h2: 'h2', h3: 'h3', h4: 'h3', h5: 'h3', h6: 'h3'} // the post title is the h1; deeper levels map to h3
 
@@ -47,7 +48,9 @@ function renderSpans(block, h) {
   }).join('')
 }
 
-// body: the post's blocks. h: {escapeHtml, safeUrl}.
+// body: the post's blocks. h: {escapeHtml, safeUrl, custom}. custom maps a block type
+// (image, imageRow, ...) to a function that returns that block's HTML, or nothing if
+// it cannot (then the block is counted as skipped).
 // Returns {html, skipped, text}: the HTML, a count of skipped block types, and
 // the plain text of every text block (in order).
 function renderPortableText(body, h) {
@@ -63,7 +66,9 @@ function renderPortableText(body, h) {
     if (!block || block._type !== 'block') {
       while (lists.length) closeList()
       const type = (block && block._type) || 'unknown'
-      skipped[type] = (skipped[type] || 0) + 1
+      const html = block && h.custom && h.custom[type] ? h.custom[type](block) : ''
+      if (html) out.push(html)
+      else skipped[type] = (skipped[type] || 0) + 1
       continue
     }
     const words = plainText(block).trim()
