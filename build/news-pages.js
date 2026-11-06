@@ -6,9 +6,6 @@
 // goes. build.js owns everything that needs Sanity or the template engine and
 // hands its helper functions in as `h`, so this file needs nothing of its own.
 
-const FIRST_PAGE_CARDS = 9 // page 1 of a list: the featured post plus 9 cards
-const LATER_PAGE_CARDS = 12 // later pages: 4 rows of 3
-
 const INTRO =
   'Projects, events and updates from the astrotourism work of the OAD.'
 
@@ -19,12 +16,58 @@ function listUrl(key, page) {
   return page > 1 ? `${base}page/${page}/` : base
 }
 
-// Page 1 holds the featured post and 9 cards (10 posts); every later page 12.
+// PAGE SIZES (6 Nov 2026, L'chelle: fewer posts per page, and no lone card at the
+// end). The pages are built ahead of time, so one size has to suit a phone (1
+// column), a tablet (2) and a desktop (3).
+// Target 6 (two rows of 3, three rows of 2).
+// A page is "clean" when its cards fill every row in both grids: an even
+// count (no lone card in the 2-column grid) that is not 1 more than a multiple
+// of 3 (no lone card in the 3-column grid). So 6 is clean; 4 and 10 leave one
+// card alone in 3 columns; odd counts leave one alone in 2 columns. The
+// planner picks page sizes from 2 to 9 with the lowest cost, which keeps pages
+// near 6 and avoids lone cards; when the number of cards is odd, one odd page
+// cannot be avoided, and it is placed last.
+const TARGET = 6
+
+function pageCost(size, last) {
+  let cost = Math.abs(size - TARGET) * (last ? 2 : 8)
+  if (size % 3 === 1) cost += 50 // a lone card in the 3-column grid
+  if (size % 2 === 1) cost += last ? 40 : 45 // a lone card in the 2-column grid
+  if (size < 3) cost += 30 // a nearly empty page
+  return cost
+}
+
+function planPageSizes(cards) {
+  if (cards <= 0) return [0]
+  const memo = new Map()
+  const best = (rest) => {
+    if (memo.has(rest)) return memo.get(rest)
+    let result = null
+    for (let size = 2; size <= 9 && size <= rest; size++) {
+      const last = size === rest
+      const tail = last ? {cost: 0, sizes: []} : best(rest - size)
+      if (!tail) continue
+      const cost = pageCost(size, last) + tail.cost + (last ? 0 : 3) // 3: each extra page costs a little
+      if (!result || cost < result.cost) result = {cost, sizes: [size, ...tail.sizes]}
+    }
+    memo.set(rest, result)
+    return result
+  }
+  const plan = best(cards)
+  // a lone page of 1 card (cards === 1) has no valid size: allow it
+  return plan ? plan.sizes : [cards]
+}
+
+// Page 1 is the featured post plus its cards; every page is planned by planPageSizes.
 // An empty list still gets one page, which says there is nothing yet.
 function splitIntoPages(posts) {
-  const pages = [posts.slice(0, FIRST_PAGE_CARDS + 1)]
-  for (let i = FIRST_PAGE_CARDS + 1; i < posts.length; i += LATER_PAGE_CARDS) {
-    pages.push(posts.slice(i, i + LATER_PAGE_CARDS))
+  if (!posts.length) return [[]]
+  const sizes = planPageSizes(posts.length - 1)
+  const pages = [posts.slice(0, 1 + sizes[0])]
+  let at = 1 + sizes[0]
+  for (const size of sizes.slice(1)) {
+    pages.push(posts.slice(at, at + size))
+    at += size
   }
   return pages
 }

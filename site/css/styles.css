@@ -3156,6 +3156,8 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.12); /* like the line above it (6 Nov 2026) */
 }
 
 .news-feature__photo {
@@ -3240,12 +3242,12 @@ h3 {
 .news-feature__arrow {
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
   background: var(--color-accent);
   color: var(--color-night);
-  font-size: 1.25rem;
+  font-size: 1rem;
   line-height: 1;
   transition: transform 0.25s ease-out;
 }
@@ -3267,7 +3269,7 @@ h3 {
 }
 
 .news-feature + .news-page__list {
-  margin-top: 6rem;
+  margin-top: 3rem;
 }
 
 .news-page__empty {
