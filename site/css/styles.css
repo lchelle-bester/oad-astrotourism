@@ -3367,8 +3367,12 @@ a.news-pager__link:focus-visible {
     font-size: clamp(3.25rem, 1.9rem + 2.3vw, 4rem);
   }
 
+  /* One line (L'chelle, 6 Nov 2026). The text is about 560px wide at this size, and
+     the narrowest space it gets from 920px is about 780px. */
   .news-page__intro {
+    max-width: none;
     font-size: 1.1875rem;
+    white-space: nowrap;
   }
 
   .news-filter__list {
