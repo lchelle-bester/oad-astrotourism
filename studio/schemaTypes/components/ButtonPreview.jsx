@@ -1,5 +1,5 @@
 import {Box, Text} from '@sanity/ui'
-import {buttonColours} from '../buttonColours'
+import {buttonColours} from '../buttonColours.mjs'
 
 // How a button looks inside the article in the Studio: a real coloured pill with
 // its words, placed left, centre or right as chosen, and the place it goes to

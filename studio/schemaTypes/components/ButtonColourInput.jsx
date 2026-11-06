@@ -1,6 +1,6 @@
 import {Flex, Stack, Text} from '@sanity/ui'
 import {set} from 'sanity'
-import {buttonColours} from '../buttonColours'
+import {buttonColours} from '../buttonColours.mjs'
 
 // The colour field of an article button: the brand colours as real coloured
 // circles with their names, the chosen one ringed. Click one to choose it.

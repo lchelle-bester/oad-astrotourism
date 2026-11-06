@@ -124,6 +124,73 @@ function renderSpotify(block, h) {
   }, h)
 }
 
+// THE BUTTON BLOCK (step g). Colours come from studio/schemaTypes/buttonColours.mjs (the
+// Studio's own table), pages from sitePages.mjs. A button the page cannot draw (no words,
+// both or neither of page and address, a page that is not in the list, an address that is
+// not https or http) is left out and counted, so the build shows it. On the paper
+// background the light colours (yellow, sand, white are 1.4, 1.7 and 1.1:1 against it)
+// get a navy edge, decided 6 Nov 2026: any colour under 3:1 against the paper does.
+const PAPER = '#f6efe5' // the same as --color-paper in the CSS
+
+function luminance(hex) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+function contrast(a, b) {
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (light + 0.05) / (dark + 0.05)
+}
+
+function renderButton(block, h) {
+  const label = (block.label || '').trim()
+  if (!label) return ''
+  let href
+  let outside = false
+  if (block.page && !block.url) {
+    if (!h.buttons.pages.some((page) => page.value === block.page)) return ''
+    href = block.page
+  } else if (block.url && !block.page) {
+    href = h.safeUrl(block.url, ['https:', 'http:'])
+    if (!href) return ''
+    outside = true
+  } else {
+    return ''
+  }
+  const colour = h.buttons.colours.find((c) => c.value === block.colour) || h.buttons.colours[0]
+  const align = ['left', 'center', 'right'].includes(block.align) ? block.align : 'left'
+  const edged = contrast(colour.hex, PAPER) < 3 ? ' article-button__link--edged' : ''
+  const arrow = outside ? ' <span aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens another site)</span>' : ''
+  return `<p class="article-button article-button--${align}"><a class="article-button__link${edged}" href="${h.escapeHtml(href)}" style="--btn-bg: ${colour.hex}; --btn-ink: ${colour.ink}">${h.escapeHtml(label)}${arrow}</a></p>`
+}
+
+// MORE FROM OAD (step g): three other posts after the article, the homepage's news
+// section in an article page. The newest other posts in the same category, topped up
+// with the newest from any category when there are fewer than three. Left out when
+// there are no other posts.
+function renderMore(post, h) {
+  const others = h.allPosts.filter((p) => p.slug !== post.slug)
+  const picks = others.filter((p) => p.category === post.category).slice(0, 3)
+  for (const other of others) {
+    if (picks.length >= 3) break
+    if (!picks.includes(other)) picks.push(other)
+  }
+  if (!picks.length) return ''
+  return `
+    <section class="news news--more" aria-labelledby="more-heading">
+      <div class="news__inner">
+        <div class="news__intro">
+          <p class="news__eyebrow">Keep reading</p>
+          <h2 id="more-heading" class="news__heading">More from OAD</h2>
+        </div>
+        <ul class="news__list">${h.renderNewsCards(picks)}
+        </ul>
+        <a class="pill-button news__button" href="/news/">See all updates <span class="pill-button__icon" aria-hidden="true">&rarr;</span></a>
+      </div>
+    </section>`
+}
+
 // Addresses the News section already uses; a post with one of these as its slug
 // would hide a real page
 const RESERVED = ['page', 'category']
@@ -143,6 +210,7 @@ function renderArticle(post, h) {
       imageRow: (block) => renderPhotoRow(block, images, h),
       youtube: (block) => renderYoutube(block, images, h),
       spotify: (block) => renderSpotify(block, h),
+      button: (block) => renderButton(block, h),
     },
   })
   return {
@@ -157,6 +225,7 @@ function renderArticle(post, h) {
       dateText: h.formatPostDate(post.publishedAt),
       photo: renderMainPhoto(images.main, h),
       body: body.html,
+      more: renderMore(post, h),
     },
   }
 }

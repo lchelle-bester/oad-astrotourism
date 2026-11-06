@@ -19,7 +19,15 @@
       <div class="article__head">
         <a class="article__back-top" href="/news/"><span aria-hidden="true">&larr;</span> Back to news</a>
         <h1 class="article__title">{{page.title}}</h1>
-        <p class="article__meta"><span class="article__category">{{page.categoryLabel}}</span><span class="article__dot" aria-hidden="true">·</span><time datetime="{{page.date}}">{{page.dateText}}</time></p>
+        <div class="article__meta-row">
+          <p class="article__meta"><span class="article__category">{{page.categoryLabel}}</span><span class="article__dot" aria-hidden="true">·</span><time datetime="{{page.date}}">{{page.dateText}}</time></p>
+          <!-- Hidden until main.js shows it, and only when the browser can copy to the clipboard -->
+          <button type="button" class="copy-link" aria-label="Copy link to this post" data-copy-link hidden>
+            <svg class="copy-link__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l3.5-3.5a3 3 0 1 1 4.2 4.2l-1.8 1.8-1.4-1.4 1.8-1.8a1 1 0 1 0-1.4-1.4L12 13.4a1 1 0 0 1-1.4 0zM13.4 10.6a1 1 0 0 1 0 1.4L9.9 15.5a3 3 0 1 1-4.2-4.2l1.8-1.8 1.4 1.4-1.8 1.8a1 1 0 1 0 1.4 1.4l3.5-3.5a1 1 0 0 1 1.4 0z" fill="currentColor"/></svg>
+            <span class="copy-link__text"><span class="copy-link__full">Copy link</span><span class="copy-link__short">Copy</span></span>
+            <span class="copy-link__done">Link copied</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -32,11 +40,20 @@
 
         <div class="article__end">
           <p class="article__filed">Filed under <a href="{{page.categoryUrl}}">{{page.categoryLabel}}</a></p>
+          <button type="button" class="copy-link copy-link--paper" aria-label="Copy link to this post" data-copy-link hidden>
+            <svg class="copy-link__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l3.5-3.5a3 3 0 1 1 4.2 4.2l-1.8 1.8-1.4-1.4 1.8-1.8a1 1 0 1 0-1.4-1.4L12 13.4a1 1 0 0 1-1.4 0zM13.4 10.6a1 1 0 0 1 0 1.4L9.9 15.5a3 3 0 1 1-4.2-4.2l1.8-1.8 1.4 1.4-1.8 1.8a1 1 0 1 0 1.4 1.4l3.5-3.5a1 1 0 0 1 1.4 0z" fill="currentColor"/></svg>
+            <span class="copy-link__text"><span class="copy-link__full">Copy link</span></span>
+            <span class="copy-link__done">Link copied</span>
+          </button>
           <a class="article__back" href="/news/"><span aria-hidden="true">&larr;</span> All news</a>
         </div>
       </div>
     </div>
+{{{page.more}}}
   </main>
+
+  <!-- Announces "Link copied" to screen readers (filled in by main.js) -->
+  <p class="visually-hidden" id="copy-status" role="status" aria-live="polite"></p>
 
 {{> footer}}
 

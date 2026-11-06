@@ -787,3 +787,39 @@ document.querySelectorAll('.embed__frame[data-embed-src]').forEach((frame) => {
     player.focus() // keyboard users land on the player, where they can carry on
   })
 })
+
+// COPY LINK on article pages
+// The buttons are in the page with the hidden attribute, and are only shown when the
+// browser can copy to the clipboard, so nobody gets a button that does nothing. Pressing
+// one copies the page's address and, for two seconds, the button says "Link copied" (a
+// polite live region announces it to screen readers too). No third-party scripts.
+const copyButtons = [...document.querySelectorAll('[data-copy-link]')]
+const copyStatus = document.getElementById('copy-status')
+
+if (copyButtons.length && navigator.clipboard && navigator.clipboard.writeText) {
+  let copyTimer
+  const label = copyButtons[0].getAttribute('aria-label')
+
+  function showCopied(done) {
+    copyButtons.forEach((button) => {
+      button.classList.toggle('is-copied', done)
+      button.setAttribute('aria-label', done ? 'Link copied' : label)
+    })
+    if (copyStatus) copyStatus.textContent = done ? 'Link copied' : ''
+  }
+
+  copyButtons.forEach((button) => {
+    button.hidden = false
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.origin + window.location.pathname)
+      } catch {
+        if (copyStatus) copyStatus.textContent = 'Could not copy the link'
+        return
+      }
+      showCopied(true)
+      clearTimeout(copyTimer)
+      copyTimer = setTimeout(() => showCopied(false), 2000)
+    })
+  })
+}

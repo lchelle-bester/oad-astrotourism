@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {sitePages} from './sitePages'
+import {sitePages} from './sitePages.mjs'
 
 // "What we do": OAD's four pillars as a ring of segments (design in docs/pillars/;
 // six until 6 Nov 2026, when Promotion & Awareness and Publications were removed).

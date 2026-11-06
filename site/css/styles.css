@@ -3570,8 +3570,17 @@ a.news-pager__link:focus-visible {
   line-height: 1.15;
 }
 
+.article__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-top: 1.75rem;
+}
+
 .article__meta {
-  margin: 1.75rem 0 0;
+  margin: 0;
   color: rgb(255 255 255 / 0.7);
   font-size: 0.75rem;
   font-weight: 600;
@@ -3592,7 +3601,7 @@ a.news-pager__link:focus-visible {
    the whole paper up over the band: only the photo overlaps. */
 .article__paper {
   display: flow-root;
-  padding-bottom: 5rem;
+  padding-bottom: 5rem; /* 120px from 920px: the space before More from OAD */
   background: var(--color-paper);
   color: var(--brand-navy);
 }
@@ -3826,6 +3835,136 @@ a.news-pager__link:focus-visible {
   line-height: 1.35;
 }
 
+/* THE BUTTON BLOCK (step g). The colours come from the Studio's own table through two
+   custom properties on each button (--btn-bg, --btn-ink). A colour that is under 3:1
+   against the paper (yellow, sand and white) gets a 1.5px navy edge, decided 6 Nov 2026.
+   The editor chooses left, centre or right within the text column. */
+.article-button {
+  display: flex;
+  max-width: 960px;
+  margin: 2rem 0;
+}
+
+.article-button--center {
+  justify-content: center;
+}
+
+.article-button--right {
+  justify-content: flex-end;
+}
+
+.article__body .article-button__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: filter 0.2s;
+}
+
+.article__body .article-button__link--edged {
+  box-shadow: inset 0 0 0 1.5px var(--brand-navy);
+}
+
+.article__body .article-button__link:focus-visible {
+  color: var(--btn-ink);
+  text-decoration: none;
+  filter: brightness(0.92);
+}
+
+@media (hover: hover) {
+  .article__body .article-button__link:hover {
+    color: var(--btn-ink);
+    text-decoration: none;
+    filter: brightness(0.92);
+  }
+}
+
+/* COPY LINK: shown by main.js only where the browser can copy. One in the band (white
+   on the dark, yellow on hover) and one at the end (navy on the paper). Phones show
+   "Copy" in the band; the end button is full width. After a copy the label says
+   "Link copied" for two seconds. */
+.copy-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  border: 1px solid rgb(255 255 255 / 0.5);
+  border-radius: 999px;
+  background: none;
+  color: var(--white);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.copy-link__icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.copy-link__short,
+.copy-link__done {
+  display: none;
+}
+
+.copy-link.is-copied .copy-link__text {
+  display: none;
+}
+
+.copy-link.is-copied .copy-link__done {
+  display: inline;
+}
+
+.copy-link:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+@media (hover: hover) {
+  .copy-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+}
+
+.copy-link--paper {
+  border-color: rgb(30 53 81 / 0.6);
+  color: var(--brand-navy);
+}
+
+.copy-link--paper:focus-visible {
+  border-color: var(--brand-teal);
+  color: var(--brand-teal);
+}
+
+@media (hover: hover) {
+  .copy-link--paper:hover {
+    border-color: var(--brand-teal);
+    color: var(--brand-teal);
+  }
+}
+
+/* On phones the band's button says "Copy" */
+.article__meta-row .copy-link__full {
+  display: none;
+}
+
+.article__meta-row .copy-link__short {
+  display: inline;
+}
+
 /* VIDEOS, PLAYLISTS AND PODCASTS (step f). Nothing from YouTube or Spotify loads until
    someone presses play; main.js then swaps the button for the player. At most as wide as
    the text (960px), a video at 16 by 9. A video with a still image shows the picture, a
@@ -4018,24 +4157,74 @@ a.news-pager__link:focus-visible {
 
 /* THE END ROW: a thin line, then "Filed under" and the way back */
 .article__end {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "copy copy"
+    "filed back";
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem 1.5rem;
+  gap: 1.25rem 1.5rem;
   margin-top: 4.5rem;
   padding-top: 1.75rem;
   border-top: 1px solid rgb(30 53 81 / 0.18);
 }
 
+.article__end .copy-link {
+  grid-area: copy;
+}
+
 .article__filed {
+  grid-area: filed;
   margin: 0;
   color: var(--color-grey);
   font-size: 0.9375rem;
 }
 
 .article__back {
+  grid-area: back;
   font-weight: 600;
+}
+
+/* More from OAD: the homepage's news section, here under an article. It is not under
+   a proof section's wave, so it needs no extra top space (88px, then 96px at the bottom). */
+.news--more {
+  margin-top: 0;
+}
+
+.news--more .news__inner {
+  padding: 5.5rem var(--gutter) 6rem;
+}
+
+/* Phones: text-only rows, like the homepage, with a thin line above each (all three,
+   including the first, which has a photo on the homepage) */
+@media not all and (min-width: 57.5em) {
+  .news--more .news__item,
+  .news--more .news__item:first-child {
+    padding: 1rem 0;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+
+  .news--more .news__item .news-card__photo {
+    display: none;
+  }
+
+  .news--more .news__item .news-card__text {
+    padding-top: 0;
+  }
+
+  .news--more .news__item .news-card__title {
+    margin-top: 0.375rem;
+    font-size: 1.0625rem;
+    line-height: 1.25;
+  }
+
+  .news--more .news__item .news-card__title a::after {
+    border-radius: 4px;
+  }
+
+  .news--more .news__button {
+    margin-top: 0.375rem;
+  }
 }
 
 /* From 920px, the phone layout's switch: the larger text sizes of the design */
@@ -4060,6 +4249,27 @@ a.news-pager__link:focus-visible {
 
   .embed {
     margin: 3.5rem 0;
+  }
+
+  .article__paper {
+    padding-bottom: 7.5rem;
+  }
+
+  .article__end {
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas: "filed copy back";
+  }
+
+  .article__meta-row .copy-link__full {
+    display: inline;
+  }
+
+  .article__meta-row .copy-link__short {
+    display: none;
+  }
+
+  .news--more .news__inner {
+    padding: 5.5rem var(--gutter) 6rem; /* the homepage's desktop padding is wider, this is the design's */
   }
 
   .embed--video .embed__play {

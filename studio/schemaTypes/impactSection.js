@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {sitePages} from './sitePages'
+import {sitePages} from './sitePages.mjs'
 
 // "Proof": the teal band after the six pillars (design in docs/proof/).
 // One headline figure, exactly three results and a link to the full outcomes.

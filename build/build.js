@@ -676,6 +676,11 @@ async function main() {
   )
   // The link rules for videos and podcasts, shared with the Studio (which checks the same links)
   const media = await import(pathToFileURL(path.join(ROOT, 'studio', 'schemaTypes', 'mediaLinks.mjs')).href)
+  // The button colours and the page list come from the Studio's own files, so the Studio
+  // and the articles never disagree about what a colour or a page is
+  const buttonColours = await import(pathToFileURL(path.join(ROOT, 'studio', 'schemaTypes', 'buttonColours.mjs')).href)
+  const sitePages = await import(pathToFileURL(path.join(ROOT, 'studio', 'schemaTypes', 'sitePages.mjs')).href)
+  const buttons = {colours: buttonColours.buttonColours, pages: sitePages.sitePages}
   const newsFiles = []
   for (const post of allPosts) {
     const photo = await fetchNewsPhoto(post)
@@ -751,7 +756,7 @@ async function main() {
   const articleTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'news-article.html'), 'utf8'))
   const notDrawn = {}
   for (const post of allPosts) {
-    const {file, page, skipped} = renderArticle(post, {escapeHtml, safeUrl, formatPostDate, POST_CATEGORIES, media})
+    const {file, page, skipped} = renderArticle(post, {escapeHtml, safeUrl, formatPostDate, POST_CATEGORIES, media, buttons, allPosts, renderNewsCards})
     const target = path.join(DIST_DIR, file)
     fs.mkdirSync(path.dirname(target), {recursive: true})
     fs.writeFileSync(target, renderTemplate(articleTemplate, {...data, page}))
@@ -760,7 +765,7 @@ async function main() {
 
   pruneCache()
   console.log(`News: ${allPosts.length} published posts, ${listPages.length} list pages, ${allPosts.length} article pages`)
-  if (Object.keys(notDrawn).length) console.log('Not drawn yet in articles:', JSON.stringify(notDrawn))
+  if (Object.keys(notDrawn).length) console.log('Blocks not drawn in articles (check the posts):', JSON.stringify(notDrawn))
   console.log(`Site settings: ${siteSettings.social.length} social links, ${siteSettings.partners.length} partner logos`)
 }
 
