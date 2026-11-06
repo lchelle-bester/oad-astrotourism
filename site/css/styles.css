@@ -3400,6 +3400,34 @@ a.news-pager__link:focus-visible {
   }
 }
 
+/* The featured post: photo and text side by side from 768px (48em), the width of an
+   iPad held upright (L'chelle, 6 Nov 2026; it was 920px). Below that the photo is on
+   top and the title under it, as on phones. */
+@media (min-width: 48em) {
+  .news-feature {
+    flex-direction: row;
+    align-items: center;
+    gap: 3.5rem;
+  }
+
+  .news-feature__photo {
+    flex: 0 1 34rem; /* 544px: about 1.5 cards wide, no longer grows to fill the row */
+  }
+
+  .news-feature__photo img {
+    aspect-ratio: 16 / 9;
+  }
+
+  .news-feature__text {
+    flex: 1 1 360px;
+    min-width: 0;
+  }
+
+  .news-feature__title {
+    font-size: clamp(1.5rem, 1.1rem + 1.1vw, 2rem);
+  }
+}
+
 /* From 920px: the featured post is photo and text side by side, and the
    cards fill as many columns as fit (three at 1440, two at 1024 to about
    1100). Gaps: 56px between rows, 96px between columns. */
@@ -3431,28 +3459,6 @@ a.news-pager__link:focus-visible {
   .news-filter__link {
     padding: 0 1.25rem;
     font-size: 0.9375rem;
-  }
-
-  .news-feature {
-    flex-direction: row;
-    align-items: center;
-    gap: 3.5rem;
-  }
-
-  .news-feature__photo {
-    flex: 0 1 34rem; /* 544px: about 1.5 cards wide, no longer grows to fill the row */
-  }
-
-  .news-feature__photo img {
-    aspect-ratio: 16 / 9;
-  }
-
-  .news-feature__text {
-    flex: 1 1 360px;
-  }
-
-  .news-feature__title {
-    font-size: clamp(1.5rem, 1.1rem + 1.1vw, 2rem);
   }
 
   .news-page__list {
