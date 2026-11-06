@@ -4081,7 +4081,7 @@ a.news-pager__link:focus-visible {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.125rem;
+  padding: 1.625rem 1.125rem; /* 1.125rem all round until 6 Nov 2026: 16px taller */
 }
 
 .embed__icon {
