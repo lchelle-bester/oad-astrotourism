@@ -4,8 +4,7 @@
 // escapeHtml and every link address through a check, and a block type this file
 // does not know is skipped, never printed.
 //
-// Step d of Phase 7 handles the text blocks: paragraphs (the first one is the
-// lead), subheadings, quotes, bulleted and numbered lists, bold, italic and
+// Step d of Phase 7 handles the text blocks: paragraphs, subheadings, quotes, bulleted and numbered lists, bold, italic and
 // links. Photos and rows of photos are drawn by functions news-article.js passes in
 // (step e). Buttons, YouTube and Spotify come in the next steps; until then they are
 // skipped and counted (the build prints how many).
@@ -58,7 +57,6 @@ function renderPortableText(body, h) {
   const skipped = {}
   const text = []
   const lists = [] // the lists that are open, outermost first: 'ul' or 'ol'
-  let lead = true // the first paragraph of the article is the lead, wherever it comes
 
   const closeList = () => out.push(`</li></${lists.pop()}>`)
 
@@ -98,8 +96,7 @@ function renderPortableText(body, h) {
     } else if (HEADINGS[style]) {
       out.push(`<${HEADINGS[style]}>${inner}</${HEADINGS[style]}>`)
     } else {
-      out.push(lead ? `<p class="article__lead">${inner}</p>` : `<p>${inner}</p>`)
-      lead = false
+      out.push(`<p>${inner}</p>`)
     }
   }
   while (lists.length) closeList()
