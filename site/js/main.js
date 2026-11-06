@@ -779,8 +779,9 @@ document.querySelectorAll('.embed__frame[data-embed-src]').forEach((frame) => {
     player.className = 'embed__iframe'
     player.src = src
     player.title = title
+    // fullscreen is allowed here; a separate allowFullscreen setting would only repeat it
+    // (and Chrome warns that the allow list wins)
     player.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'
-    player.allowFullscreen = true
     player.referrerPolicy = 'strict-origin-when-cross-origin'
     if (frame.dataset.embedHeight) player.style.height = `${frame.dataset.embedHeight}px`
     frame.replaceChildren(player)
