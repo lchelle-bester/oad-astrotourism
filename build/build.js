@@ -432,10 +432,11 @@ async function fetchArticleImages(post, files) {
   return images
 }
 
-// The address the site will live at, for the canonical link and the address of the share
-// picture on article pages (they must be full addresses). It has to match the address the
-// site really ends up on: confirm with OAD how the subdomain will point here (CLAUDE.md).
-const SITE_URL = process.env.SITE_URL || 'https://astrotourism.astro4dev.org'
+// The address the site is at, for the canonical link and the address of the share picture
+// on article pages (they must be full addresses). For now this is the Netlify preview
+// (decided 6 Nov 2026). When the site is approved and OAD says where it will officially
+// live, change this one line (or set SITE_URL in Netlify).
+const SITE_URL = process.env.SITE_URL || 'https://astrotourism.netlify.app'
 
 // "2026-07-21" as "21 July 2026"
 function formatPostDate(date) {
