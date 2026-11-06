@@ -10,7 +10,7 @@ const FIRST_PAGE_CARDS = 9 // page 1 of a list: the featured post plus 9 cards
 const LATER_PAGE_CARDS = 12 // later pages: 4 rows of 3
 
 const INTRO =
-  'Projects, events and updates from the astrotourism work of the IAU Office of Astronomy for Development.'
+  'Projects, events and updates from the astrotourism work of the OAD.'
 
 // Where a list lives. "all" is /news/, a category is /news/category/<code>/;
 // page 2 and later add page/<n>/.
