@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{page.title}} | Astrotourism</title>
   <meta name="description" content="{{page.description}}">
+  <link rel="canonical" href="{{page.canonical}}">
+  <!-- How the article looks when it is shared (link previews): the post's own words and its
+       main photo at 1200 wide -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Astrotourism">
+  <meta property="og:url" content="{{page.canonical}}">
+  <meta property="og:title" content="{{page.title}}">
+  <meta property="og:description" content="{{page.description}}">
+  <meta property="og:image" content="{{page.shareImage}}">
+  <meta property="og:image:width" content="{{page.shareImageWidth}}">
+  <meta property="og:image:height" content="{{page.shareImageHeight}}">
+  <meta property="og:image:alt" content="{{page.shareImageAlt}}">
   <link rel="preload" href="/assets/fonts/space-grotesk-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/styles.css">
@@ -20,7 +32,7 @@
         <a class="article__back-top" href="/news/"><span aria-hidden="true">&larr;</span> Back to news</a>
         <h1 class="article__title">{{page.title}}</h1>
         <div class="article__meta-row">
-          <p class="article__meta"><span class="article__category">{{page.categoryLabel}}</span><span class="article__dot" aria-hidden="true">·</span><time datetime="{{page.date}}">{{page.dateText}}</time></p>
+          <p class="article__meta"><span class="article__category">{{page.categoryLabel}}</span><span class="article__dot" aria-hidden="true">·</span><time datetime="{{page.date}}">{{page.dateText}}</time><span class="article__dot" aria-hidden="true">·</span><span class="article__read">{{page.readMinutes}} min<span class="article__read-more"> read</span></span></p>
           <!-- Hidden until main.js shows it, and only when the browser can copy to the clipboard -->
           <button type="button" class="copy-link" aria-label="Copy link to this post" data-copy-link hidden>
             <svg class="copy-link__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l3.5-3.5a3 3 0 1 1 4.2 4.2l-1.8 1.8-1.4-1.4 1.8-1.8a1 1 0 1 0-1.4-1.4L12 13.4a1 1 0 0 1-1.4 0zM13.4 10.6a1 1 0 0 1 0 1.4L9.9 15.5a3 3 0 1 1-4.2-4.2l1.8-1.8 1.4 1.4-1.8 1.8a1 1 0 1 0 1.4 1.4l3.5-3.5a1 1 0 0 1 1.4 0z" fill="currentColor"/></svg>
@@ -36,11 +48,6 @@
         {{{page.photo}}}
         <div class="article__body">
 {{{page.body}}}
-        </div>
-
-        <div class="article__end">
-          <p class="article__filed">Filed under <a href="{{page.categoryUrl}}">{{page.categoryLabel}}</a></p>
-          <a class="article__back" href="/news/"><span aria-hidden="true">&larr;</span> All news</a>
         </div>
       </div>
     </div>

@@ -326,7 +326,7 @@ async function fetchNewsPhoto(post) {
 // ratio null: the photo's own shape (the editor's crop, no hotspot cut); a ratio
 // (such as 3 / 2): cut to that shape around the hotspot. Returns the image as the page
 // needs it, and adds the files to write to `files`.
-async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null}) {
+async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null, formats = ['webp', 'jpg']}) {
   if (!photo || !photo.url || !photo.assetId) return null
   const id = photo.assetId.split('-')[1].slice(0, 10)
   let rect
@@ -349,7 +349,7 @@ async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null}
     alt: (photo.alt || '').trim(), caption: (photo.caption || '').trim(), credit: (photo.credit || '').trim(),
     position: `${Math.round((photo.hotspot?.x ?? 0.5) * 100)}% ${Math.round((photo.hotspot?.y ?? 0.5) * 100)}%`,
   }
-  for (const format of ['webp', 'jpg']) {
+  for (const format of formats) {
     for (const width of usable) {
       const height = Math.round(width / shape)
       const url = `${photo.url}?rect=${rect.x},${rect.y},${rect.w},${rect.h}&w=${width}` +
@@ -413,7 +413,12 @@ async function fetchYoutubeStills(post, media, files) {
 // Every photo one article needs: the main photo and each photo in its text, found by
 // the block's key. A row of three is cut square, a row of two 3 by 2.
 async function fetchArticleImages(post, files) {
-  const images = {main: await fetchArticleImage(post.photo, post, files, {tag: 'main', widths: [800, 1312, 2000]}), byKey: {}}
+  const images = {
+    main: await fetchArticleImage(post.photo, post, files, {tag: 'main', widths: [800, 1312, 2000]}),
+    // The picture shown when the article is shared (the og:image): the main photo, 1200 wide
+    share: await fetchArticleImage(post.photo, post, files, {tag: 'share', widths: [1200], formats: ['jpg']}),
+    byKey: {},
+  }
   for (const block of post.body || []) {
     if (block._type === 'image') {
       images.byKey[block._key] = await fetchArticleImage(block, post, files, {tag: `photo-${block._key}`, widths: [800, 1312, 2000]})
@@ -426,6 +431,11 @@ async function fetchArticleImages(post, files) {
   }
   return images
 }
+
+// The address the site will live at, for the canonical link and the address of the share
+// picture on article pages (they must be full addresses). It has to match the address the
+// site really ends up on: confirm with OAD how the subdomain will point here (CLAUDE.md).
+const SITE_URL = process.env.SITE_URL || 'https://astrotourism.astro4dev.org'
 
 // "2026-07-21" as "21 July 2026"
 function formatPostDate(date) {
@@ -756,7 +766,7 @@ async function main() {
   const articleTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'news-article.html'), 'utf8'))
   const notDrawn = {}
   for (const post of allPosts) {
-    const {file, page, skipped} = renderArticle(post, {escapeHtml, safeUrl, formatPostDate, POST_CATEGORIES, media, buttons, allPosts, renderNewsCards})
+    const {file, page, skipped} = renderArticle(post, {escapeHtml, safeUrl, formatPostDate, POST_CATEGORIES, media, buttons, allPosts, renderNewsCards, siteUrl: SITE_URL})
     const target = path.join(DIST_DIR, file)
     fs.mkdirSync(path.dirname(target), {recursive: true})
     fs.writeFileSync(target, renderTemplate(articleTemplate, {...data, page}))

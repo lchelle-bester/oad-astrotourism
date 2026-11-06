@@ -165,17 +165,12 @@ function renderButton(block, h) {
   return `<p class="article-button article-button--${align}"><a class="article-button__link${edged}" href="${h.escapeHtml(href)}" style="--btn-bg: ${colour.hex}; --btn-ink: ${colour.ink}">${h.escapeHtml(label)}${arrow}</a></p>`
 }
 
-// MORE FROM OAD (step g): three other posts after the article, the homepage's news
-// section in an article page. The newest other posts in the same category, topped up
-// with the newest from any category when there are fewer than three. Left out when
-// there are no other posts.
+// MORE FROM OAD (step g): the three latest posts after the article, whatever their
+// category and not the one being read (L'chelle, 6 Nov 2026; first it was the same
+// category). The homepage's news section in an article page. Left out when there are
+// no other posts.
 function renderMore(post, h) {
-  const others = h.allPosts.filter((p) => p.slug !== post.slug)
-  const picks = others.filter((p) => p.category === post.category).slice(0, 3)
-  for (const other of others) {
-    if (picks.length >= 3) break
-    if (!picks.includes(other)) picks.push(other)
-  }
+  const picks = h.allPosts.filter((p) => p.slug !== post.slug).slice(0, 3)
   if (!picks.length) return ''
   return `
     <section class="news news--more" aria-labelledby="more-heading">
@@ -189,6 +184,13 @@ function renderMore(post, h) {
         <a class="pill-button news__button" href="/news/">See all updates <span class="pill-button__icon" aria-hidden="true">&rarr;</span></a>
       </div>
     </section>`
+}
+
+// Minutes to read: the words of the text blocks divided by 200, rounded up, at least 1
+// (decided in the Phase 7 spec). Captions, button words and the players are not counted.
+function readingTime(text) {
+  const words = text.join(' ').split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.ceil(words / 200))
 }
 
 // Addresses the News section already uses; a post with one of these as its slug
@@ -224,6 +226,12 @@ function renderArticle(post, h) {
       date: post.publishedAt,
       dateText: h.formatPostDate(post.publishedAt),
       photo: renderMainPhoto(images.main, h),
+      readMinutes: readingTime(body.text),
+      canonical: `${h.siteUrl}/news/${post.slug}/`,
+      shareImage: images.share ? `${h.siteUrl}${images.share.src}` : '',
+      shareImageWidth: images.share ? images.share.width : '',
+      shareImageHeight: images.share ? images.share.height : '',
+      shareImageAlt: images.share ? images.share.alt : '',
       body: body.html,
       more: renderMore(post, h),
     },

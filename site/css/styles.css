@@ -3606,6 +3606,10 @@ a.news-pager__link:focus-visible {
   color: var(--color-accent-soft);
 }
 
+.article__read-more {
+  display: none;
+}
+
 .article__dot {
   margin: 0 0.625rem;
   color: rgb(255 255 255 / 0.35);
@@ -3731,11 +3735,6 @@ a.news-pager__link:focus-visible {
   margin-inline: auto;
 }
 
-.article__end {
-  max-width: 960px;
-  margin-inline: auto;
-}
-
 /* (the width limit itself, for the text blocks) */
 .article__body > p,
 .article__body > h2,
@@ -3782,17 +3781,14 @@ a.news-pager__link:focus-visible {
   margin-top: 0;
 }
 
-.article__body a,
-.article__end a {
+.article__body a {
   color: var(--brand-teal);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
 .article__body a:hover,
-.article__body a:focus-visible,
-.article__end a:hover,
-.article__end a:focus-visible {
+.article__body a:focus-visible {
   color: var(--color-ink);
   text-decoration-thickness: 2px;
 }
@@ -4164,30 +4160,6 @@ a.news-pager__link:focus-visible {
   text-transform: uppercase;
 }
 
-/* THE END ROW: a thin line, then "Filed under" and the way back */
-.article__end {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas: "filed back";
-  align-items: center;
-  gap: 1.25rem 1.5rem;
-  margin-top: 4.5rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid rgb(30 53 81 / 0.18);
-}
-
-.article__filed {
-  grid-area: filed;
-  margin: 0;
-  color: var(--color-grey);
-  font-size: 0.9375rem;
-}
-
-.article__back {
-  grid-area: back;
-  font-weight: 600;
-}
-
 /* More from OAD: the homepage's news section, here under an article. It is not under
    a proof section's wave, so it needs no extra top space (88px, then 96px at the bottom). */
 .news--more {
@@ -4196,6 +4168,15 @@ a.news-pager__link:focus-visible {
 
 .news--more .news__inner {
   padding: 5.5rem var(--gutter) 6rem;
+}
+
+/* A smaller See all updates pill than the homepage's (6 Nov 2026): 14px text and a
+   32px circle on desktop, 14px and 34px on phones (the homepage has 15 and 36, 16 and 40) */
+.news--more .news__button {
+  --circle: 2.125rem;
+  padding: 0.3125rem 0.3125rem 0.3125rem 1.125rem;
+  gap: 0.75rem;
+  font-size: 0.875rem;
 }
 
 /* Phones: text-only rows, like the homepage, with a thin line above each (all three,
@@ -4256,6 +4237,10 @@ a.news-pager__link:focus-visible {
 
   .article__paper {
     padding-bottom: 7.5rem;
+  }
+
+  .article__read-more {
+    display: inline;
   }
 
   .article__meta-row .copy-link__full {
