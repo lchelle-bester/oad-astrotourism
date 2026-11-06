@@ -3049,7 +3049,7 @@ h3 {
 .news-page {
   position: relative;
   overflow: clip; /* the trails may run past the edges */
-  padding-bottom: 7.5rem; /* 120px of space, then the footer */
+  padding-bottom: 3rem; /* phones: 48px, then the footer (L'chelle, 6 Nov 2026) */
   background: var(--color-night);
 }
 
@@ -3384,6 +3384,10 @@ a.news-pager__link:focus-visible {
    cards fill as many columns as fit (three at 1440, two at 1024 to about
    1100). Gaps: 56px between rows, 96px between columns. */
 @media (min-width: 57.5em) {
+  .news-page {
+    padding-bottom: 7.5rem; /* 120px of space, then the footer */
+  }
+
   .news-page__head {
     padding-top: 8.5rem; /* header 104px tall + 32px */
   }
