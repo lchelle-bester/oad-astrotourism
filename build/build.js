@@ -235,11 +235,11 @@ const POST_CATEGORIES = {news: 'News', events: 'Events', 'oad-projects': 'OAD pr
 const NEWS_DIR = 'assets/images/news'
 // One shape: wide (15 by 8). The square shape for the phone rows was dropped on
 // 30 Oct 2026, when the photos of posts 2 and 3 were taken off phones.
-// feature (16 by 10) is the big photo of the newest post on the News page
-// (6 Nov 2026); phones show it cropped to 4 by 3 by the CSS.
+// feature (16 by 9, was 16 by 10 until 6 Nov 2026) is the big photo of the newest post
+// on the News page.
 const NEWS_SHAPES = {
   wide: {ratio: 15 / 8, widths: [480, 820, 1240]},
-  feature: {ratio: 16 / 10, widths: [640, 960, 1400]},
+  feature: {ratio: 16 / 9, widths: [640, 960, 1400]},
 }
 
 // The part of the photo to keep for a shape, in the original's pixels: inside
