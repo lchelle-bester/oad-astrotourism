@@ -16,6 +16,11 @@
        later pages and the category pages). build/news-pages.js fills it in once
        for each page. The wording here is fixed (decided 6 Nov 2026). -->
   <main id="main" class="news-page">
+    <!-- The homepage's star trails, standing still, at the top right (decorative) -->
+    <div class="news-page__sky" aria-hidden="true">
+{{> news-sky-desktop}}
+    </div>
+
     <div class="news-page__head">
       <p class="news-page__eyebrow">News and updates</p>
       <h1 class="news-page__title">News</h1>

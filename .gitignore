@@ -5,3 +5,5 @@ dist/
 originals/
 # Site plan PDF: contains Ram's and Joy's email addresses, and the repo is public
 docs/Astrotourism Site Plan.pdf
+# Photos already downloaded from Sanity (build/build.js), rebuilt as needed
+.cache/

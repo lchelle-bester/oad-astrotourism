@@ -3,6 +3,7 @@
 
 const fs = require('node:fs')
 const path = require('node:path')
+const crypto = require('node:crypto')
 const {renderNewsListPages} = require('./news-pages')
 
 const ROOT = path.join(__dirname, '..')
@@ -258,6 +259,33 @@ function cropForShape(photo, ratio) {
   return {x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h)}
 }
 
+// The news photos already downloaded by an earlier build, so a build only
+// fetches photos that are new or changed (added 6 Nov 2026, after the build
+// grew to 41 posts). Lives in .cache/ (git-ignored) on this machine. Files not
+// used by this build are deleted at the end, so the folder never grows.
+const CACHE_DIR = path.join(ROOT, '.cache', 'news-photos')
+const cacheUsed = new Set()
+
+async function downloadCached(url, title, hash, format) {
+  const file = path.join(CACHE_DIR, `${hash}.${format}`)
+  cacheUsed.add(file)
+  if (fs.existsSync(file)) return fs.readFileSync(file)
+  const response = await fetchWithRetry(url)
+  if (!response.ok) throw new Error(`Could not download the photo for "${title}" (${response.status}).`)
+  const data = Buffer.from(await response.arrayBuffer())
+  fs.mkdirSync(CACHE_DIR, {recursive: true})
+  fs.writeFileSync(file, data)
+  return data
+}
+
+function pruneCache() {
+  if (!fs.existsSync(CACHE_DIR)) return
+  for (const name of fs.readdirSync(CACHE_DIR)) {
+    const file = path.join(CACHE_DIR, name)
+    if (!cacheUsed.has(file)) fs.rmSync(file)
+  }
+}
+
 // Downloads one post's photo in every shape, width and format. Widths bigger
 // than the kept part of the photo are skipped (never blown up), but the
 // smallest is always made. Returns the files to write and the srcset lists.
@@ -274,12 +302,14 @@ async function fetchNewsPhoto(post) {
     for (const format of ['webp', 'jpg']) {
       for (const width of usable) {
         const height = Math.round(width / ratio)
-        const name = `${post.slug.replace(/[^a-z0-9-]/g, '')}-${id}-${shape}-${width}.${format}`
         const url = `${photo.url}?rect=${rect.x},${rect.y},${rect.w},${rect.h}&w=${width}&h=${height}&fit=crop` +
           `&fm=${format}&q=${format === 'webp' ? 72 : 78}`
-        const response = await fetchWithRetry(url)
-        if (!response.ok) throw new Error(`Could not download the photo for "${post.title}" (${response.status}).`)
-        files.push({name, data: Buffer.from(await response.arrayBuffer())})
+        // The address holds the asset, the crop, the size and the format, so its
+        // hash changes whenever an editor swaps the photo or moves the crop or hotspot.
+        // The hash is in the file name too, so browsers never keep an old picture.
+        const hash = crypto.createHash('sha1').update(url).digest('hex').slice(0, 8)
+        const name = `${post.slug.replace(/[^a-z0-9-]/g, '')}-${id}-${shape}-${width}-${hash}.${format}`
+        files.push({name, data: await downloadCached(url, `${post.title}`, hash, format)})
         shapes[shape][format].push(`/${NEWS_DIR}/${name} ${width}w`)
       }
     }
@@ -595,6 +625,7 @@ async function main() {
   }
 
   console.log(`Built ${pages.join(', ')} with hero:`, hero.headlineWord, hero.headlineRest)
+  pruneCache()
   console.log(`News: ${allPosts.length} published posts, ${listPages.length} list pages`)
   console.log(`Site settings: ${siteSettings.social.length} social links, ${siteSettings.partners.length} partner logos`)
 }
