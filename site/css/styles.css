@@ -3547,23 +3547,20 @@ a.news-pager__link:focus-visible {
   background: var(--color-night);
 }
 
-.breadcrumb__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 0.9375rem;
-}
-
-.breadcrumb a {
+/* The way back, instead of a breadcrumb (6 Nov 2026: "News / News" looked like a mistake).
+   Sand on the dark band is 8.9:1. */
+.article__back-top {
+  display: inline-block;
   color: var(--color-accent-soft);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.breadcrumb__slash {
-  margin-left: 0.5rem;
-  color: rgb(255 255 255 / 0.6);
+.article__back-top:hover,
+.article__back-top:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .article__title {
@@ -3829,6 +3826,196 @@ a.news-pager__link:focus-visible {
   line-height: 1.35;
 }
 
+/* VIDEOS, PLAYLISTS AND PODCASTS (step f). Nothing from YouTube or Spotify loads until
+   someone presses play; main.js then swaps the button for the player. At most as wide as
+   the text (960px), a video at 16 by 9. A video with a still image shows the picture, a
+   yellow play circle and its title on a bar; a playlist, a podcast (and a video with no
+   still) is a dark card with an icon, the title and a small play circle. Navy on yellow
+   10.7:1, white on #0b1522 about 19:1, sand on #0f1b2b 8.9:1. */
+.embed {
+  max-width: 960px;
+  margin: 2.5rem 0;
+}
+
+.embed__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--color-night);
+}
+
+.embed--video .embed__frame {
+  aspect-ratio: 16 / 9;
+}
+
+.embed--card .embed__frame {
+  border-radius: 14px;
+}
+
+/* The link (a button once main.js has run): reset to fill the frame */
+.embed__trigger {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--white);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* The yellow ring is hidden by the dark frame's clipping, so focus gets a white ring
+   inside the frame and a navy one outside it (where :has is supported) */
+.embed__trigger:focus-visible {
+  outline: 3px solid var(--white);
+  outline-offset: -8px;
+}
+
+.embed__frame:has(.embed__trigger:focus-visible) {
+  outline: 3px solid var(--brand-navy);
+  outline-offset: 3px;
+}
+
+.embed__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* crops the black bars off the 4 by 3 stills */
+}
+
+.embed__play {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-night);
+  transition: background-color 0.2s;
+}
+
+.embed__play svg {
+  width: 55%;
+  height: 55%;
+  margin-left: 6%; /* a triangle looks centred a little right of the middle */
+}
+
+.embed__trigger:focus-visible .embed__play {
+  background: var(--white);
+}
+
+@media (hover: hover) {
+  .embed__trigger:hover .embed__play {
+    background: var(--white);
+  }
+}
+
+.embed--video .embed__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4rem;
+  height: 4rem;
+  transform: translate(-50%, -50%);
+}
+
+.embed__bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0.75rem 1rem;
+  background: rgb(11 21 34 / 0.85);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.embed--card .embed__trigger {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.125rem;
+}
+
+.embed__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 8px;
+  background: var(--brand-teal);
+  color: var(--color-accent-soft);
+}
+
+.embed__icon svg {
+  width: 55%;
+  height: 55%;
+}
+
+.embed__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.embed__eyebrow {
+  display: block;
+  color: var(--color-accent-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.embed__title {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-heading);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* The player that replaces the button */
+.embed__iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.embed--card .embed__iframe {
+  height: 152px; /* main.js sets the real height for the taller Spotify players */
+}
+
+.embed__caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-top: 0.75rem;
+  color: var(--color-grey);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.embed__source {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* THE END ROW: a thin line, then "Filed under" and the way back */
 .article__end {
   display: flex;
@@ -3854,7 +4041,7 @@ a.news-pager__link:focus-visible {
 /* From 920px, the phone layout's switch: the larger text sizes of the design */
 @media (min-width: 57.5em) {
   .article__band {
-    padding: 10rem 0 16.25rem; /* header 104px tall + 56px; 260px at the bottom */
+    padding: 8rem 0 16.25rem; /* header 104px tall + 24px (was 56, 6 Nov 2026); 260px at the bottom */
   }
 
   .article__photo {
@@ -3869,6 +4056,38 @@ a.news-pager__link:focus-visible {
   .article-photo {
     --cap: 720px;
     margin: 3.5rem 0;
+  }
+
+  .embed {
+    margin: 3.5rem 0;
+  }
+
+  .embed--video .embed__play {
+    width: 4.75rem; /* 76px */
+    height: 4.75rem;
+  }
+
+  .embed__bar {
+    padding: 1rem 1.25rem;
+    font-size: 1.0625rem;
+  }
+
+  .embed--card .embed__trigger {
+    gap: 1.25rem;
+  }
+
+  .embed__icon {
+    width: 4.5rem; /* 72px */
+    height: 4.5rem;
+  }
+
+  .embed__title {
+    font-size: 1.1875rem;
+  }
+
+  .embed__play {
+    width: 3.25rem; /* 52px */
+    height: 3.25rem;
   }
 
   .article-row {

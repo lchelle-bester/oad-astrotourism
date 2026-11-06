@@ -59,6 +59,71 @@ function renderPhotoRow(block, images, h) {
   return `<div class="article-row article-row--${items.length}">${figures.join('')}</div>`
 }
 
+// VIDEOS AND PODCASTS (step f). Nothing from YouTube or Spotify is loaded until someone
+// presses play (decided 30 Oct 2026, for privacy and page weight). In the HTML each one
+// is a plain link to YouTube or Spotify, so it works without JavaScript; main.js turns
+// the link into a button and, when pressed, swaps it for the player. The player address
+// is made here from the validated id, never from the editor's text, and main.js only
+// accepts addresses on these two hosts.
+const TRIANGLE = '<svg viewBox="0 0 24 24" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>'
+const LIST_ICON = '<svg viewBox="0 0 24 24" focusable="false"><path d="M3 6h13v2H3zM3 11h13v2H3zM3 16h8v2H3zM18 11v8l5-4z" fill="currentColor"/></svg>'
+const WAVE_ICON = '<svg viewBox="0 0 24 24" focusable="false"><path d="M3 10h2v4H3zM7 7h2v10H7zM11 4h2v16h-2zM15 8h2v8h-2zM19 10h2v4h-2z" fill="currentColor"/></svg>'
+
+// The line under a player: the caption (if any) on the left, where it plays from on the right
+function embedCaption(block, host, h) {
+  const caption = (block.caption || '').trim()
+  return `<figcaption class="embed__caption">${caption ? `<span class="embed__text">${h.escapeHtml(caption)}</span>` : ''}<span class="embed__source">Plays from ${host}</span></figcaption>`
+}
+
+// One embed. `card` is the play card (playlists, podcasts, and videos with no still image);
+// a video with a still image shows that picture with the title on a bar.
+function renderEmbed({block, kind, host, href, embed, still, icon, eyebrow, height}, h) {
+  const title = (block.title || '').trim() || eyebrow
+  const data = [
+    `data-embed-src="${h.escapeHtml(embed)}"`,
+    `data-embed-title="${h.escapeHtml(title)}"`,
+    `data-embed-label="${kind}"`,
+    `data-embed-host="${host}"`,
+    height ? `data-embed-height="${height}"` : '',
+  ].filter(Boolean).join(' ')
+  const hidden = `<span class="visually-hidden"> (opens ${host})</span>`
+  if (still) {
+    return `<figure class="embed embed--video"><div class="embed__frame" ${data}><a class="embed__trigger" href="${h.escapeHtml(href)}"><img class="embed__still" src="${h.escapeHtml(still.src)}" width="${still.width}" height="${still.height}" alt="" loading="lazy" decoding="async"><span class="embed__play" aria-hidden="true">${TRIANGLE}</span><span class="embed__bar">${h.escapeHtml(title)}${hidden}</span></a></div>${embedCaption(block, host, h)}</figure>`
+  }
+  return `<figure class="embed embed--card"><div class="embed__frame" ${data}><a class="embed__trigger" href="${h.escapeHtml(href)}"><span class="embed__icon" aria-hidden="true">${icon}</span><span class="embed__label"><span class="embed__eyebrow">${eyebrow}</span><span class="embed__title">${h.escapeHtml(title)}${hidden}</span></span><span class="embed__play" aria-hidden="true">${TRIANGLE}</span></a></div>${embedCaption(block, host, h)}</figure>`
+}
+
+function renderYoutube(block, images, h) {
+  const source = h.media.youtubeSource(block.url)
+  if (!source) return ''
+  if (source.kind === 'playlist') {
+    return renderEmbed({
+      block, kind: 'playlist', host: 'YouTube', icon: LIST_ICON, eyebrow: 'YouTube playlist',
+      href: `https://www.youtube.com/playlist?list=${source.id}`,
+      embed: `https://www.youtube-nocookie.com/embed/videoseries?list=${source.id}&autoplay=1&rel=0`,
+    }, h)
+  }
+  return renderEmbed({
+    block, kind: 'video', host: 'YouTube', icon: TRIANGLE, eyebrow: 'YouTube video',
+    href: `https://www.youtube.com/watch?v=${source.id}`,
+    embed: `https://www.youtube-nocookie.com/embed/${source.id}?autoplay=1&rel=0`,
+    still: images.youtube[block._key],
+  }, h)
+}
+
+function renderSpotify(block, h) {
+  const path = h.media.spotifyPath(block.url)
+  if (!path) return ''
+  // A single episode or track is the slim player, a show, album or playlist the tall one
+  const slim = /^(episode|track)\//.test(path)
+  return renderEmbed({
+    block, kind: 'podcast', host: 'Spotify', icon: WAVE_ICON, eyebrow: 'Podcast',
+    href: `https://open.spotify.com/${path}`,
+    embed: `https://open.spotify.com/embed/${path}`,
+    height: slim ? 152 : 352,
+  }, h)
+}
+
 // Addresses the News section already uses; a post with one of these as its slug
 // would hide a real page
 const RESERVED = ['page', 'category']
@@ -76,6 +141,8 @@ function renderArticle(post, h) {
     custom: {
       image: (block) => renderSinglePhoto(block, images, h),
       imageRow: (block) => renderPhotoRow(block, images, h),
+      youtube: (block) => renderYoutube(block, images, h),
+      spotify: (block) => renderSpotify(block, h),
     },
   })
   return {

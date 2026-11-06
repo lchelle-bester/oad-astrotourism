@@ -752,3 +752,38 @@ if (siteFooter) {
   footerIsPhone.addEventListener('change', layoutFooter)
   layoutFooter()
 }
+
+// VIDEOS, PLAYLISTS AND PODCASTS IN ARTICLES (click to load)
+// In the page each one is a plain link to YouTube or Spotify, so it works without
+// JavaScript. This turns the link into a button; pressing it swaps the button for the
+// player. YouTube and Spotify are only contacted at that moment (decided 30 Oct 2026),
+// and YouTube in its privacy-enhanced mode (youtube-nocookie.com). The player's address
+// comes from the build; this only accepts addresses on these two hosts.
+const EMBED_HOSTS = ['https://www.youtube-nocookie.com/embed/', 'https://open.spotify.com/embed/']
+
+document.querySelectorAll('.embed__frame[data-embed-src]').forEach((frame) => {
+  const link = frame.querySelector('a.embed__trigger')
+  const src = frame.dataset.embedSrc
+  if (!link || !EMBED_HOSTS.some((host) => src.startsWith(host))) return
+
+  const title = frame.dataset.embedTitle
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.className = link.className
+  button.setAttribute('aria-label', `Play ${frame.dataset.embedLabel}: ${title} (loads ${frame.dataset.embedHost})`)
+  button.append(...link.childNodes)
+  link.replaceWith(button)
+
+  button.addEventListener('click', () => {
+    const player = document.createElement('iframe')
+    player.className = 'embed__iframe'
+    player.src = src
+    player.title = title
+    player.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'
+    player.allowFullscreen = true
+    player.referrerPolicy = 'strict-origin-when-cross-origin'
+    if (frame.dataset.embedHeight) player.style.height = `${frame.dataset.embedHeight}px`
+    frame.replaceChildren(player)
+    player.focus() // keyboard users land on the player, where they can carry on
+  })
+})

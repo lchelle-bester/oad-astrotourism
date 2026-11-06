@@ -17,12 +17,7 @@
   <main id="main" class="article">
     <div class="article__band">
       <div class="article__head">
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-          <ol class="breadcrumb__list">
-            <li><a href="/news/">News</a> <span class="breadcrumb__slash" aria-hidden="true">/</span></li>
-            <li><a href="{{page.categoryUrl}}">{{page.categoryLabel}}</a></li>
-          </ol>
-        </nav>
+        <a class="article__back-top" href="/news/"><span aria-hidden="true">&larr;</span> Back to news</a>
         <h1 class="article__title">{{page.title}}</h1>
         <p class="article__meta"><span class="article__category">{{page.categoryLabel}}</span><span class="article__dot" aria-hidden="true">·</span><time datetime="{{page.date}}">{{page.dateText}}</time></p>
       </div>

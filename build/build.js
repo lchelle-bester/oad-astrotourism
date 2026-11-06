@@ -4,6 +4,7 @@
 const fs = require('node:fs')
 const path = require('node:path')
 const crypto = require('node:crypto')
+const {pathToFileURL} = require('node:url')
 const {renderNewsListPages} = require('./news-pages')
 const {renderArticle} = require('./news-article')
 
@@ -363,6 +364,52 @@ async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null}
   return image
 }
 
+// YOUTUBE STILLS (Phase 7, step f): the picture a video shows before anyone presses play.
+// Downloaded at build time from YouTube's image server, so visitors' browsers contact
+// YouTube only when they press play. Not every video has every size, so the biggest that
+// exists is used (the first two sizes are 16 by 9, the 4 by 3 ones have black bars that
+// the CSS crops off). One file per video, WebP, kept in the same cache as the photos.
+// A video with no still at all (removed or private) gets a plain card instead.
+const YOUTUBE_STILLS = [['maxresdefault', 1280, 720], ['sddefault', 640, 480], ['hqdefault', 480, 360], ['mqdefault', 320, 180]]
+const youtubeStills = new Map()
+
+async function findYoutubeStill(id) {
+  for (const [size, width, height] of YOUTUBE_STILLS) {
+    const name = `youtube-${id}-${size}.webp`
+    const file = path.join(CACHE_DIR, name)
+    cacheUsed.add(file)
+    if (fs.existsSync(file)) return {name, data: fs.readFileSync(file), width, height}
+    try {
+      const response = await fetchWithRetry(`https://i.ytimg.com/vi_webp/${id}/${size}.webp`)
+      if (!response.ok) continue
+      const data = Buffer.from(await response.arrayBuffer())
+      fs.mkdirSync(CACHE_DIR, {recursive: true})
+      fs.writeFileSync(file, data)
+      return {name, data, width, height}
+    } catch {
+      // the connection failed: try the next size, and in the end show the card
+    }
+  }
+  return null
+}
+
+// The stills for one article's YouTube videos, found by block key (a playlist has no
+// still image). Adds the files to write to `files`.
+async function fetchYoutubeStills(post, media, files) {
+  const stills = {}
+  for (const block of post.body || []) {
+    if (block._type !== 'youtube') continue
+    const source = media.youtubeSource(block.url)
+    if (!source || source.kind !== 'video') continue
+    if (!youtubeStills.has(source.id)) youtubeStills.set(source.id, await findYoutubeStill(source.id))
+    const still = youtubeStills.get(source.id)
+    if (!still) continue
+    files.push({name: still.name, data: still.data})
+    stills[block._key] = {src: `/${NEWS_DIR}/${still.name}`, width: still.width, height: still.height}
+  }
+  return stills
+}
+
 // Every photo one article needs: the main photo and each photo in its text, found by
 // the block's key. A row of three is cut square, a row of two 3 by 2.
 async function fetchArticleImages(post, files) {
@@ -627,12 +674,15 @@ async function main() {
       '"photo": mainImage{alt, credit, hotspot, crop, "url": asset->url, ' +
       '"assetId": asset->_id, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}',
   )
+  // The link rules for videos and podcasts, shared with the Studio (which checks the same links)
+  const media = await import(pathToFileURL(path.join(ROOT, 'studio', 'schemaTypes', 'mediaLinks.mjs')).href)
   const newsFiles = []
   for (const post of allPosts) {
     const photo = await fetchNewsPhoto(post)
     post.shapes = photo.shapes
     newsFiles.push(...photo.files)
     post.images = await fetchArticleImages(post, newsFiles)
+    post.images.youtube = await fetchYoutubeStills(post, media, newsFiles)
   }
   const posts = allPosts.slice(0, 3)
   // No posts: the section is left out of the page altogether
@@ -701,7 +751,7 @@ async function main() {
   const articleTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'news-article.html'), 'utf8'))
   const notDrawn = {}
   for (const post of allPosts) {
-    const {file, page, skipped} = renderArticle(post, {escapeHtml, safeUrl, formatPostDate, POST_CATEGORIES})
+    const {file, page, skipped} = renderArticle(post, {escapeHtml, safeUrl, formatPostDate, POST_CATEGORIES, media})
     const target = path.join(DIST_DIR, file)
     fs.mkdirSync(path.dirname(target), {recursive: true})
     fs.writeFileSync(target, renderTemplate(articleTemplate, {...data, page}))
