@@ -56,6 +56,18 @@ export default defineConfig({
                     {field: '_createdAt', direction: 'desc'},
                   ]),
               ),
+            // Every project in the directory, newest year first, then A to Z
+            S.listItem()
+              .title('Projects')
+              .id('projects')
+              .child(
+                S.documentTypeList('project')
+                  .title('Projects')
+                  .defaultOrdering([
+                    {field: 'year', direction: 'desc'},
+                    {field: 'title', direction: 'asc'},
+                  ]),
+              ),
           ]),
     }),
     visionTool(),

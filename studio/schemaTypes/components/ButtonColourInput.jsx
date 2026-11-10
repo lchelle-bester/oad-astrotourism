@@ -5,11 +5,14 @@ import {buttonColours} from '../buttonColours.mjs'
 // The colour field of an article button: the brand colours as real coloured
 // circles with their names, the chosen one ringed. Click one to choose it.
 // Each circle is a button, so it also works with the keyboard (Tab, Enter).
+// Used for the project card colour too (10 Nov 2026): a field passes its own colours
+// as options.swatches, a list of {title, value, hex}; without it the button colours show.
 export function ButtonColourInput(props) {
-  const {value, onChange, readOnly} = props
+  const {value, onChange, readOnly, schemaType} = props
+  const colours = schemaType?.options?.swatches ?? buttonColours
   return (
     <Flex gap={4} wrap="wrap">
-      {buttonColours.map((colour) => {
+      {colours.map((colour) => {
         const chosen = value === colour.value
         return (
           <Stack key={colour.value} space={2} style={{textAlign: 'center'}}>

@@ -41,24 +41,30 @@ Not in this phase: the map, the Impact page, case studies, the Theory of Change 
 | slug | web address | yes | Generated from the title, locked once generated (like news posts) |
 | kind | list | yes | "Funded by OAD". Only this value until the map phase adds surveyed initiatives. Read-only. |
 | year | number | yes for funded | "Implementation year", 2000 to 2100 |
-| countries | list of selections | yes, at least one | One drop-down per country, from one shared list of countries (also used by the map later) |
+| countries | list of selections | yes, at least one | One drop-down per country, from one shared list of 250 (studio/schemaTypes/countries.mjs, ISO codes stored). Map positions are added in the map phase. |
 | place | string | no | Detail inside the country, for example "Northern Cape and Karoo region" |
 | summary | long text | yes | OAD's text, paragraphs separated by blank lines. Warning over 3,500 characters. |
-| sdgs | list of choices | no | The 17 SDGs as tick boxes |
+| photo | image | no | Added 10 Nov 2026 after the mock-up. Hotspot, alt text required once there is a photo, optional credit. The card's background, with the dark fade on the left. |
+| cardColour | list | yes unless there is a photo | Added 10 Nov 2026 (L'chelle's choice: the editor picks). Six brand colour circles: deep teal, terracotta, sand, sage, yellow, deep navy. Used only when there is no photo. |
+| sdgs | list of numbers | no | The 17 SDGs as tick boxes (studio/schemaTypes/sdgs.mjs) |
 | tags | tags | no | Free tags, kept for later (not shown or filtered yet) |
 | originalUrl | https address | no | "Original page on astro4dev.org" |
 
-Left out on purpose: photos (consent and effort, ask Ram and Joy first), map pin coordinates (map phase, the country centre is the fallback), contact details (privacy), money (not in the data; the Impact page has its own figures).
+Left out on purpose: map pin coordinates (map phase, the country centre is the fallback), contact details (privacy), money (not in the data; the Impact page has its own figures). Photos are now a field, but none are imported: a photo is only added once OAD has agreed it can be shown (consent rule).
 
 The directory list in the Studio is sorted newest year first and shows title, year and countries.
+
+## The look (mock-up, 10 Nov 2026)
+
+L'chelle's mock-up is docs/project directory/F2a final. Photo or brand colour, desktop@1x.png. Page: the h1 "Project directory", an intro line, a search field ("Search by name, country or keyword"), then two columns. Left: "Filter" with "Clear all", and three groups of checkboxes with counts: Country (the biggest seven, then "Show all 20 countries"), Year (the five newest, then "Show all years"), Sustainable Development Goal (only goals that have a project, shown as "4. Quality Education"). Right: the result count ("18 projects" in the mock-up, a placeholder), a Sort drop-down ("Newest first"), then one wide card per project, then a "Show more projects" button. Card: a year, a pin icon with the country and the place (small capitals, sand), then the title in white; the whole card is the link to the project page. A project with a photo shows the photo, a project without one a solid brand colour; a dark navy fade on the left stays in both cases, so the white title and sand text always sit on navy and contrast does not depend on the colour. In the mock-up the cards without photos cycle through the six colours; in the build the editor chooses (cardColour). Counts in the mock-up are placeholders: the real ones come from the data.
 
 ## Steps (stop after each one, tell me what to check, suggest a commit message)
 
 a. This document, the decisions, and the schema above agreed.
-b. The schema, a shared countries list (names and country-centre positions, from a public dataset whose licence is checked first, not typed by hand), and the Studio list. Validate.
+b. The schema, a shared countries list (names from a public dataset whose licence is checked first, not typed by hand; country-centre positions wait for the map phase), and the Studio list. Validate. DONE 10 Nov 2026: studio/schemaTypes/project.js, countries.mjs (250 countries, i18n-iso-countries 7.14.0, MIT), sdgs.mjs, projectColours.mjs; Projects list in the Studio, newest year first.
 c. The importer: reads the live page, cleans it (line breaks, damaged characters, tracking junk in links, country names, "GREECE" to "Greece", locations split into countries and place), writes `docs/projects/imported-projects.json` for you to review, then imports it with Sanity's own command-line import (your login, so no secret key in the public repo; to be confirmed in this step).
 d. build.js fetches the projects and writes the directory page and the project pages from templates (as the News pages).
-e. The directory: search, filters (country, year, SDG), result count announced to screen readers, cards with a short excerpt. Without JavaScript it is a plain list of all 20.
+e. The directory, as in the mock-up: search, filters (country, year, SDG) with counts, Clear all, Show all countries and years, sort, result count announced to screen readers, cards, "Show more projects". Without JavaScript it is a plain list of all 20.
 f. The project pages.
 g. Phase-end checklist: every width, keyboard only, screen reader order, 200% zoom, reduced motion, JavaScript off, contrast, a build with no projects, a filter with no results.
 

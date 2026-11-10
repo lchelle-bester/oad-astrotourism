@@ -47,3 +47,9 @@ How the hero files were made from OAD's original clip (8.7 s, 3832 x 2160, HEVC)
 | Icon | Used for | Source | Licence |
 |---|---|---|---|
 | Facebook (`facebook-f`), Instagram, TikTok, YouTube, LinkedIn (`linkedin-in`) and X (`x-twitter`) brand icons | Social links in the footer | Font Awesome Free 6.5.2 (`@fortawesome/free-brands-svg-icons`), https://fontawesome.com. The SVG paths are copied into `build/social-icons.js`; nothing is loaded from Font Awesome's servers | Icons: CC BY 4.0, https://fontawesome.com/license/free. Credit given here |
+
+## Data
+
+| Data | Used for | Source | Licence |
+|---|---|---|---|
+| Country names and ISO codes (250) | The country list for projects, in `studio/schemaTypes/countries.mjs` | `i18n-iso-countries` 7.14.0, https://github.com/michaelwittig/node-i18n-iso-countries. Copied into the file (generated once); not a dependency. A few short names set by hand | MIT, copyright 2016 widdix GmbH |
