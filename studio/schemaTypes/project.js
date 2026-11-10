@@ -5,16 +5,15 @@ import {countries, countryName} from './countries.mjs'
 import {sdgs} from './sdgs.mjs'
 import {projectColours} from './projectColours.mjs'
 
-// A project in the directory (Phase 8, spec in docs/projects/projects-design.md). One
-// type for projects funded by OAD now and surveyed initiatives later (decided 10 Nov
-// 2026), told apart by "kind". After one import from OAD's list, this is the master
-// copy: Ram and Joy edit it here. Nothing appears on the site until it is published.
+// A project in the directory (Phase 8, spec in docs/projects/projects-design.md): a
+// project funded by OAD. After one import from OAD's list, this is the master copy:
+// Ram and Joy edit it here. Nothing appears on the site until it is published.
+// There is no "kind" field (removed 10 Nov 2026, every project is funded by OAD). If
+// the map phase needs to tell surveyed initiatives apart, add one then and treat a
+// project without it as funded.
 //
 // This is a public dataset, so nothing private goes in: no names, emails or phone
 // numbers of people. Photos only once OAD has agreed they can be shown.
-
-// Only one kind for now; the map phase adds "Surveyed initiative".
-export const projectKinds = [{title: 'Funded by OAD', value: 'funded'}]
 
 export const project = defineType({
   name: 'project',
@@ -40,16 +39,6 @@ export const project = defineType({
       options: {source: 'title', maxLength: 96},
       components: {input: GenerateOnlySlugInput},
       validation: (Rule) => Rule.required().error('Generate the web address from the title.'),
-    }),
-    defineField({
-      name: 'kind',
-      title: 'Kind',
-      type: 'string',
-      description: 'Fixed for now: every project here was funded by OAD.',
-      options: {list: projectKinds},
-      initialValue: 'funded',
-      readOnly: true,
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'year',
@@ -81,7 +70,7 @@ export const project = defineType({
       title: 'Place',
       type: 'string',
       description:
-        'Optional. Where inside the country, for example "Northern Cape and Karoo region". Shown after the country on the card.',
+        'Optional. Where inside the country, for example "Northern Cape and Karoo region". Not shown on the directory cards, which give the country only.',
     }),
     defineField({
       name: 'summary',
