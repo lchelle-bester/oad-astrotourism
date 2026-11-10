@@ -72,6 +72,22 @@ export const post = defineType({
       options: {list: postCategories},
       validation: (Rule) => Rule.required().error('Choose a category.'),
     }),
+    // Added 10 Nov 2026 (L'chelle): an OAD projects post can say which projects in the
+    // directory it is about. It then appears under "News and updates" on each project's page,
+    // and the article links back to the project. Only shown for the OAD projects category. The
+    // references are weak, so a project can still be deleted: the build ignores a link that
+    // no longer points at anything. A post whose category is changed away from OAD projects
+    // keeps the choice in the Studio, but the site ignores it.
+    defineField({
+      name: 'projects',
+      title: 'Projects this post is about',
+      type: 'array',
+      description:
+        'Optional. Add the project or projects in the Project directory that this post is about. The post then shows on each project\'s page, and links back to it. Leave empty if it is not about one of them.',
+      hidden: ({document}) => document?.category !== 'oad-projects',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'project'}], weak: true})],
+      validation: (Rule) => Rule.unique().error('The same project is in the list twice.'),
+    }),
     defineField({
       name: 'mainImage',
       title: 'Main photo',
