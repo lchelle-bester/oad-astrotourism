@@ -4,7 +4,8 @@
 // build, like buttonColours.mjs.
 // Source: the i18n-iso-countries package 7.14.0 (MIT licence, copyright 2016 widdix
 // GmbH), English names; where its short name was an abbreviation or reads backwards
-// (UAE, UK, Korea Republic of, and a few more) the plain name was set by hand.
+// (UAE, UK, Korea Republic of, and a few more) the plain name was set by hand, and
+// the two Congos (the package calls both "Congo") are spelled out.
 // Map positions are not here: the map phase adds them from a public-domain dataset.
 export const countries = [
   {code: 'AF', name: 'Afghanistan'},
@@ -58,8 +59,6 @@ export const countries = [
   {code: 'CC', name: 'Cocos (Keeling) Islands'},
   {code: 'CO', name: 'Colombia'},
   {code: 'KM', name: 'Comoros'},
-  {code: 'CG', name: 'Congo'},
-  {code: 'CD', name: 'Congo'},
   {code: 'CK', name: 'Cook Islands'},
   {code: 'CR', name: 'Costa Rica'},
   {code: 'CI', name: 'Côte d\'Ivoire'},
@@ -68,6 +67,7 @@ export const countries = [
   {code: 'CW', name: 'Curaçao'},
   {code: 'CY', name: 'Cyprus'},
   {code: 'CZ', name: 'Czechia'},
+  {code: 'CD', name: 'Democratic Republic of the Congo'},
   {code: 'DK', name: 'Denmark'},
   {code: 'DJ', name: 'Djibouti'},
   {code: 'DM', name: 'Dominica'},
@@ -189,6 +189,7 @@ export const countries = [
   {code: 'PT', name: 'Portugal'},
   {code: 'PR', name: 'Puerto Rico'},
   {code: 'QA', name: 'Qatar'},
+  {code: 'CG', name: 'Republic of the Congo'},
   {code: 'RE', name: 'Reunion'},
   {code: 'RO', name: 'Romania'},
   {code: 'RU', name: 'Russia'},
