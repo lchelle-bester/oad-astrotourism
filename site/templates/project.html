@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{> favicon}}
+  <title>{{page.title}}</title>
+  <meta name="description" content="{{page.description}}">
+  <link rel="canonical" href="{{page.canonical}}">
+  <!-- How the page looks when it is shared (link previews): the project's own words and, if it
+       has one, its photo -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Astrotourism">
+  <meta property="og:url" content="{{page.canonical}}">
+  <meta property="og:title" content="{{page.title}}">
+  <meta property="og:description" content="{{page.description}}">
+  {{{page.shareImage}}}
+  <link rel="preload" href="/assets/fonts/space-grotesk-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+{{> header}}
+
+  <!-- One template for every project (design in docs/projects/projects-design.md).
+       build/projects.js fills it in once for each project. The wording here is fixed.
+       "Projects and impact" is plain text because /projects/ has no page (it is not in
+       the sitemap); it becomes a link if that page is ever made. -->
+  <main id="main" class="project">
+    <div class="project__head">
+      <nav class="project__crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li>Projects and impact</li>
+          <li><a href="/projects/directory/">Project directory</a></li>
+        </ol>
+      </nav>
+      <h1 class="project__title">{{page.name}}</h1>
+    </div>
+
+    {{{page.photo}}}
+
+    <div class="project__layout">
+      <div class="project__summary">
+          {{{page.summary}}}
+      </div>
+      <aside class="project__side" aria-label="About this project">
+        {{{page.facts}}}
+        {{{page.original}}}
+        {{{page.news}}}
+        {{{page.more}}}
+      </aside>
+    </div>
+
+    <p class="project__back"><a href="/projects/directory/"><span aria-hidden="true">&larr;</span> All projects</a></p>
+  </main>
+
+{{> footer}}
+
+{{> to-top}}
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

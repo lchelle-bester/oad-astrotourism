@@ -196,6 +196,15 @@ function readingTime(text) {
 // would hide a real page
 const RESERVED = ['page', 'category']
 
+// "About the project: ..." under the title, when an OAD projects post names projects in the
+// directory (10 Nov 2026). Each is a link to the project's page.
+function renderProjectLine(post, h) {
+  const links = post.projectLinks || []
+  if (!links.length) return ''
+  const anchors = links.map((p) => `<a href="/projects/directory/${h.escapeHtml(p.slug)}/">${h.escapeHtml(p.title.trim())}</a>`)
+  return `<p class="article__project">${links.length === 1 ? 'About the project' : 'About the projects'}: ${anchors.join(', ')}</p>`
+}
+
 function renderArticle(post, h) {
   if (!/^[a-z0-9-]+$/.test(post.slug) || RESERVED.includes(post.slug)) {
     throw new Error(`News post "${post.title}" has the web address "${post.slug}", which cannot be used (only a to z, 0 to 9 and hyphens, and not "page" or "category").`)
@@ -226,6 +235,7 @@ function renderArticle(post, h) {
       dateText: h.formatPostDate(post.publishedAt),
       photo: renderMainPhoto(images.main, h),
       readMinutes: readingTime(body.text),
+      projectLine: renderProjectLine(post, h),
       canonical: `${h.siteUrl}/news/${post.slug}/`,
       shareImage: images.share ? `${h.siteUrl}${images.share.src}` : '',
       shareImageWidth: images.share ? images.share.width : '',
@@ -237,4 +247,4 @@ function renderArticle(post, h) {
   }
 }
 
-module.exports = {renderArticle}
+module.exports = {renderArticle, picture, renderProjectLine}

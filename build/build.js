@@ -6,7 +6,8 @@ const path = require('node:path')
 const crypto = require('node:crypto')
 const {pathToFileURL} = require('node:url')
 const {renderNewsListPages} = require('./news-pages')
-const {renderArticle} = require('./news-article')
+const {renderArticle, picture} = require('./news-article')
+const {loadProjects, renderDirectoryPage, renderProjectPage, renderSearchIndex} = require('./projects')
 
 const ROOT = path.join(__dirname, '..')
 const SITE_DIR = path.join(ROOT, 'site')
@@ -233,6 +234,7 @@ function renderImpactResults(results) {
 // postCategories in studio/schemaTypes/post.js.
 const POST_CATEGORIES = {news: 'News', events: 'Events', 'oad-projects': 'OAD projects'}
 const NEWS_DIR = 'assets/images/news'
+const PROJECT_DIR = 'assets/images/projects'
 // One shape: wide (15 by 8). The square shape for the phone rows was dropped on
 // 30 Oct 2026, when the photos of posts 2 and 3 were taken off phones.
 // feature (16 by 9, was 16 by 10 until 6 Nov 2026) is the big photo of the newest post
@@ -326,7 +328,8 @@ async function fetchNewsPhoto(post) {
 // ratio null: the photo's own shape (the editor's crop, no hotspot cut); a ratio
 // (such as 3 / 2): cut to that shape around the hotspot. Returns the image as the page
 // needs it, and adds the files to write to `files`.
-async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null, formats = ['webp', 'jpg']}) {
+// `dir` is the folder in dist/ the files go to (the project photos use their own, added 10 Nov 2026).
+async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null, formats = ['webp', 'jpg'], dir = NEWS_DIR}) {
   if (!photo || !photo.url || !photo.assetId) return null
   const id = photo.assetId.split('-')[1].slice(0, 10)
   let rect
@@ -357,7 +360,7 @@ async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null,
       const hash = crypto.createHash('sha1').update(url).digest('hex').slice(0, 8)
       const name = `${post.slug.replace(/[^a-z0-9-]/g, '')}-${id}-${tag.replace(/[^a-z0-9-]/gi, '')}-${width}-${hash}.${format}`
       files.push({name, data: await downloadCached(url, post.title, hash, format)})
-      image[format].push(`/${NEWS_DIR}/${name} ${width}w`)
+      image[format].push(`/${dir}/${name} ${width}w`)
     }
   }
   image.src = image.jpg.at(-1).split(' ')[0]
@@ -676,7 +679,7 @@ async function main() {
   // Same date: created later first. The body is fetched now for the article pages.
   const allPosts = await sanityQuery(
     '*[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current)] | order(publishedAt desc, _createdAt desc)' +
-      '{title, "slug": slug.current, publishedAt, category, ' +
+      '{title, "slug": slug.current, publishedAt, category, "projects": projects[]->{title, "slug": slug.current}, ' +
       // The article: every photo (and every photo in a row) gets its address and size
       'body[]{..., _type == "image" => {"url": asset->url, "assetId": asset->_id, ' +
       '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}, ' +
@@ -708,12 +711,35 @@ async function main() {
     newsSection.html = renderTemplate(partial, {newsSection})
   }
 
+  // The project directory: every published project, checked before anything is written
+  const projects = await loadProjects({sanityQuery, safeUrl, root: ROOT})
+  // A project's photo, at its own shape (the editor's crop). The cards cut it to a wide strip
+  // with CSS around the hotspot; the project page uses the same files, so the widest is bigger.
+  // The news of each project (10 Nov 2026): the posts in OAD projects that name it, newest
+  // first (allPosts already is). A post whose category is not OAD projects is ignored, and so
+  // is a link to a project that is gone or not published.
+  const projectSlugs = new Set(projects.map((p) => p.slug))
+  const newsByProject = new Map()
+  for (const post of allPosts) {
+    post.projectLinks = post.category === 'oad-projects'
+      ? (post.projects || []).filter((p) => p && p.slug && projectSlugs.has(p.slug))
+      : []
+    for (const link of post.projectLinks) {
+      if (!newsByProject.has(link.slug)) newsByProject.set(link.slug, [])
+      newsByProject.get(link.slug).push(post)
+    }
+  }
+  const projectFiles = []
+  for (const project of projects) {
+    if (project.photo) project.image = await fetchArticleImage(project.photo, project, projectFiles, {tag: 'photo', widths: [640, 1000, 1400, 2000], dir: PROJECT_DIR})
+  }
+
   const siteSettings = await fetchSiteSettings()
 
   const footer = renderFooter(siteSettings)
 
   // newsCurrent marks "News" in the header on the News section's pages
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: ''}}
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: ''}}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
@@ -733,6 +759,12 @@ async function main() {
   fs.mkdirSync(path.join(DIST_DIR, NEWS_DIR), {recursive: true})
   for (const file of newsFiles) {
     fs.writeFileSync(path.join(DIST_DIR, NEWS_DIR, file.name), file.data)
+  }
+
+  // The project photos downloaded from Sanity
+  fs.mkdirSync(path.join(DIST_DIR, PROJECT_DIR), {recursive: true})
+  for (const file of projectFiles) {
+    fs.writeFileSync(path.join(DIST_DIR, PROJECT_DIR, file.name), file.data)
   }
 
   // The partner logos downloaded from Sanity
@@ -758,7 +790,7 @@ async function main() {
   for (const {file, page} of listPages) {
     const target = path.join(DIST_DIR, file)
     fs.mkdirSync(path.dirname(target), {recursive: true})
-    fs.writeFileSync(target, renderTemplate(listTemplate, {...data, page, nav: {newsCurrent: ' aria-current="page"'}}))
+    fs.writeFileSync(target, renderTemplate(listTemplate, {...data, page, nav: {...data.nav, newsCurrent: ' aria-current="page"'}}))
   }
 
   console.log(`Built ${pages.join(', ')} with hero:`, hero.headlineWord, hero.headlineRest)
@@ -774,8 +806,29 @@ async function main() {
     for (const [type, count] of Object.entries(skipped)) notDrawn[type] = (notDrawn[type] || 0) + count
   }
 
+  // The project directory page and one page per project
+  const projectTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'project.html'), 'utf8'))
+  const directoryTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'project-directory.html'), 'utf8'))
+  const projectHelpers = {escapeHtml, picture, formatPostDate, newsByProject, siteUrl: SITE_URL}
+  const directory = renderDirectoryPage(projects, projectHelpers)
+  const projectPages = projects.map((project) => renderProjectPage(project, projects, projectHelpers))
+  // The header marks "Projects and impact" as the section on all of these pages, and the
+  // directory page itself as the current page
+  const projectNav = {...data.nav, projectsCurrent: ' aria-current="true"'}
+  const directoryNav = {...projectNav, directoryCurrent: ' aria-current="page"'}
+  for (const [template, nav, {file, page}] of [[directoryTemplate, directoryNav, directory], ...projectPages.map((p) => [projectTemplate, projectNav, p])]) {
+    const target = path.join(DIST_DIR, file)
+    fs.mkdirSync(path.dirname(target), {recursive: true})
+    fs.writeFileSync(target, renderTemplate(template, {...data, nav, page}))
+  }
+
+  // The words the directory's search looks in, fetched only when someone searches
+  fs.writeFileSync(path.join(DIST_DIR, 'projects', 'directory', 'search.json'), renderSearchIndex(projects))
+
   pruneCache()
-  console.log(`News: ${allPosts.length} published posts, ${listPages.length} list pages, ${allPosts.length} article pages`)
+  console.log(`Projects: ${projects.length} published projects, 1 directory page, ${projectPages.length} project pages`)
+  console.log(`Project photos: ${projects.filter((p) => p.image).length}; news linked to projects: ${[...newsByProject.values()].reduce((n, posts) => n + posts.length, 0)} links on ${newsByProject.size} project pages`)
+  console.log(`News:${allPosts.length} published posts, ${listPages.length} list pages, ${allPosts.length} article pages`)
   if (Object.keys(notDrawn).length) console.log('Blocks not drawn in articles (check the posts):', JSON.stringify(notDrawn))
   console.log(`Site settings: ${siteSettings.social.length} social links, ${siteSettings.partners.length} partner logos`)
 }
