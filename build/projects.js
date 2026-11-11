@@ -14,7 +14,7 @@ const {renderArticleBody} = require('./news-article')
 // are not shown). Drafts are left out (their ids start with "drafts.").
 const PROJECTS_QUERY =
   '*[_type == "project" && !(_id in path("drafts.**")) && defined(slug.current)] | order(year desc, title asc)' +
-  '{title, "slug": slug.current, year, countries, place, summary, sdgs, tags, originalUrl, cardColour, ' +
+  '{title, "slug": slug.current, year, countries, place, summary, sdgs, tags, originalUrl, cardColour, contact{name, email}, ' +
   // The page content: every photo (and every photo in a row) gets its address and size, as for an article
   'body[]{..., _type == "image" => {"url": asset->url, "assetId": asset->_id, ' +
   '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}, ' +
@@ -24,6 +24,9 @@ const PROJECTS_QUERY =
   '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}'
 
 const INTRO = 'Astrotourism projects funded by the IAU Office of Astronomy for Development.'
+
+// An email address the page will link to: one @, no spaces or characters that could break out of an attribute
+const EMAIL = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/
 
 // Reads the projects, checks every one and adds what the pages need: country names,
 // goal labels, paragraphs and the card colour. Stops the build with a clear message
@@ -51,6 +54,9 @@ async function loadProjects({sanityQuery, safeUrl, root}) {
     for (const number of goals) if (!sdgs.some((s) => s.number === number)) fail(`SDG ${number} is not one of the 17.`)
     const paragraphs = (row.summary || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)
     const hasBody = Boolean(row.body && row.body.length)
+    const contactName = ((row.contact && row.contact.name) || '').trim()
+    const contactEmail = ((row.contact && row.contact.email) || '').trim()
+    if (contactEmail && !EMAIL.test(contactEmail)) fail(`the contact email "${contactEmail}" is not a valid email address.`)
     if (!paragraphs.length && !hasBody) fail('it has no summary and no page content.')
 
     const hasPhoto = Boolean(row.photo && row.photo.url)
@@ -68,6 +74,8 @@ async function loadProjects({sanityQuery, safeUrl, root}) {
       countryCodes: codes,
       countryNames: codes.map(countryName),
       place: (row.place || '').trim(),
+      contactName,
+      contactEmail,
       paragraphs,
       // The page content (rich text), or null; its words also feed the search
       body: hasBody ? row.body : null,
@@ -174,7 +182,7 @@ function renderFilters(projects, h) {
 function renderSearchIndex(projects) {
   const index = {}
   for (const p of projects) {
-    index[p.slug] = [p.title, p.place, p.countryNames.join(' '), p.goals.join(' '), p.tags.join(' '), p.paragraphs.join(' '), p.bodyText.join(' ')]
+    index[p.slug] = [p.title, p.place, p.countryNames.join(' '), p.goals.join(' '), p.tags.join(' '), p.contactName, p.paragraphs.join(' '), p.bodyText.join(' ')]
       .filter(Boolean).join(' ').replace(/\s+/g, ' ').toLowerCase()
   }
   return JSON.stringify(index)
@@ -237,6 +245,14 @@ function renderFacts(project, h) {
   if (project.place) rows.push(['Place', h.escapeHtml(project.place)])
   if (project.goals.length) {
     rows.push(['Sustainable Development Goals', `<ul class="project-facts__goals">${project.goals.map((g) => `<li>${h.escapeHtml(g)}</li>`).join('')}</ul>`])
+  }
+  // The contact (11 Nov 2026): the name is a link that opens an email, as on OAD's own page. Only the name
+  // or only the email is fine too. The link says it sends an email, for screen readers.
+  if (project.contactName || project.contactEmail) {
+    const label = h.escapeHtml(project.contactName || project.contactEmail)
+    rows.push(['Project contact', project.contactEmail
+      ? `<a href="mailto:${h.escapeHtml(project.contactEmail)}">${label}<span class="visually-hidden"> (sends an email)</span></a>`
+      : label])
   }
   return `<dl class="project-facts">${rows
     .map(([name, value]) => `

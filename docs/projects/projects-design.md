@@ -71,6 +71,8 @@ g. DONE 11 Nov 2026, results in CLAUDE.md (Phase 8 checklist). Phase-end checkli
 
 A project has a "Page content" field with the same editor as a news article, so a project page can show OAD's full page (text, photos, buttons such as the project report, videos) instead of only the plain summary. The Summary stays for the search and is shown only when there is no page content. OAD's contact person is deliberately not copied. The scraping prompt is docs/projects/scrape-prompt.md. Build and styling: see CLAUDE.md (Project page content) and CSS section 19.
 
+Contact (11 Nov 2026): Ram and Joy agreed that the contact person on OAD's own page can be shown. A project has an optional `contact` {name, email}; the page shows it as "Project contact" in the facts, the name linking to an email. Second scraping pass: docs/projects/scrape-contacts-prompt.md.
+
 ## News linked to projects (added 10 Nov 2026, L'chelle)
 
 An OAD projects news post can name the projects in the directory it is about. Decided: a post can name one or more projects (a list, not a single choice), and the article links back to the project.

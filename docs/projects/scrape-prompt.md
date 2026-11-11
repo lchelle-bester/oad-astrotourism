@@ -1,5 +1,7 @@
 # Prompt: fill the project pages from OAD's own pages
 
+**Note, 11 Nov 2026:** this prompt was run for the goals and the page content. Its rule to leave the contact person out is replaced: Ram and Joy agreed that contact details can be shown, and `docs/projects/scrape-contacts-prompt.md` is the second pass that adds them.
+
 Give this whole file to the Claude that will do the scraping, together with `studio/schemaTypes/project.js`, `studio/schemaTypes/articleBody.js` and `build/import-projects.js` (for the text clean-up code). It works from the prompt alone.
 
 ---

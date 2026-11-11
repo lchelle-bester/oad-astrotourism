@@ -168,6 +168,28 @@ export const project = defineType({
         'Optional. Where OAD\'s own page for this project lives. Shown on the project page as "Read the original". Leave empty to show no link.',
       validation: (Rule) => Rule.uri({scheme: ['https']}).error('Add the full address, starting with https://'),
     }),
+    // The person to contact about the project, as on OAD's own page (added 11 Nov 2026). Ram and Joy
+    // agreed that contact details can be shown, because they are on OAD's pages already. The name
+    // links to their email on the project page.
+    defineField({
+      name: 'contact',
+      title: 'Project contact',
+      type: 'object',
+      description:
+        'Optional. The person to contact about the project, as shown on OAD\'s own page for it. On the project page the name is a link that opens an email to them.',
+      fields: [
+        defineField({name: 'name', title: 'Name', type: 'string'}),
+        defineField({
+          name: 'email',
+          title: 'Email address',
+          type: 'string',
+          validation: (Rule) =>
+            Rule.regex(/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/, {name: 'email'}).error('Add a full email address, for example name@example.org'),
+        }),
+      ],
+      validation: (Rule) =>
+        Rule.custom((contact) => (contact && !contact.name && !contact.email ? 'Add a name or an email address, or clear the contact.' : true)),
+    }),
   ],
   // The Studio list: newest year first, then A to Z
   orderings: [
