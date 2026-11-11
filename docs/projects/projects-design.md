@@ -67,6 +67,10 @@ e. (first part DONE 10 Nov 2026: the page and the cards, CSS section 15; the pho
 f. The project pages. DONE 10 Nov 2026: CSS section 16, the photo band (only when the project has a photo; a project without one has no band at all, L'chelle's choice over a colour band or a slimmer band), the header marking "Projects and impact" (and, on the directory page, "Project directory") as current, share-image tags for projects with a photo. Tested: 20 project pages at 8 widths (no sideways scroll, errors, failed requests or broken images), Tab order, focus rings.
 g. DONE 11 Nov 2026, results in CLAUDE.md (Phase 8 checklist). Phase-end checklist: every width, keyboard only, screen reader order, 200% zoom, reduced motion, JavaScript off, contrast, a build with no projects, a filter with no results.
 
+## Page content, added 11 Nov 2026 (L'chelle)
+
+A project has a "Page content" field with the same editor as a news article, so a project page can show OAD's full page (text, photos, buttons such as the project report, videos) instead of only the plain summary. The Summary stays for the search and is shown only when there is no page content. OAD's contact person is deliberately not copied. The scraping prompt is docs/projects/scrape-prompt.md. Build and styling: see CLAUDE.md (Project page content) and CSS section 19.
+
 ## News linked to projects (added 10 Nov 2026, L'chelle)
 
 An OAD projects news post can name the projects in the directory it is about. Decided: a post can name one or more projects (a list, not a single choice), and the article links back to the project.

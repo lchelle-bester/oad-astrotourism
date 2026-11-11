@@ -160,9 +160,12 @@ function renderButton(block, h) {
   }
   const colour = h.buttons.colours.find((c) => c.value === block.colour) || h.buttons.colours[0]
   const align = ['left', 'center', 'right'].includes(block.align) ? block.align : 'left'
-  const edged = contrast(colour.hex, PAPER) < 3 ? ' article-button__link--edged' : ''
+  // The page the button sits on: the paper by default; the project page is dark and passes its own
+  // background (and a light edge colour), because a teal or terracotta button is nearly invisible on navy
+  const edged = contrast(colour.hex, h.buttonBackdrop || PAPER) < 3 ? ' article-button__link--edged' : ''
+  const edge = h.buttonEdge ? `; --btn-edge: ${h.buttonEdge}` : ''
   const arrow = outside ? ' <span aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens another site)</span>' : ''
-  return `<p class="article-button article-button--${align}"><a class="article-button__link${edged}" href="${h.escapeHtml(href)}" style="--btn-bg: ${colour.hex}; --btn-ink: ${colour.ink}">${h.escapeHtml(label)}${arrow}</a></p>`
+  return `<p class="article-button article-button--${align}"><a class="article-button__link${edged}" href="${h.escapeHtml(href)}" style="--btn-bg: ${colour.hex}; --btn-ink: ${colour.ink}${edge}">${h.escapeHtml(label)}${arrow}</a></p>`
 }
 
 // MORE FROM OAD (step g): the three latest posts after the article, whatever their
@@ -196,6 +199,22 @@ function readingTime(text) {
 // would hide a real page
 const RESERVED = ['page', 'category']
 
+// The blocks of a long text, as HTML: the text blocks and every custom block (photos, photos side by side,
+// videos, podcasts, buttons). Used for a news article and, since 11 Nov 2026, for a project page.
+// `images` is what build.js downloaded for them. Returns {html, skipped, text}.
+function renderArticleBody(blocks, images, h) {
+  return renderPortableText(blocks, {
+    ...h,
+    custom: {
+      image: (block) => renderSinglePhoto(block, images, h),
+      imageRow: (block) => renderPhotoRow(block, images, h),
+      youtube: (block) => renderYoutube(block, images, h),
+      spotify: (block) => renderSpotify(block, h),
+      button: (block) => renderButton(block, h),
+    },
+  })
+}
+
 // "About the project: ..." under the title, when an OAD projects post names projects in the
 // directory (10 Nov 2026). Each is a link to the project's page.
 function renderProjectLine(post, h) {
@@ -213,16 +232,7 @@ function renderArticle(post, h) {
   if (!category) throw new Error(`News post "${post.title}" has an unknown category "${post.category}".`)
 
   const images = post.images
-  const body = renderPortableText(post.body, {
-    ...h,
-    custom: {
-      image: (block) => renderSinglePhoto(block, images, h),
-      imageRow: (block) => renderPhotoRow(block, images, h),
-      youtube: (block) => renderYoutube(block, images, h),
-      spotify: (block) => renderSpotify(block, h),
-      button: (block) => renderButton(block, h),
-    },
-  })
+  const body = renderArticleBody(post.body, images, h)
   return {
     file: `news/${post.slug}/index.html`,
     skipped: body.skipped,
@@ -247,4 +257,4 @@ function renderArticle(post, h) {
   }
 }
 
-module.exports = {renderArticle, picture, renderProjectLine}
+module.exports = {renderArticle, renderArticleBody, picture, renderProjectLine}

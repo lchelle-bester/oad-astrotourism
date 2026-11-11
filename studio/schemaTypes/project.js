@@ -1,6 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {GenerateOnlySlugInput} from './components/GenerateOnlySlugInput'
 import {ButtonColourInput} from './components/ButtonColourInput'
+import {articleBlocks} from './articleBody'
 import {countries, countryName} from './countries.mjs'
 import {sdgs} from './sdgs.mjs'
 import {projectColours} from './projectColours.mjs'
@@ -78,11 +79,28 @@ export const project = defineType({
       type: 'text',
       rows: 14,
       description:
-        'OAD\'s description of the project. Plain text: start a new paragraph by leaving a blank line. (No bold or links in here.)',
+        'OAD\'s short description of the project, as plain text: start a new paragraph by leaving a blank line. Used for the directory search. It is also shown on the project page, unless you fill in "Page content" below, which then replaces it.',
+      // Needed unless the page content is written (added 11 Nov 2026)
       validation: (Rule) => [
-        Rule.required().error('Add the summary.'),
+        Rule.custom((value, context) =>
+          !value && !(context.document?.body && context.document.body.length)
+            ? 'Add the summary, or write the page in "Page content".'
+            : true,
+        ),
         Rule.max(3500).warning('This is very long. Consider keeping the main points.'),
       ],
+    }),
+    // The full text of the project page (added 11 Nov 2026, L'chelle): the same editor as a news
+    // article, so a project can have subheadings, photos, photos side by side, buttons (for
+    // example "Download the project report"), videos and podcasts. When it has anything in it,
+    // the project page shows it instead of the plain summary.
+    defineField({
+      name: 'body',
+      title: 'Page content',
+      type: 'array',
+      description:
+        'The text of the project page, written like a news article. If you write anything here it is shown on the page instead of the Summary. Use Subheading to break up long text. The + button adds photos, photos side by side, buttons (for example a download), videos and podcasts.',
+      of: articleBlocks,
     }),
     defineField({
       name: 'photo',

@@ -398,7 +398,8 @@ async function findYoutubeStill(id) {
 
 // The stills for one article's YouTube videos, found by block key (a playlist has no
 // still image). Adds the files to write to `files`.
-async function fetchYoutubeStills(post, media, files) {
+// `dir` is the folder in dist/ the files go to (news by default; the project pages use their own)
+async function fetchYoutubeStills(post, media, files, dir = NEWS_DIR) {
   const stills = {}
   for (const block of post.body || []) {
     if (block._type !== 'youtube') continue
@@ -408,27 +409,27 @@ async function fetchYoutubeStills(post, media, files) {
     const still = youtubeStills.get(source.id)
     if (!still) continue
     files.push({name: still.name, data: still.data})
-    stills[block._key] = {src: `/${NEWS_DIR}/${still.name}`, width: still.width, height: still.height}
+    stills[block._key] = {src: `/${dir}/${still.name}`, width: still.width, height: still.height}
   }
   return stills
 }
 
 // Every photo one article needs: the main photo and each photo in its text, found by
 // the block's key. A row of three is cut square, a row of two 3 by 2.
-async function fetchArticleImages(post, files) {
+async function fetchArticleImages(post, files, dir = NEWS_DIR) {
   const images = {
-    main: await fetchArticleImage(post.photo, post, files, {tag: 'main', widths: [800, 1312, 2000]}),
+    main: await fetchArticleImage(post.photo, post, files, {tag: 'main', widths: [800, 1312, 2000], dir}),
     // The picture shown when the article is shared (the og:image): the main photo, 1200 wide
-    share: await fetchArticleImage(post.photo, post, files, {tag: 'share', widths: [1200], formats: ['jpg']}),
+    share: await fetchArticleImage(post.photo, post, files, {tag: 'share', widths: [1200], formats: ['jpg'], dir}),
     byKey: {},
   }
   for (const block of post.body || []) {
     if (block._type === 'image') {
-      images.byKey[block._key] = await fetchArticleImage(block, post, files, {tag: `photo-${block._key}`, widths: [800, 1312, 2000]})
+      images.byKey[block._key] = await fetchArticleImage(block, post, files, {tag: `photo-${block._key}`, widths: [800, 1312, 2000], dir})
     } else if (block._type === 'imageRow') {
       const ratio = (block.images || []).length === 3 ? 1 : 3 / 2
       for (const photo of block.images || []) {
-        images.byKey[photo._key] = await fetchArticleImage(photo, post, files, {tag: `row-${photo._key}`, widths: [480, 960], ratio})
+        images.byKey[photo._key] = await fetchArticleImage(photo, post, files, {tag: `row-${photo._key}`, widths: [480, 960], ratio, dir})
       }
     }
   }
@@ -732,6 +733,13 @@ async function main() {
   const projectFiles = []
   for (const project of projects) {
     if (project.photo) project.image = await fetchArticleImage(project.photo, project, projectFiles, {tag: 'photo', widths: [640, 1000, 1400, 2000], dir: PROJECT_DIR})
+    // The photos and video stills in the page content (11 Nov 2026), the same way as for an article.
+    // The wide photo above is fetched once, so the stand-in has none.
+    if (project.body) {
+      const content = {slug: project.slug, title: project.title, photo: null, body: project.body}
+      project.bodyImages = await fetchArticleImages(content, projectFiles, PROJECT_DIR)
+      project.bodyImages.youtube = await fetchYoutubeStills(content, media, projectFiles, PROJECT_DIR)
+    }
   }
 
   const siteSettings = await fetchSiteSettings()
@@ -809,9 +817,13 @@ async function main() {
   // The project directory page and one page per project
   const projectTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'project.html'), 'utf8'))
   const directoryTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'project-directory.html'), 'utf8'))
-  const projectHelpers = {escapeHtml, picture, formatPostDate, newsByProject, siteUrl: SITE_URL}
+  // Buttons in the page content sit on the dark page: a colour that is under 3:1 against it gets a white edge
+  const projectHelpers = {escapeHtml, picture, formatPostDate, newsByProject, safeUrl, media, buttons, buttonBackdrop: '#0f1b2b', buttonEdge: '#ffffff', siteUrl: SITE_URL}
   const directory = renderDirectoryPage(projects, projectHelpers)
   const projectPages = projects.map((project) => renderProjectPage(project, projects, projectHelpers))
+  // Blocks in a project's page content that the page could not draw (a button with no address, and so on)
+  const notDrawnInProjects = {}
+  for (const {skipped} of projectPages) for (const [type, count] of Object.entries(skipped || {})) notDrawnInProjects[type] = (notDrawnInProjects[type] || 0) + count
   // The header marks "Projects and impact" as the section on all of these pages, and the
   // directory page itself as the current page
   const projectNav = {...data.nav, projectsCurrent: ' aria-current="true"'}
@@ -827,6 +839,8 @@ async function main() {
 
   pruneCache()
   console.log(`Projects: ${projects.length} published projects, 1 directory page, ${projectPages.length} project pages`)
+  if (Object.keys(notDrawnInProjects).length) console.log('Blocks not drawn on project pages (check the content):', JSON.stringify(notDrawnInProjects))
+  console.log(`Project pages with page content: ${projects.filter((p) => p.body).length}`)
   console.log(`Project photos: ${projects.filter((p) => p.image).length}; news linked to projects: ${[...newsByProject.values()].reduce((n, posts) => n + posts.length, 0)} links on ${newsByProject.size} project pages`)
   console.log(`News:${allPosts.length} published posts, ${listPages.length} list pages, ${allPosts.length} article pages`)
   if (Object.keys(notDrawn).length) console.log('Blocks not drawn in articles (check the posts):', JSON.stringify(notDrawn))

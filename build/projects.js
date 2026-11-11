@@ -7,13 +7,19 @@
 
 const path = require('path')
 const {pathToFileURL} = require('url')
-const {describe} = require('./portable-text')
+const {describe, plainText} = require('./portable-text')
+const {renderArticleBody} = require('./news-article')
 
 // What the directory needs from each project. The tags are only used by the search (they
 // are not shown). Drafts are left out (their ids start with "drafts.").
 const PROJECTS_QUERY =
   '*[_type == "project" && !(_id in path("drafts.**")) && defined(slug.current)] | order(year desc, title asc)' +
   '{title, "slug": slug.current, year, countries, place, summary, sdgs, tags, originalUrl, cardColour, ' +
+  // The page content: every photo (and every photo in a row) gets its address and size, as for an article
+  'body[]{..., _type == "image" => {"url": asset->url, "assetId": asset->_id, ' +
+  '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}, ' +
+  '_type == "imageRow" => {images[]{..., "url": asset->url, "assetId": asset->_id, ' +
+  '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}}, ' +
   '"photo": photo{alt, credit, hotspot, crop, "url": asset->url, "assetId": asset->_id, ' +
   '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}}'
 
@@ -44,7 +50,8 @@ async function loadProjects({sanityQuery, safeUrl, root}) {
     const goals = [...(row.sdgs || [])].sort((a, b) => a - b)
     for (const number of goals) if (!sdgs.some((s) => s.number === number)) fail(`SDG ${number} is not one of the 17.`)
     const paragraphs = (row.summary || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)
-    if (!paragraphs.length) fail('it has no summary.')
+    const hasBody = Boolean(row.body && row.body.length)
+    if (!paragraphs.length && !hasBody) fail('it has no summary and no page content.')
 
     const hasPhoto = Boolean(row.photo && row.photo.url)
     const colour = projectColours.find((c) => c.value === row.cardColour)
@@ -62,6 +69,9 @@ async function loadProjects({sanityQuery, safeUrl, root}) {
       countryNames: codes.map(countryName),
       place: (row.place || '').trim(),
       paragraphs,
+      // The page content (rich text), or null; its words also feed the search
+      body: hasBody ? row.body : null,
+      bodyText: hasBody ? row.body.filter((b) => b && b._type === 'block').map((b) => plainText(b)) : [],
       goalNumbers: goals,
       goals: goals.map(sdgLabel),
       tags: (row.tags || []).map((t) => t.trim()).filter(Boolean),
@@ -164,7 +174,7 @@ function renderFilters(projects, h) {
 function renderSearchIndex(projects) {
   const index = {}
   for (const p of projects) {
-    index[p.slug] = [p.title, p.place, p.countryNames.join(' '), p.goals.join(' '), p.tags.join(' '), p.paragraphs.join(' ')]
+    index[p.slug] = [p.title, p.place, p.countryNames.join(' '), p.goals.join(' '), p.tags.join(' '), p.paragraphs.join(' '), p.bodyText.join(' ')]
       .filter(Boolean).join(' ').replace(/\s+/g, ' ').toLowerCase()
   }
   return JSON.stringify(index)
@@ -297,17 +307,31 @@ function renderProjectNews(project, h) {
 }
 
 function renderProjectPage(project, projects, h) {
+  // The page content, if there is some, replaces the plain summary (11 Nov 2026, L'chelle)
+  let summary
+  let description
+  let skipped = {}
+  if (project.body) {
+    const content = renderArticleBody(project.body, project.bodyImages, h)
+    summary = `<div class="project__body">\n${content.html}\n          </div>`
+    description = describe(content.text)
+    skipped = content.skipped
+  } else {
+    // Each paragraph is a <p>; a line break inside one (a bullet list, for example) is kept
+    summary = project.paragraphs.map((p) => `<p>${h.escapeHtml(p).replace(/\n/g, '<br>')}</p>`).join('\n          ')
+    description = describe(project.paragraphs)
+  }
   return {
+    skipped,
     file: `projects/directory/${project.slug}/index.html`,
     page: {
       title: `${project.title} | Astrotourism`,
       name: project.title,
       photo: renderProjectPhoto(project, h),
       shareImage: renderShareImage(project, h),
-      description: describe(project.paragraphs),
+      description,
       canonical: `${h.siteUrl}${projectUrl(project)}`,
-      // Each paragraph is a <p>; a line break inside one (a bullet list, for example) is kept
-      summary: project.paragraphs.map((p) => `<p>${h.escapeHtml(p).replace(/\n/g, '<br>')}</p>`).join('\n          '),
+      summary,
       facts: renderFacts(project, h),
       original: project.originalUrl
         ? `<p class="project__original"><a href="${h.escapeHtml(project.originalUrl)}">Original page on astro4dev.org <span aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens another site)</span></a></p>`

@@ -3902,7 +3902,7 @@ a.news-pager__link:focus-visible {
 }
 
 .article__body .article-button__link--edged {
-  box-shadow: inset 0 0 0 1.5px var(--brand-navy);
+  box-shadow: inset 0 0 0 1.5px var(--btn-edge, var(--brand-navy));
 }
 
 .article__body .article-button__link:focus-visible {
@@ -5286,11 +5286,8 @@ a.news-pager__link:focus-visible {
   background: rgb(255 255 255 / 0.05);
 }
 
-/* The heading becomes a small sand label with a four-point star, like the directory's group titles */
+/* The heading becomes a small sand label, like the directory's group titles (the star beside it was taken out on 11 Nov 2026) */
 .project-news .project-more__heading {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
   padding-bottom: 0.875rem;
   border-bottom-color: rgb(255 255 255 / 0.14);
   color: var(--color-accent-soft);
@@ -5300,15 +5297,6 @@ a.news-pager__link:focus-visible {
   letter-spacing: 0.14em;
   line-height: 1.4;
   text-transform: uppercase;
-}
-
-.project-news .project-more__heading::before {
-  content: "";
-  flex: none;
-  width: 0.75rem;
-  height: 0.75rem;
-  background: currentColor;
-  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
 }
 
 .project-news .project-card {
@@ -5323,4 +5311,187 @@ a.news-pager__link:focus-visible {
   .project-news {
     margin-top: 2.5rem;
   }
+}
+
+/* 19. PROJECT PAGE CONTENT (11 Nov 2026, L'chelle). A project's "Page content" is written in the
+   same editor as a news article, so it can have subheadings, lists, quotes, links, photos, photos
+   side by side, buttons, videos and podcasts. The blocks are drawn by the same code and use the
+   article's own classes (.article-photo, .article-row, .article-button, .embed); section 14 styles
+   them for the light paper, so this section gives them their dark-page colours inside
+   .project__body. The paragraph look comes from section 16 (.project__summary p). Contrast
+   (calculated): white on #0f1b2b 17.3:1, white at 90% about 14:1, sand 8.9:1, white at 70% 7.3:1. */
+
+.project__body {
+  /* a long web address in the text breaks onto the next line instead of widening the page */
+  overflow-wrap: anywhere;
+}
+
+.project__body > :first-child {
+  margin-top: 0;
+}
+
+.project__body strong {
+  font-weight: 600;
+}
+
+.project__body h2,
+.project__body h3 {
+  margin: 2.5rem 0 1rem;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.project__body h2 {
+  font-size: 1.5rem;
+}
+
+.project__body h3,
+.project__body h2.article__minor {
+  font-size: 1.25rem;
+}
+
+.project__body a {
+  color: var(--color-accent-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  transition: color 0.2s;
+}
+
+.project__body a:hover,
+.project__body a:focus-visible {
+  color: var(--color-text);
+}
+
+/* Lists: sand dots (decoration), sand numbers */
+.project__body ul,
+.project__body ol {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  color: rgb(255 255 255 / 0.9);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.project__body ul {
+  list-style: none;
+}
+
+.project__body ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.project__body ul > li::before {
+  content: "";
+  position: absolute;
+  top: 0.8em;
+  left: 0.25rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+}
+
+.project__body ol {
+  padding-left: 1.75rem;
+}
+
+.project__body ol > li::marker {
+  color: var(--color-accent-soft);
+  font-weight: 600;
+}
+
+.project__body li {
+  margin-bottom: 0.5rem;
+}
+
+.project__body li > ul,
+.project__body li > ol {
+  margin: 0.5rem 0 0;
+}
+
+/* The quote: a sand bar (the teal of the article is 1.4:1 on navy) and Space Grotesk */
+.project__body blockquote {
+  margin: 2rem 0;
+  padding-left: 1.5rem;
+  border-left: 4px solid var(--color-accent-soft);
+}
+
+.project__body blockquote p {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Photos in the text: the article's own sizing (its shape, at most 520px tall), here with light captions */
+.project__body .article-photo,
+.project__body .article-row {
+  margin: 2rem 0;
+}
+
+.project__body .article-photo__caption,
+.project__body .article-row__caption,
+.project__body .embed__caption {
+  color: rgb(255 255 255 / 0.7);
+}
+
+/* Buttons: the same pill, on the dark page. A colour too close to the navy gets a white edge. */
+.project__body .article-button {
+  display: flex;
+  margin: 1.75rem 0;
+}
+
+.project__body .article-button--center {
+  justify-content: center;
+}
+
+.project__body .article-button--right {
+  justify-content: flex-end;
+}
+
+.project__body .article-button__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: filter 0.2s;
+}
+
+.project__body .article-button__link--edged {
+  box-shadow: inset 0 0 0 1.5px var(--btn-edge, #fff);
+}
+
+.project__body .article-button__link:focus-visible {
+  color: var(--btn-ink);
+  text-decoration: none;
+  filter: brightness(0.92);
+}
+
+@media (hover: hover) {
+  .project__body .article-button__link:hover {
+    color: var(--btn-ink);
+    text-decoration: none;
+    filter: brightness(0.92);
+  }
+}
+
+/* Videos and podcasts: the play card is a little lighter than the page so its edge shows */
+.project__body .embed {
+  margin: 2rem 0;
+}
+
+.project__body .embed--card .embed__frame {
+  background: rgb(255 255 255 / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
 }
