@@ -39,12 +39,15 @@
 
     {{{page.photo}}}
 
+    <!-- The facts (year, country, goals, contact) come first, so on a phone they are above the text;
+         from 1100px the grid puts them in the right-hand column again, with the rest of the side
+         (original page, news, more projects) under them. -->
     <div class="project__layout">
+      {{{page.facts}}}
       <div class="project__summary">
           {{{page.summary}}}
       </div>
-      <aside class="project__side" aria-label="About this project">
-        {{{page.facts}}}
+      <aside class="project__side" aria-label="Related to this project">
         {{{page.original}}}
         {{{page.news}}}
         {{{page.more}}}

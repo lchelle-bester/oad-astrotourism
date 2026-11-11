@@ -5087,6 +5087,12 @@ a.news-pager__link:focus-visible {
   margin-top: 3rem;
 }
 
+/* On a phone the order is the facts, the text, then the rest: the first thing in the rest needs no
+   extra space above it, as the gap between the parts is already there */
+.project__side > :first-child {
+  margin-top: 0;
+}
+
 /* THE TEXT: OAD's summary, as written */
 .project__summary p {
   margin: 0 0 1.25rem;
@@ -5232,17 +5238,38 @@ a.news-pager__link:focus-visible {
 /* From 1100px (68.75em, like the directory) the facts go beside the text: 340px on the
    right, the text at most 720px on the left */
 @media (min-width: 68.75em) {
+  /* Two columns: the text on the left runs down both rows; the facts are the first row of the right
+     column and the rest of the side the second. The second row takes the spare height ("1fr"), so
+     a tall text cannot stretch the space under the facts. */
   .project__layout {
     grid-template-columns: minmax(0, 45rem) 21.25rem;
+    grid-template-rows: auto 1fr;
     justify-content: space-between;
+    row-gap: 0;
+  }
+
+  .project__summary {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .project-facts {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .project__side {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  /* under the facts the original page link keeps its 24px */
+  .project__side > :first-child {
+    margin-top: 1.5rem;
   }
 
   .project__photo + .project__layout {
     margin-top: 3.5rem;
-  }
-
-  .project__side > :first-child {
-    margin-top: 0;
   }
 
   .project-more {
