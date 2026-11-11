@@ -48,7 +48,7 @@ Open the post in the Studio, check the category is "OAD projects", then use **Pr
 | 26 | 19 Dec 2017 | Overview of Global Himalayan Expedition Astrotourism Project | Astronomy for Himalayan Livelihood Creation (2018) | Certain | Copies the project's own description |
 | 27 | 14 Dec 2016 | Astro Tourism in South West Asia: Final Report | Development of Astro Tourism in South West Asia (2016) | High | The title is the project's name, and it is the final report |
 
-## Three things to decide or ask Joy
+## Three things to decide (if unsure draft email to joy)
 
 **The two Tanzania projects.** "Astro-tourism development in Tanzania" (2022) and "Astro Tourism Development Tanzania" (2023) have exactly the same summary text, word for word. So post 21 fits both equally. I suggested the 2022 one because the post is dated December 2021, like the other overviews for 2022 projects. Joy can say whether the 2023 one is a follow-on that should share it.
 

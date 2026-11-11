@@ -5272,3 +5272,55 @@ a.news-pager__link:focus-visible {
 .article__project a:hover {
   color: var(--color-text);
 }
+
+/* 18. NEWS PANEL ON THE PROJECT PAGE (11 Nov 2026, L'chelle). "News and updates" and "More
+   projects in..." looked like one long list, so the news sits in a soft tinted panel with a
+   sand label, and "More projects" stays as plain rows. Contrast (calculated): sand on the panel
+   (night with 5% white over it) about 8.4:1, white title about 16:1. */
+
+.project-news {
+  margin-top: 2.5rem;
+  padding: 1.25rem 1.5rem 0.5rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 0.05);
+}
+
+/* The heading becomes a small sand label with a four-point star, like the directory's group titles */
+.project-news .project-more__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding-bottom: 0.875rem;
+  border-bottom-color: rgb(255 255 255 / 0.14);
+  color: var(--color-accent-soft);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.project-news .project-more__heading::before {
+  content: "";
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: currentColor;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
+.project-news .project-card {
+  border-bottom-color: rgb(255 255 255 / 0.1);
+}
+
+.project-news .project-card:last-child {
+  border-bottom: 0;
+}
+
+@media (min-width: 68.75em) {
+  .project-news {
+    margin-top: 2.5rem;
+  }
+}
