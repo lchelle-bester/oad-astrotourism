@@ -196,7 +196,6 @@ async function main() {
       _type: 'project',
       title,
       slug: {_type: 'slug', current: slug},
-      kind: 'funded',
       year,
       countries: codes,
       ...(place ? {place} : {}),

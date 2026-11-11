@@ -824,3 +824,198 @@ if (copyButtons.length && navigator.clipboard && navigator.clipboard.writeText) 
     })
   })
 }
+
+// PROJECT DIRECTORY: SEARCH AND FILTERS (Phase 8)
+// The directory page is a plain list of every project, so it works without JavaScript. The
+// search box and the filters are in the HTML with the hidden attribute, and this shows them.
+// Choices in one group (India or Brazil) are alternatives; between groups they add up
+// (India and 2023); every word typed in the search has to be found. A project that does not
+// match is hidden (the hidden attribute), so it is also skipped by Tab and by screen
+// readers. The count line is a polite live region and says the new number after every change.
+// The full words of the projects are in a separate file, loaded the first time someone
+// searches; until it arrives the search looks in the title, years and countries on the cards.
+const projectDirectory = document.querySelector('.project-directory')
+const projectFilters = projectDirectory && projectDirectory.querySelector('[data-project-filters]')
+
+if (projectFilters) {
+  const searchForm = projectDirectory.querySelector('[data-project-search]')
+  const searchInput = searchForm.querySelector('input')
+  const filtersToggle = searchForm.querySelector('[data-filters-toggle]')
+  const countLine = projectDirectory.querySelector('[data-count]')
+  const noneMessage = projectDirectory.querySelector('[data-none]')
+  const projectCards = [...projectDirectory.querySelectorAll('.project-card')]
+  const filterGroups = [...projectFilters.querySelectorAll('[data-group]')]
+  const wide = window.matchMedia('(min-width: 68.75em)') // the same width as the CSS: filters beside the cards
+  const projectList = projectDirectory.querySelector('.project-list')
+  const sortBox = projectDirectory.querySelector('[data-project-sort]')
+  const sortSelect = projectDirectory.querySelector('#project-sort-select')
+  const moreWrap = projectDirectory.querySelector('[data-more-wrap]')
+  const moreButton = moreWrap.querySelector('button')
+  const moreStatus = moreWrap.querySelector('[data-more-status]')
+
+  // How many projects show at first, and how many each press of "Show more projects" adds.
+  // The mock-up shows five. A setting: change this one number to change it.
+  const PAGE_SIZE = 5
+  let shownLimit = PAGE_SIZE
+
+  // The names of the data attributes on a card for each group
+  const cardData = {country: 'countries', year: 'year', goal: 'goals'}
+  // Lower case and without accents, so "cote" finds "Côte d'Ivoire"
+  const fold = (text) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+  let searchIndex = null
+  let searchIndexLoading = false
+  function loadSearchIndex() {
+    if (searchIndex || searchIndexLoading) return
+    searchIndexLoading = true
+    fetch('/projects/directory/search.json')
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error('no search file'))))
+      .then((index) => {
+        searchIndex = Object.fromEntries(Object.entries(index).map(([slug, text]) => [slug, fold(text)]))
+        applyProjectFilters(true)
+      })
+      .catch(() => {
+        searchIndexLoading = false // the search keeps working on what the cards show
+      })
+  }
+
+  function cardMatches(card, picks, words) {
+    for (const [group, values] of Object.entries(picks)) {
+      if (!values.length) continue
+      const have = (card.dataset[cardData[group]] || '').split(' ')
+      if (!values.some((value) => have.includes(value))) return false
+    }
+    if (!words.length) return true
+    const text = searchIndex && searchIndex[card.dataset.slug] ? searchIndex[card.dataset.slug] : fold(card.textContent)
+    return words.every((word) => text.includes(word))
+  }
+
+  // The three orders. "Newest first" is the order the build wrote the cards in (data-order).
+  const cardTitle = (card) => card.querySelector('.project-card__title').textContent
+  const sorters = {
+    newest: (a, b) => a.dataset.order - b.dataset.order,
+    oldest: (a, b) => a.dataset.year - b.dataset.year || cardTitle(a).localeCompare(cardTitle(b)),
+    title: (a, b) => cardTitle(a).localeCompare(cardTitle(b)),
+  }
+  const sortNames = {newest: 'newest first', oldest: 'oldest first', title: 'by title A to Z'}
+
+  // Works out which projects match, shows the first shownLimit of them (the rest are hidden,
+  // like the ones that do not match), and updates the count and the Show more button. Any
+  // change to the search, a filter or the sort starts again from the first few; pressing
+  // Show more calls it with keepLimit set.
+  function applyProjectFilters(keepLimit) {
+    if (keepLimit !== true) shownLimit = PAGE_SIZE
+    const picks = {}
+    filterGroups.forEach((group) => {
+      picks[group.dataset.group] = [...group.querySelectorAll('input:checked')].map((input) => input.value)
+    })
+    const words = fold(searchInput.value).split(/\s+/).filter(Boolean)
+    const matching = projectCards.filter((card) => cardMatches(card, picks, words))
+    const shown = Math.min(shownLimit, matching.length)
+    projectCards.forEach((card) => {
+      card.hidden = true
+    })
+    matching.slice(0, shown).forEach((card) => {
+      card.hidden = false
+    })
+
+    // The count says how many match, not how many are showing. The sort is part of it, but
+    // only read out. Written only when it changed, so nothing is announced for nothing.
+    const total = matching.length === 0 ? 'No projects' : `${matching.length} project${matching.length === 1 ? '' : 's'}`
+    const summary = `${total}, ${sortNames[sortSelect.value]}`
+    if (countLine.textContent !== summary) {
+      const note = document.createElement('span')
+      note.className = 'visually-hidden'
+      note.textContent = `, ${sortNames[sortSelect.value]}`
+      countLine.replaceChildren(total, note)
+    }
+    noneMessage.hidden = matching.length > 0
+    moreWrap.hidden = matching.length <= shown
+    moreStatus.textContent = ` (showing ${shown} of ${matching.length})`
+  }
+
+  sortSelect.addEventListener('change', () => {
+    projectCards.sort(sorters[sortSelect.value])
+    projectList.append(...projectCards)
+    applyProjectFilters()
+  })
+
+  // Show more projects: five more, and the keyboard lands on the first new one
+  moreButton.addEventListener('click', () => {
+    const before = projectCards.filter((card) => !card.hidden).length
+    shownLimit += PAGE_SIZE
+    applyProjectFilters(true)
+    const firstNew = projectCards.filter((card) => !card.hidden)[before]
+    if (firstNew) firstNew.querySelector('a').focus()
+  })
+
+  // "Show all 20 countries": the first few are shown; a choice that is already ticked stays
+  // visible when the list is folded again
+  function setExpanded(group, expanded) {
+    const button = group.querySelector('[data-more]')
+    group.querySelectorAll('[data-extra]').forEach((item) => {
+      item.hidden = !expanded && !item.querySelector('input').checked
+    })
+    if (button) {
+      button.setAttribute('aria-expanded', String(expanded))
+      button.textContent = expanded ? button.dataset.lessLabel : button.dataset.moreLabel
+    }
+  }
+
+  filterGroups.forEach((group) => {
+    const button = group.querySelector('[data-more]')
+    if (button) button.addEventListener('click', () => setExpanded(group, button.getAttribute('aria-expanded') !== 'true'))
+  })
+
+  projectFilters.addEventListener('change', applyProjectFilters)
+
+  // The search: after the last key (so a screen reader is not told the count at every
+  // letter). Enter does nothing more: there is nothing to submit.
+  let searchTimer
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer)
+    searchTimer = setTimeout(applyProjectFilters, 250)
+  })
+  searchInput.addEventListener('focus', loadSearchIndex)
+  searchForm.addEventListener('submit', (event) => event.preventDefault())
+
+  // Clear all: both the one in the filter column and the one under "No projects match"
+  projectDirectory.querySelectorAll('[data-clear]').forEach((button) => {
+    button.addEventListener('click', () => {
+      projectFilters.querySelectorAll('input:checked').forEach((input) => {
+        input.checked = false
+      })
+      searchInput.value = ''
+      filterGroups.forEach((group) => {
+        const more = group.querySelector('[data-more]')
+        if (more) setExpanded(group, more.getAttribute('aria-expanded') === 'true')
+      })
+      applyProjectFilters()
+      if (button.closest('[data-none]')) searchInput.focus() // the message has just gone: keep the keyboard somewhere sensible
+    })
+  })
+
+  // Wide screens: the filters are beside the cards. Narrower: a button next to the search
+  // opens and closes them above the cards.
+  function syncFilters() {
+    projectFilters.hidden = wide.matches ? false : filtersToggle.getAttribute('aria-expanded') !== 'true'
+  }
+  filtersToggle.addEventListener('click', () => {
+    filtersToggle.setAttribute('aria-expanded', String(filtersToggle.getAttribute('aria-expanded') !== 'true'))
+    syncFilters()
+  })
+  wide.addEventListener('change', syncFilters)
+
+  // The long placeholder does not fit a phone, so there it is the short one (as in the phone mock-up)
+  const searchWide = window.matchMedia('(min-width: 57.5em)')
+  const setSearchPlaceholder = () => {
+    searchInput.placeholder = searchWide.matches ? 'Search by name, country or keyword' : 'Search projects'
+  }
+  searchWide.addEventListener('change', setSearchPlaceholder)
+  setSearchPlaceholder()
+
+  searchForm.hidden = false
+  sortBox.hidden = false
+  syncFilters()
+  applyProjectFilters() // only the first few show, from the start
+}

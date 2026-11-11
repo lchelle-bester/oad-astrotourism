@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{> favicon}}
+  <title>{{page.title}}</title>
+  <meta name="description" content="{{page.description}}">
+  <link rel="canonical" href="{{page.canonical}}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Astrotourism">
+  <meta property="og:url" content="{{page.canonical}}">
+  <meta property="og:title" content="{{page.title}}">
+  <meta property="og:description" content="{{page.description}}">
+  <link rel="preload" href="/assets/fonts/space-grotesk-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+{{> header}}
+
+  <!-- The project directory (design in docs/projects/projects-design.md). build/projects.js
+       writes the list, the search box and the filters. The wording here is fixed. The
+       search and filters are hidden until main.js shows them, so without JavaScript this is
+       the plain list of every project. -->
+  <main id="main" class="project-directory">
+    <h1 class="project-directory__title">Project directory</h1>
+    <p class="project-directory__intro">{{page.intro}}</p>
+
+    {{{page.search}}}
+    {{{page.filters}}}
+
+    <!-- The count is a polite live region: after a search, a filter or a sort change a screen
+         reader hears the new number of projects -->
+    <div class="project-directory__bar">
+      <p class="project-directory__count" role="status" aria-live="polite" data-count>{{{page.count}}}</p>
+      {{{page.sort}}}
+    </div>
+    {{{page.list}}}
+    {{{page.none}}}
+    {{{page.more}}}
+  </main>
+
+{{> footer}}
+
+{{> to-top}}
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

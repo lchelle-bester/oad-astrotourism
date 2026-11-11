@@ -1,0 +1,336 @@
+{
+  "note": "Suggested links between OAD projects news posts and projects, 10 Nov 2026. Same list as news-project-matches.md. confidence: certain, high, medium (suggested), unsure or none (leave untagged).",
+  "matches": [
+    {
+      "number": 1,
+      "postId": "1577852f-37c4-46bf-8a17-0defc27e2553",
+      "postTitle": "IAU OAD Project in Tanzania Launches Astrotourism Tours",
+      "publishedAt": "2026-07-21",
+      "confidence": "certain",
+      "projectIds": [
+        "project-starry-safaris-astrotourism-for-development-project-in-arusha-tanzania"
+      ],
+      "projectTitles": [
+        "Starry Safaris | Astrotourism for Development Project in Arusha, Tanzania"
+      ]
+    },
+    {
+      "number": 2,
+      "postId": "wp-29029",
+      "postTitle": "Colombian Project Fosters Astrotourism Among Local Community",
+      "publishedAt": "2024-10-16",
+      "confidence": "high",
+      "projectIds": [
+        "project-the-small-corner-of-the-stars-an-initiative-for-development-of-local-communities-in-la-tatacoa"
+      ],
+      "projectTitles": [
+        "The Small Corner of the Stars: An Initiative for Development of Local Communities in \"La Tatacoa\""
+      ]
+    },
+    {
+      "number": 3,
+      "postId": "wp-28977",
+      "postTitle": "Astro Tourism Project in Malaysia Makes A Mark",
+      "publishedAt": "2024-06-08",
+      "confidence": "high",
+      "projectIds": [
+        "project-langkawians-guide-malaysians-to-the-stars"
+      ],
+      "projectTitles": [
+        "Langkawians Guide Malaysians to the Stars"
+      ]
+    },
+    {
+      "number": 4,
+      "postId": "wp-28408",
+      "postTitle": "Astro-tourism Guide Training in Malaysia",
+      "publishedAt": "2023-11-02",
+      "confidence": "medium",
+      "projectIds": [
+        "project-langkawians-guide-malaysians-to-the-stars"
+      ],
+      "projectTitles": [
+        "Langkawians Guide Malaysians to the Stars"
+      ]
+    },
+    {
+      "number": 5,
+      "postId": "wp-28363",
+      "postTitle": "Astrotourism Project in India Empowers Local Youth",
+      "publishedAt": "2023-10-23",
+      "confidence": "medium",
+      "projectIds": [
+        "project-guide-training-for-the-tribal-students-phase-2"
+      ],
+      "projectTitles": [
+        "Guide Training for the Tribal Students (Phase 2)"
+      ]
+    },
+    {
+      "number": 6,
+      "postId": "wp-28318",
+      "postTitle": "Astrotourism and Entrepreneurship in a Small Town in Colombia",
+      "publishedAt": "2023-10-05",
+      "confidence": "high",
+      "projectIds": [
+        "project-the-small-corner-of-the-stars-an-initiative-for-development-of-local-communities-in-la-tatacoa"
+      ],
+      "projectTitles": [
+        "The Small Corner of the Stars: An Initiative for Development of Local Communities in \"La Tatacoa\""
+      ]
+    },
+    {
+      "number": 7,
+      "postId": "wp-28015",
+      "postTitle": "Student Astroguides Earn First Income through Astronomy",
+      "publishedAt": "2023-07-05",
+      "confidence": "medium",
+      "projectIds": [
+        "project-guide-training-workshop-for-tribal-students"
+      ],
+      "projectTitles": [
+        "Guide training workshop for tribal students"
+      ]
+    },
+    {
+      "number": 8,
+      "postId": "wp-27760",
+      "postTitle": "Strengthening Connections Between Astronomy Observatory and Businesses",
+      "publishedAt": "2023-05-19",
+      "confidence": "high",
+      "projectIds": [
+        "project-beyond-the-beach-foundations-for-caribbean-astrotourism"
+      ],
+      "projectTitles": [
+        "Beyond the Beach: Foundations for Caribbean Astrotourism"
+      ]
+    },
+    {
+      "number": 9,
+      "postId": "wp-27769",
+      "postTitle": "Nigerian Project Develops DIY, Low Cost Radio Telescope for Teaching",
+      "publishedAt": "2023-05-19",
+      "confidence": "none",
+      "projectIds": [],
+      "projectTitles": []
+    },
+    {
+      "number": 10,
+      "postId": "wp-26707",
+      "postTitle": "Call for Astronomy Mentors by Astrotribe Project",
+      "publishedAt": "2023-01-11",
+      "confidence": "medium",
+      "projectIds": [
+        "project-guide-training-for-the-tribal-students-phase-2"
+      ],
+      "projectTitles": [
+        "Guide Training for the Tribal Students (Phase 2)"
+      ]
+    },
+    {
+      "number": 11,
+      "postId": "wp-26607",
+      "postTitle": "Overview: Langkawians Guide Malaysians to the Stars",
+      "publishedAt": "2023-01-10",
+      "confidence": "certain",
+      "projectIds": [
+        "project-langkawians-guide-malaysians-to-the-stars"
+      ],
+      "projectTitles": [
+        "Langkawians Guide Malaysians to the Stars"
+      ]
+    },
+    {
+      "number": 12,
+      "postId": "wp-26626",
+      "postTitle": "Overview: An initiative for development of local communities in “La Tatacoa”",
+      "publishedAt": "2023-01-10",
+      "confidence": "certain",
+      "projectIds": [
+        "project-the-small-corner-of-the-stars-an-initiative-for-development-of-local-communities-in-la-tatacoa"
+      ],
+      "projectTitles": [
+        "The Small Corner of the Stars: An Initiative for Development of Local Communities in \"La Tatacoa\""
+      ]
+    },
+    {
+      "number": 13,
+      "postId": "wp-26630",
+      "postTitle": "Overview: Guide Training for the Tribal Students (Phase 2)",
+      "publishedAt": "2023-01-10",
+      "confidence": "certain",
+      "projectIds": [
+        "project-guide-training-for-the-tribal-students-phase-2"
+      ],
+      "projectTitles": [
+        "Guide Training for the Tribal Students (Phase 2)"
+      ]
+    },
+    {
+      "number": 14,
+      "postId": "wp-26455",
+      "postTitle": "Disadvantaged Students Trained as Astroguides in India",
+      "publishedAt": "2022-10-25",
+      "confidence": "medium",
+      "projectIds": [
+        "project-guide-training-workshop-for-tribal-students"
+      ],
+      "projectTitles": [
+        "Guide training workshop for tribal students"
+      ]
+    },
+    {
+      "number": 15,
+      "postId": "wp-31981",
+      "postTitle": "Astrostays: A Community-centred Astro-tourism Model for Creating Sustainable Livelihoods",
+      "publishedAt": "2022-08-01",
+      "confidence": "unsure",
+      "projectIds": [],
+      "projectTitles": []
+    },
+    {
+      "number": 16,
+      "postId": "wp-24970",
+      "postTitle": "Astrostays Launches Cosmohub To Benefit Local Community",
+      "publishedAt": "2022-07-01",
+      "confidence": "unsure",
+      "projectIds": [],
+      "projectTitles": []
+    },
+    {
+      "number": 17,
+      "postId": "wp-24731",
+      "postTitle": "OAD Project Crowdfunding To Train Students as Astroguides",
+      "publishedAt": "2022-04-14",
+      "confidence": "certain",
+      "projectIds": [
+        "project-guide-training-workshop-for-tribal-students"
+      ],
+      "projectTitles": [
+        "Guide training workshop for tribal students"
+      ]
+    },
+    {
+      "number": 18,
+      "postId": "wp-24299",
+      "postTitle": "Overview: Astro-tourism with nomadic herder in forest area of Mongolia",
+      "publishedAt": "2021-12-13",
+      "confidence": "certain",
+      "projectIds": [
+        "project-astro-tourism-with-nomadic-herder-in-forest-area-of-mongolia"
+      ],
+      "projectTitles": [
+        "Astro-tourism with nomadic herder in forest area of Mongolia"
+      ]
+    },
+    {
+      "number": 19,
+      "postId": "wp-24316",
+      "postTitle": "Overview: Guide training workshop for tribal students",
+      "publishedAt": "2021-12-13",
+      "confidence": "certain",
+      "projectIds": [
+        "project-guide-training-workshop-for-tribal-students"
+      ],
+      "projectTitles": [
+        "Guide training workshop for tribal students"
+      ]
+    },
+    {
+      "number": 20,
+      "postId": "wp-24320",
+      "postTitle": "Overview: Beyond the Beach- Foundations for Caribbean Astrotourism",
+      "publishedAt": "2021-12-13",
+      "confidence": "certain",
+      "projectIds": [
+        "project-beyond-the-beach-foundations-for-caribbean-astrotourism"
+      ],
+      "projectTitles": [
+        "Beyond the Beach: Foundations for Caribbean Astrotourism"
+      ]
+    },
+    {
+      "number": 21,
+      "postId": "wp-24324",
+      "postTitle": "Astro Tourism Development in Tanzania",
+      "publishedAt": "2021-12-13",
+      "confidence": "medium",
+      "projectIds": [
+        "project-astro-tourism-development-in-tanzania"
+      ],
+      "projectTitles": [
+        "Astro-tourism development in Tanzania"
+      ]
+    },
+    {
+      "number": 22,
+      "postId": "wp-24099",
+      "postTitle": "Unlocking Science – Astrostays Featured in International Science Council Series",
+      "publishedAt": "2021-11-23",
+      "confidence": "unsure",
+      "projectIds": [],
+      "projectTitles": []
+    },
+    {
+      "number": 23,
+      "postId": "wp-23813",
+      "postTitle": "New Astrostays Model Established At A Buddhist Monastery",
+      "publishedAt": "2021-09-23",
+      "confidence": "unsure",
+      "projectIds": [],
+      "projectTitles": []
+    },
+    {
+      "number": 24,
+      "postId": "wp-18999",
+      "postTitle": "Astronomy for Himalayan Livelihood Creation: Final summary",
+      "publishedAt": "2019-11-18",
+      "confidence": "certain",
+      "projectIds": [
+        "project-astronomy-for-himalayan-livelihood-creation"
+      ],
+      "projectTitles": [
+        "Astronomy for Himalayan Livelihood Creation"
+      ]
+    },
+    {
+      "number": 25,
+      "postId": "wp-18613",
+      "postTitle": "Global Himalayan Expeditions Update: First Telescopes Installed",
+      "publishedAt": "2019-06-11",
+      "confidence": "high",
+      "projectIds": [
+        "project-astronomy-for-himalayan-livelihood-creation"
+      ],
+      "projectTitles": [
+        "Astronomy for Himalayan Livelihood Creation"
+      ]
+    },
+    {
+      "number": 26,
+      "postId": "wp-17016",
+      "postTitle": "Overview of Global Himalayan Expedition Astrotourism Project",
+      "publishedAt": "2017-12-19",
+      "confidence": "certain",
+      "projectIds": [
+        "project-astronomy-for-himalayan-livelihood-creation"
+      ],
+      "projectTitles": [
+        "Astronomy for Himalayan Livelihood Creation"
+      ]
+    },
+    {
+      "number": 27,
+      "postId": "wp-15550",
+      "postTitle": "Astro Tourism in South West Asia: Final Report",
+      "publishedAt": "2016-12-14",
+      "confidence": "high",
+      "projectIds": [
+        "project-development-of-astro-tourism-in-south-west-asia"
+      ],
+      "projectTitles": [
+        "Development of Astro Tourism in South West Asia"
+      ]
+    }
+  ]
+}
