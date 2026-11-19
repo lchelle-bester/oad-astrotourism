@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{> favicon}}
+  <title>{{page.title}}</title>
+  <meta name="description" content="{{page.description}}">
+  <link rel="canonical" href="{{page.canonical}}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Astrotourism">
+  <meta property="og:url" content="{{page.canonical}}">
+  <meta property="og:title" content="{{page.title}}">
+  <meta property="og:description" content="{{page.description}}">
+  <link rel="preload" href="/assets/fonts/space-grotesk-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+{{> header}}
+
+  <!-- The Theory of Change page (design in docs/theory-of-change/). build/theory.js writes every
+       part from the "Theory of Change page" document in Sanity. The five section headings, the
+       column labels and the button words are fixed here. "Projects and impact" is plain text
+       because /projects/ has no page. The fold-open buttons are hidden until main.js shows them,
+       so without JavaScript every part is open. -->
+  <main id="main" class="toc">
+    <div class="toc-band">
+      <div class="toc-band__inner">
+        <nav class="toc-crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li>Projects and impact</li>
+            <li aria-current="page">Theory of Change</li>
+          </ol>
+        </nav>
+        <div class="toc-band__row">
+          <div class="toc-band__text">
+            <h1 class="toc-band__title">Theory of Change</h1>
+            <p class="toc-band__intro">{{page.intro}}</p>
+          </div>{{{page.download}}}
+        </div>
+      </div>
+    </div>
+
+    <div class="toc-paper">
+      <div class="toc-paper__inner">{{{page.problem}}}{{{page.who}}}{{{page.pathways}}}{{{page.goals}}}
+      </div>
+    </div>
+{{{page.impact}}}
+  </main>
+
+{{> footer}}
+
+{{> to-top}}
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

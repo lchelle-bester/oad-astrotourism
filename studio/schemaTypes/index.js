@@ -6,5 +6,6 @@ import {impactSection} from './impactSection'
 import {post} from './post'
 import {project} from './project'
 import {siteSettings} from './siteSettings'
+import {theoryOfChange} from './theoryOfChange'
 
-export const schemaTypes = [hero, caseSection, pillarsSection, impactFigure, impactResult, impactSection, post, project, siteSettings]
+export const schemaTypes = [hero, caseSection, pillarsSection, impactFigure, impactResult, impactSection, post, project, siteSettings, theoryOfChange]

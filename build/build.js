@@ -8,6 +8,7 @@ const {pathToFileURL} = require('node:url')
 const {renderNewsListPages} = require('./news-pages')
 const {renderArticle, picture} = require('./news-article')
 const {loadProjects, renderDirectoryPage, renderProjectPage, renderSearchIndex} = require('./projects')
+const {loadTheory, renderTheoryPage} = require('./theory')
 
 const ROOT = path.join(__dirname, '..')
 const SITE_DIR = path.join(ROOT, 'site')
@@ -499,6 +500,24 @@ function safeUrl(value, schemes = ['https:']) {
   }
 }
 
+// The Theory of Change diagram file (a PDF or a picture uploaded in the Studio), downloaded at
+// build time and served from this site like every other Sanity file (Phase 9, 19 Nov 2026). The
+// name on disk holds part of the asset's id, so a replaced file gets a new address and nobody is
+// shown a stale copy; the name a visitor's browser saves it under stays the same.
+const DOWNLOAD_DIR = 'assets/downloads'
+const diagramFiles = [] // {name, data}, written into dist/ once it exists
+
+async function fetchDiagram(diagram) {
+  const response = await fetchWithRetry(diagram.url)
+  if (!response.ok) throw new Error(`Could not download the Theory of Change diagram file (${response.status}).`)
+  const data = Buffer.from(await response.arrayBuffer())
+  const ext = String(diagram.extension || path.extname(diagram.url).slice(1) || 'file').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const id = String(diagram._id).split('-')[1]?.slice(0, 10) || 'file'
+  const name = `astrotourism-theory-of-change-${id}.${ext}`
+  diagramFiles.push({name, data})
+  return {href: `/${DOWNLOAD_DIR}/${name}`, downloadName: `astrotourism-theory-of-change.${ext}`, ext, size: data.length}
+}
+
 // Reads and cleans the site settings, and downloads the partner logos. Never
 // throws because the settings are missing: the footer then leaves out whatever
 // has no content (no social row, no partners band) and the build carries on.
@@ -747,7 +766,7 @@ async function main() {
   const footer = renderFooter(siteSettings)
 
   // newsCurrent marks "News" in the header on the News section's pages
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: ''}}
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: '', theoryCurrent: ''}}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
@@ -836,6 +855,26 @@ async function main() {
 
   // The words the directory's search looks in, fetched only when someone searches
   fs.writeFileSync(path.join(DIST_DIR, 'projects', 'directory', 'search.json'), renderSearchIndex(projects))
+
+  // The Theory of Change page (Phase 9). Left out, with a note, until the document is published.
+  const theory = await loadTheory({sanityQuery, safeUrl, root: ROOT})
+  if (theory) {
+    const diagramFile = theory.diagram ? await fetchDiagram(theory.diagram) : null
+    if (diagramFiles.length) {
+      fs.mkdirSync(path.join(DIST_DIR, DOWNLOAD_DIR), {recursive: true})
+      for (const file of diagramFiles) fs.writeFileSync(path.join(DIST_DIR, DOWNLOAD_DIR, file.name), file.data)
+    }
+    const sdgDir = path.join(SITE_DIR, 'assets', 'images', 'sdg')
+    const iconFiles = fs.existsSync(sdgDir) ? fs.readdirSync(sdgDir) : []
+    const {file, page} = renderTheoryPage(theory, {escapeHtml, siteUrl: SITE_URL}, {diagramFile, iconFiles})
+    const theoryTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'theory-of-change.html'), 'utf8'))
+    const target = path.join(DIST_DIR, file)
+    fs.mkdirSync(path.dirname(target), {recursive: true})
+    fs.writeFileSync(target, renderTemplate(theoryTemplate, {...data, nav: {...data.nav, projectsCurrent: ' aria-current="true"', theoryCurrent: ' aria-current="page"'}, page}))
+    console.log(`Theory of Change page: written, ${theory.pathways.length} pathways, ${theory.goals.length} goals, ${diagramFile ? `diagram for download (${diagramFile.ext})` : 'no diagram file uploaded, so no download button'}, ${iconFiles.length ? `${iconFiles.length} SDG icon files` : 'no SDG icon files (number tiles are shown)'}`)
+  } else {
+    console.log('Theory of Change page: not published in Sanity yet, so the page is not written.')
+  }
 
   pruneCache()
   console.log(`Projects: ${projects.length} published projects, 1 directory page, ${projectPages.length} project pages`)

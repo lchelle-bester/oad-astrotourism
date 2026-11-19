@@ -753,6 +753,54 @@ if (siteFooter) {
   layoutFooter()
 }
 
+// THEORY OF CHANGE PAGE: THE FOLD-OPEN PARTS
+// Three kinds of button, all written hidden in the HTML (build/theory.js), with every part open,
+// so without JavaScript nothing is hidden and nothing is lost:
+//  - "Read in full" on each pathway row opens OAD's full wording under its three stages,
+//  - "Show" on the assumptions panel opens the assumptions behind each stage,
+//  - "Show" on the two lists in "Who it serves", on phones only (below 57.5em, the CSS width):
+//    side by side on a wider screen both lists are always open and the button stays hidden.
+// aria-controls names what the button opens (one or several ids); "hidden" on those parts is
+// what hides them (a hidden part is also skipped by Tab and by screen readers). The button's
+// visible words change with the state, and so does aria-expanded.
+
+const theoryPage = document.querySelector('.toc')
+
+if (theoryPage) {
+  function setTheoryFold(button, open) {
+    button.setAttribute('aria-expanded', String(open))
+    button.querySelector('.toc-fold__label').textContent = open ? button.dataset.openLabel : button.dataset.closedLabel
+    button.getAttribute('aria-controls').split(' ').forEach((id) => {
+      const part = document.getElementById(id)
+      if (part) part.hidden = !open
+    })
+  }
+
+  theoryPage.querySelectorAll('.toc-fold').forEach((button) => {
+    button.addEventListener('click', () => setTheoryFold(button, button.getAttribute('aria-expanded') !== 'true'))
+  })
+
+  // Rows and the assumptions panel start closed, at every width
+  theoryPage.querySelectorAll('.toc-fold--row, .toc-fold--assumptions').forEach((button) => {
+    button.hidden = false
+    setTheoryFold(button, false)
+  })
+
+  // The two lists start closed on a phone and open (with no button) on a wider screen
+  const theoryGroups = theoryPage.querySelectorAll('.toc-fold--group')
+  const theoryIsPhone = window.matchMedia('not all and (min-width: 57.5em)')
+
+  function layoutTheoryGroups() {
+    theoryGroups.forEach((button) => {
+      button.hidden = !theoryIsPhone.matches
+      setTheoryFold(button, !theoryIsPhone.matches)
+    })
+  }
+
+  theoryIsPhone.addEventListener('change', layoutTheoryGroups)
+  layoutTheoryGroups()
+}
+
 // VIDEOS, PLAYLISTS AND PODCASTS IN ARTICLES (click to load)
 // In the page each one is a plain link to YouTube or Spotify, so it works without
 // JavaScript. This turns the link into a button; pressing it swaps the button for the
