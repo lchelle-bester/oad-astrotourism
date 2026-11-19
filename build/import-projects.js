@@ -1,4 +1,6 @@
 // One-time importer for the project directory (Phase 8, step c, 10 Nov 2026).
+// OBSOLETE since 11 Nov 2026: it writes a plain "summary", a field that no longer exists (a project's
+// text is its "Page content" now). It was only ever meant to run once. Do not run it again.
 // Reads OAD's public projects table (https://astro4dev.org/projects-search/), keeps
 // the projects tagged astrotourism, cleans them up and writes two files:
 //   docs/projects/imported-projects.json   to read and check, exactly what would be imported

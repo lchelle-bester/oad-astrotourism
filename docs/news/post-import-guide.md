@@ -55,7 +55,7 @@ If an article fits two, choose the one that is its main subject. If you are unsu
   {"_type": "image", "asset": {"_type": "reference", "_ref": "image-<id>-<width>x<height>-<format>"},
    "alt": "...", "credit": "..."}
   ```
-- **`alt` is required** (the Studio will not publish without it). It says what the photo shows, for people who cannot see it. Use the blog's own alt text if it has one. If it has none, write a plain description of only what is visible (no names, places or claims you cannot see), and list the post in your report as "alt text written by Claude".
+- **`alt` is required** (the Studio will not publish without it). It says what the photo shows, for people who cannot see it. Use the blog's own alt text if it has one. If it has none, write a plain description of only what is visible (no names, places or claims you cannot see)
 - **`credit`** (main image only) is optional. Use the photo credit from the blog if it has one, in the form `Photo: Name / Organisation`. Otherwise leave it out.
 - **`hotspot`** (optional): `{"_type": "sanity.imageHotspot", "x": 0.5, "y": 0.5, "width": 0.5, "height": 0.5}`, values from 0 to 1. It tells the site where the important part of the photo is, because the photo is cut to different shapes. Set it only if the subject is clearly off-centre, or the image has text or a graphic that must not be cut. Otherwise leave it out.
 - Use the largest version of the image the blog has. Do not alter it.

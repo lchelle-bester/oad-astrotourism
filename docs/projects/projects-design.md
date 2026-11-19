@@ -42,7 +42,7 @@ Not in this phase: the map, the Impact page, case studies, the Theory of Change 
 | year | number | yes for funded | "Implementation year", 2000 to 2100 |
 | countries | list of selections | yes, at least one | One drop-down per country, from one shared list of 250 (studio/schemaTypes/countries.mjs, ISO codes stored). Map positions are added in the map phase. |
 | place | string | no | Detail inside the country, for example "Northern Cape and Karoo region". Not shown on the directory cards (country only); where it shows on the project page is still to decide. |
-| summary | long text | yes | OAD's text, paragraphs separated by blank lines. Warning over 3,500 characters. |
+| body (Page content) | rich text | yes, at least one block | Changed 11 Nov 2026: the plain summary field was removed and the page content (the same editor as a news article) is the only text of a project. |
 | photo | image | no | Added 10 Nov 2026 after the mock-up. Hotspot, alt text required once there is a photo, optional credit. The card's background, with the dark fade on the left. |
 | cardColour | list | yes unless there is a photo | Added 10 Nov 2026 (L'chelle's choice: the editor picks). Five brand colour circles: deep teal, terracotta, sand, sage, deep navy (yellow was taken out on 10 Nov 2026). Used only when there is no photo. |
 | sdgs | list of numbers | no | The 17 SDGs as tick boxes (studio/schemaTypes/sdgs.mjs) |

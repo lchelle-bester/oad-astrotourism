@@ -14,7 +14,7 @@ const {renderArticleBody} = require('./news-article')
 // are not shown). Drafts are left out (their ids start with "drafts.").
 const PROJECTS_QUERY =
   '*[_type == "project" && !(_id in path("drafts.**")) && defined(slug.current)] | order(year desc, title asc)' +
-  '{title, "slug": slug.current, year, countries, place, summary, sdgs, tags, originalUrl, cardColour, contact{name, email}, ' +
+  '{title, "slug": slug.current, year, countries, place, sdgs, tags, originalUrl, cardColour, contact{name, email}, ' +
   // The page content: every photo (and every photo in a row) gets its address and size, as for an article
   'body[]{..., _type == "image" => {"url": asset->url, "assetId": asset->_id, ' +
   '"width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}, ' +
@@ -29,7 +29,7 @@ const INTRO = 'Astrotourism projects funded by the IAU Office of Astronomy for D
 const EMAIL = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/
 
 // Reads the projects, checks every one and adds what the pages need: country names,
-// goal labels, paragraphs and the card colour. Stops the build with a clear message
+// goal labels and the card colour. Stops the build with a clear message
 // if a project cannot be drawn, so a bad entry never reaches the site silently.
 async function loadProjects({sanityQuery, safeUrl, root}) {
   const lists = async (name) => import(pathToFileURL(path.join(root, 'studio', 'schemaTypes', name)).href)
@@ -52,12 +52,11 @@ async function loadProjects({sanityQuery, safeUrl, root}) {
     for (const code of codes) if (!countries.some((c) => c.code === code)) fail(`"${code}" is not a country in studio/schemaTypes/countries.mjs.`)
     const goals = [...(row.sdgs || [])].sort((a, b) => a - b)
     for (const number of goals) if (!sdgs.some((s) => s.number === number)) fail(`SDG ${number} is not one of the 17.`)
-    const paragraphs = (row.summary || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)
     const hasBody = Boolean(row.body && row.body.length)
     const contactName = ((row.contact && row.contact.name) || '').trim()
     const contactEmail = ((row.contact && row.contact.email) || '').trim()
     if (contactEmail && !EMAIL.test(contactEmail)) fail(`the contact email "${contactEmail}" is not a valid email address.`)
-    if (!paragraphs.length && !hasBody) fail('it has no summary and no page content.')
+    if (!hasBody) fail('it has no page content. Write it in the Studio (the field called Page content).')
 
     const hasPhoto = Boolean(row.photo && row.photo.url)
     const colour = projectColours.find((c) => c.value === row.cardColour)
@@ -76,10 +75,9 @@ async function loadProjects({sanityQuery, safeUrl, root}) {
       place: (row.place || '').trim(),
       contactName,
       contactEmail,
-      paragraphs,
-      // The page content (rich text), or null; its words also feed the search
-      body: hasBody ? row.body : null,
-      bodyText: hasBody ? row.body.filter((b) => b && b._type === 'block').map((b) => plainText(b)) : [],
+      // The page content (rich text): the only text a project has. Its words also feed the search.
+      body: row.body,
+      bodyText: row.body.filter((b) => b && b._type === 'block').map((b) => plainText(b)),
       goalNumbers: goals,
       goals: goals.map(sdgLabel),
       tags: (row.tags || []).map((t) => t.trim()).filter(Boolean),
@@ -177,12 +175,12 @@ function renderFilters(projects, h) {
 }
 
 // The words the search looks in, one lower-case line per project: title, place, countries,
-// goals, tags and the whole summary. A separate file, fetched the first time someone
+// goals, tags, the contact's name and the whole page content. A separate file, fetched the first time someone
 // searches, so the page itself stays light.
 function renderSearchIndex(projects) {
   const index = {}
   for (const p of projects) {
-    index[p.slug] = [p.title, p.place, p.countryNames.join(' '), p.goals.join(' '), p.tags.join(' '), p.contactName, p.paragraphs.join(' '), p.bodyText.join(' ')]
+    index[p.slug] = [p.title, p.place, p.countryNames.join(' '), p.goals.join(' '), p.tags.join(' '), p.contactName, p.bodyText.join(' ')]
       .filter(Boolean).join(' ').replace(/\s+/g, ' ').toLowerCase()
   }
   return JSON.stringify(index)
@@ -246,13 +244,13 @@ function renderFacts(project, h) {
   if (project.goals.length) {
     rows.push(['Sustainable Development Goals', `<ul class="project-facts__goals">${project.goals.map((g) => `<li>${h.escapeHtml(g)}</li>`).join('')}</ul>`])
   }
-  // The contact (11 Nov 2026): the name is a link that opens an email, as on OAD's own page. Only the name
-  // or only the email is fine too. The link says it sends an email, for screen readers.
+  // The contact (11 Nov 2026): the name, then the email address under it as a link that opens an email.
+  // Either can be there without the other (some pages give only an address).
   if (project.contactName || project.contactEmail) {
-    const label = h.escapeHtml(project.contactName || project.contactEmail)
-    rows.push(['Project contact', project.contactEmail
-      ? `<a href="mailto:${h.escapeHtml(project.contactEmail)}">${label}<span class="visually-hidden"> (sends an email)</span></a>`
-      : label])
+    const lines = []
+    if (project.contactName) lines.push(`<span class="project-facts__contact-name">${h.escapeHtml(project.contactName)}</span>`)
+    if (project.contactEmail) lines.push(`<a class="project-facts__contact-email" href="mailto:${h.escapeHtml(project.contactEmail)}">${h.escapeHtml(project.contactEmail)}</a>`)
+    rows.push(['Project contact', lines.join('')])
   }
   return `<dl class="project-facts">${rows
     .map(([name, value]) => `
@@ -323,31 +321,19 @@ function renderProjectNews(project, h) {
 }
 
 function renderProjectPage(project, projects, h) {
-  // The page content, if there is some, replaces the plain summary (11 Nov 2026, L'chelle)
-  let summary
-  let description
-  let skipped = {}
-  if (project.body) {
-    const content = renderArticleBody(project.body, project.bodyImages, h)
-    summary = `<div class="project__body">\n${content.html}\n          </div>`
-    description = describe(content.text)
-    skipped = content.skipped
-  } else {
-    // Each paragraph is a <p>; a line break inside one (a bullet list, for example) is kept
-    summary = project.paragraphs.map((p) => `<p>${h.escapeHtml(p).replace(/\n/g, '<br>')}</p>`).join('\n          ')
-    description = describe(project.paragraphs)
-  }
+  // The page content is the only text of a project (11 Nov 2026, L'chelle; the plain summary is gone)
+  const content = renderArticleBody(project.body, project.bodyImages, h)
   return {
-    skipped,
+    skipped: content.skipped,
     file: `projects/directory/${project.slug}/index.html`,
     page: {
       title: `${project.title} | Astrotourism`,
       name: project.title,
       photo: renderProjectPhoto(project, h),
       shareImage: renderShareImage(project, h),
-      description,
+      description: describe(content.text),
       canonical: `${h.siteUrl}${projectUrl(project)}`,
-      summary,
+      content: `<div class="project__body">\n${content.html}\n          </div>`,
       facts: renderFacts(project, h),
       original: project.originalUrl
         ? `<p class="project__original"><a href="${h.escapeHtml(project.originalUrl)}">Original page on astro4dev.org <span aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens another site)</span></a></p>`

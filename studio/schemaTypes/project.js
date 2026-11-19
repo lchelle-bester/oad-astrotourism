@@ -73,34 +73,19 @@ export const project = defineType({
       description:
         'Optional. Where inside the country, for example "Northern Cape and Karoo region". Not shown on the directory cards, which give the country only.',
     }),
-    defineField({
-      name: 'summary',
-      title: 'Summary',
-      type: 'text',
-      rows: 14,
-      description:
-        'OAD\'s short description of the project, as plain text: start a new paragraph by leaving a blank line. Used for the directory search. It is also shown on the project page, unless you fill in "Page content" below, which then replaces it.',
-      // Needed unless the page content is written (added 11 Nov 2026)
-      validation: (Rule) => [
-        Rule.custom((value, context) =>
-          !value && !(context.document?.body && context.document.body.length)
-            ? 'Add the summary, or write the page in "Page content".'
-            : true,
-        ),
-        Rule.max(3500).warning('This is very long. Consider keeping the main points.'),
-      ],
-    }),
-    // The full text of the project page (added 11 Nov 2026, L'chelle): the same editor as a news
-    // article, so a project can have subheadings, photos, photos side by side, buttons (for
-    // example "Download the project report"), videos and podcasts. When it has anything in it,
-    // the project page shows it instead of the plain summary.
+    // The text of the project page (added 11 Nov 2026, L'chelle): the same editor as a news article,
+    // so a project can have subheadings, photos, photos side by side, buttons (for example "Download
+    // the project report"), videos and podcasts. It is the only text a project has: the separate
+    // plain "Summary" field was removed the same day (a project that had only a summary had it moved
+    // into this field).
     defineField({
       name: 'body',
       title: 'Page content',
       type: 'array',
       description:
-        'The text of the project page, written like a news article. If you write anything here it is shown on the page instead of the Summary. Use Subheading to break up long text. The + button adds photos, photos side by side, buttons (for example a download), videos and podcasts.',
+        'The text of the project page, written like a news article. Use Subheading to break up long text. The + button adds photos, photos side by side, buttons (for example a download), videos and podcasts.',
       of: articleBlocks,
+      validation: (Rule) => Rule.required().min(1).error('Write the page content.'),
     }),
     defineField({
       name: 'photo',
