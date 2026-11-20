@@ -6475,6 +6475,19 @@ a.news-pager__link:focus-visible {
   line-height: 1.6;
 }
 
+.toc-goals__note {
+  max-width: 52rem;
+  margin: 2.5rem 0 0;
+  color: var(--color-grey);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.toc-goals__note a {
+  color: var(--brand-teal);
+  text-underline-offset: 0.2em;
+}
+
 .toc-goal__indicator {
   margin: 0.75rem 0 0;
   color: var(--color-grey);
@@ -6508,6 +6521,10 @@ a.news-pager__link:focus-visible {
 
   .toc-goal:last-child {
     padding-right: 0;
+  }
+
+  .toc-goals__note {
+    margin-left: 4rem;
   }
 
   .toc-goal__icon {

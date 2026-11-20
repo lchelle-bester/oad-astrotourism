@@ -269,17 +269,28 @@ function renderPathways(theory, h) {
 }
 
 // The goal's picture. The official UN icons are fixed design files kept in the repo
-// (site/assets/images/sdg/sdg-08.svg or .png, and so on). Until a file is there the tile shows
-// the goal's number, so nothing is broken and the icons can be dropped in later with no code change.
-function renderGoalIcon(goal, h, iconFiles) {
+// (site/assets/images/sdg/sdg-08.png and so on, all 17, added 20 Nov 2026). They are used whole
+// and unaltered, as the UN guidelines require. If a file is ever missing, the tile shows the
+// goal's number, so nothing is broken.
+function goalIconFile(goal, iconFiles) {
   const number = String(goal.number).padStart(2, '0')
-  const file = iconFiles.find((f) => f === `sdg-${number}.svg`) || iconFiles.find((f) => f === `sdg-${number}.png`)
+  return iconFiles.find((f) => f === `sdg-${number}.svg`) || iconFiles.find((f) => f === `sdg-${number}.png`)
+}
+
+function renderGoalIcon(goal, h, iconFiles) {
+  const file = goalIconFile(goal, iconFiles)
   if (file) return `<img class="toc-goal__icon" src="/assets/images/sdg/${file}" alt="" width="96" height="96" loading="lazy" decoding="async">`
   return `<span class="toc-goal__icon toc-goal__icon--tile" aria-hidden="true">${goal.number}</span>`
 }
 
 function renderGoals(theory, h, iconFiles) {
   const one = theory.goals.length === 1
+  // The UN's rules for its icons: the guidelines go on the same page (as a link to the UN's own
+  // copy), and the page says the use is not an endorsement. Only shown when an official icon is.
+  const note = theory.goals.some((g) => goalIconFile(g, iconFiles))
+    ? `
+      <p class="toc-goals__note">The goal icons are the <a href="https://www.un.org/sustainabledevelopment/">United Nations Sustainable Development Goals</a> icons, used under the <a href="https://www.un.org/sustainabledevelopment/wp-content/uploads/2023/09/E_SDG_Guidelines_Sep20238.pdf">UN guidelines for their use</a> (PDF). Their use does not mean the United Nations endorses OAD, this website or its activities.</p>`
+    : ''
   const items = theory.goals.map((goal) => {
     const label = `SDG goal ${goal.number}${goal.target ? `<span aria-hidden="true"> &middot; </span><span class="visually-hidden">, </span>Target ${goal.target}` : ''}`
     const badge = goal.main ? ' <span class="toc-goal__badge">Main goal</span>' : ''
@@ -300,7 +311,7 @@ function renderGoals(theory, h, iconFiles) {
       <h2 class="toc-section__title" id="toc-goals-title"><span class="toc-section__num" aria-hidden="true">4</span>The goals it serves</h2>
       <p class="toc-section__lead">${one ? 'All three pathways lead to this UN Sustainable Development Goal.' : 'All three pathways lead to these UN Sustainable Development Goals.'}</p>
       <ul class="toc-goals__list toc-goals__list--${theory.goals.length}" role="list">${items}
-      </ul>
+      </ul>${note}
     </section>`
 }
 
