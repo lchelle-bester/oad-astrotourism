@@ -1,11 +1,12 @@
 import {hero} from './hero'
 import {caseSection} from './caseSection'
 import {pillarsSection} from './pillarsSection'
-import {impactFigure, impactResult} from './impactFigure'
+import {impactFigure, impactResult, impactStat} from './impactFigure'
 import {impactSection} from './impactSection'
+import {impactPage} from './impactPage'
 import {post} from './post'
 import {project} from './project'
 import {siteSettings} from './siteSettings'
 import {theoryOfChange} from './theoryOfChange'
 
-export const schemaTypes = [hero, caseSection, pillarsSection, impactFigure, impactResult, impactSection, post, project, siteSettings, theoryOfChange]
+export const schemaTypes = [hero, caseSection, pillarsSection, impactFigure, impactResult, impactStat, impactSection, impactPage, post, project, siteSettings, theoryOfChange]
