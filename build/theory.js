@@ -139,7 +139,7 @@ const PERSON_SYMBOL =
 // closes the part, so without JavaScript the part stays open and nothing is lost. The name of
 // the part follows the visible words ("Show" or "Hide"), so the visible label is inside the name.
 function foldButton(h, {controls, label, context, openLabel, closedLabel, className = ''}) {
-  return `<button class="toc-fold${className ? ` ${className}` : ''}" type="button" hidden aria-expanded="true" aria-controls="${controls}" data-open-label="${h.escapeHtml(openLabel)}" data-closed-label="${h.escapeHtml(closedLabel)}"><span class="toc-fold__label">${h.escapeHtml(label)}</span><span class="visually-hidden">: ${h.escapeHtml(context)}</span>${CHEVRON}</button>`
+  return `<button class="toc-fold${className ? ` ${className}` : ''}" type="button" hidden aria-expanded="true" aria-controls="${controls}" data-open-label="${h.escapeHtml(openLabel)}" data-closed-label="${h.escapeHtml(closedLabel)}"><span class="toc-fold__label">${h.escapeHtml(label)}</span><span class="visually-hidden">, ${h.escapeHtml(context)}</span>${CHEVRON}</button>`
 }
 
 function renderProblem(theory, h) {

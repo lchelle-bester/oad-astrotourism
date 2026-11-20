@@ -5565,6 +5565,9 @@ a.news-pager__link:focus-visible {
    them; without JavaScript every part is open. */
 
 .toc {
+  /* A long unbroken word or web address in any text (an editor can type one) wraps instead of
+     pushing the page wider than the screen (found with made-up content, 20 Nov 2026) */
+  overflow-wrap: anywhere;
   --toc-line: rgb(19 36 58 / 0.16);
   --toc-side: max(var(--gutter), (100% - 1312px) / 2); /* the page margin, 64px at 1440 */
   background: var(--color-paper);
