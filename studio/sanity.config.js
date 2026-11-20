@@ -21,30 +21,51 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
+            // The sections of the homepage, in the order they appear on the page. Each is
+            // still its own document; this folder only groups them in the sidebar.
             S.listItem()
-              .title('Hero')
-              .id('hero')
-              .child(S.document().schemaType('hero').documentId('hero')),
+              .title('Homepage')
+              .id('homepage')
+              .child(
+                S.list()
+                  .title('Homepage')
+                  .items([
+                    S.listItem()
+                      .title('Hero')
+                      .id('hero')
+                      .child(S.document().schemaType('hero').documentId('hero')),
+                    S.listItem()
+                      .title('The case')
+                      .id('caseSection')
+                      .child(S.document().schemaType('caseSection').documentId('caseSection')),
+                    S.listItem()
+                      .title('What we do (four pillars)')
+                      .id('pillarsSection')
+                      .child(S.document().schemaType('pillarsSection').documentId('pillarsSection')),
+                    S.listItem()
+                      .title('Proof (impact figures)')
+                      .id('impactSection')
+                      .child(S.document().schemaType('impactSection').documentId('impactSection')),
+                  ]),
+              ),
+            // Pages of their own, each with tabs inside
             S.listItem()
-              .title('The case')
-              .id('caseSection')
-              .child(S.document().schemaType('caseSection').documentId('caseSection')),
-            S.listItem()
-              .title('What we do (six pillars)')
-              .id('pillarsSection')
-              .child(S.document().schemaType('pillarsSection').documentId('pillarsSection')),
-            S.listItem()
-              .title('Impact (proof)')
-              .id('impactSection')
-              .child(S.document().schemaType('impactSection').documentId('impactSection')),
-            S.listItem()
-              .title('Impact page')
-              .id('impactPage')
-              .child(S.document().schemaType('impactPage').documentId('impactPage')),
-            S.listItem()
-              .title('Theory of Change page')
-              .id('theoryOfChange')
-              .child(S.document().schemaType('theoryOfChange').documentId('theoryOfChange')),
+              .title('Pages')
+              .id('pages')
+              .child(
+                S.list()
+                  .title('Pages')
+                  .items([
+                    S.listItem()
+                      .title('Impact page')
+                      .id('impactPage')
+                      .child(S.document().schemaType('impactPage').documentId('impactPage')),
+                    S.listItem()
+                      .title('Theory of Change page')
+                      .id('theoryOfChange')
+                      .child(S.document().schemaType('theoryOfChange').documentId('theoryOfChange')),
+                  ]),
+              ),
             S.divider(),
             S.listItem()
               .title('Site settings (footer)')
