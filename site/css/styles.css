@@ -5620,7 +5620,11 @@ a.news-pager__link:focus-visible {
 }
 
 .toc-band__download {
+  --circle: 2.25rem;
   flex: none;
+  gap: 0.75rem;
+  padding: 0.3125rem 0.3125rem 0.3125rem 1.125rem;
+  font-size: 0.9375rem;
 }
 
 .toc-band__download .pill-button__icon svg {
@@ -5631,6 +5635,14 @@ a.news-pager__link:focus-visible {
 @media (min-width: 57.5em) {
   .toc-band {
     padding-bottom: 3.75rem;
+  }
+
+  /* the shared pill's desktop size is set from 920px: this smaller size has to win there too */
+  .toc-band__download {
+    --circle: 2.25rem;
+    gap: 0.75rem;
+    padding: 0.3125rem 0.3125rem 0.3125rem 1.125rem;
+    font-size: 0.9375rem;
   }
 
   .toc-band__row {
@@ -5762,7 +5774,7 @@ a.news-pager__link:focus-visible {
   background: var(--color-accent);
   color: var(--color-ink);
   font-family: var(--font-heading);
-  font-size: 3.5rem;
+  font-size: 3.125rem;
   font-weight: 600;
   line-height: 1.3;
 }
@@ -5829,7 +5841,7 @@ a.news-pager__link:focus-visible {
   }
 
   .toc-problem__figure {
-    font-size: 4.5rem;
+    font-size: 3.875rem;
     line-height: 1.15;
   }
 
@@ -6029,6 +6041,14 @@ a.news-pager__link:focus-visible {
   padding: 0;
   border-top: 1px solid var(--toc-line);
   list-style: none;
+}
+
+/* indented like the lead and the column heads above it (the shorthand margin above would
+   otherwise reset the left margin the earlier 920px rule gives it) */
+@media (min-width: 57.5em) {
+  .toc-pathways__list {
+    margin-left: 4rem;
+  }
 }
 
 .toc-pathway {
@@ -6244,6 +6264,12 @@ a.news-pager__link:focus-visible {
 
   .toc-pathways__head {
     margin: 0;
+    color: var(--brand-teal);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1.4;
+    text-transform: uppercase;
   }
 
   .toc-pathways__head:nth-child(1) {
@@ -6256,23 +6282,6 @@ a.news-pager__link:focus-visible {
 
   .toc-pathways__head:nth-child(3) {
     grid-column: 6;
-  }
-
-  .toc-pathways__head-label {
-    display: block;
-    color: var(--brand-teal);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    line-height: 1.4;
-    text-transform: uppercase;
-  }
-
-  .toc-pathways__head-hint {
-    display: block;
-    color: var(--color-grey);
-    font-size: 0.875rem;
-    line-height: 1.4;
   }
 
   .toc-pathways__list {

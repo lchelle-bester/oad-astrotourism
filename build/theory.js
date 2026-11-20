@@ -193,9 +193,9 @@ function renderWho(theory, h) {
 }
 
 const STAGES = [
-  {key: 'activity', label: 'Activity', hint: 'What OAD does'},
-  {key: 'output', label: 'Output', hint: 'What can be counted'},
-  {key: 'outcome', label: 'Outcome', hint: 'What should change'},
+  {key: 'activity', label: 'Activity'},
+  {key: 'output', label: 'Output'},
+  {key: 'outcome', label: 'Outcome'},
 ]
 
 function renderPathway(pathway, i, h) {
@@ -257,7 +257,7 @@ function renderAssumptions(theory, h) {
 }
 
 function renderPathways(theory, h) {
-  const heads = STAGES.map((s) => `<p class="toc-pathways__head"><span class="toc-pathways__head-label">${s.label}</span><span class="toc-pathways__head-hint">${s.hint}</span></p>`).join('')
+  const heads = STAGES.map((s) => `<p class="toc-pathways__head">${s.label}</p>`).join('')
   return `
     <section class="toc-section toc-pathways" aria-labelledby="toc-pathways-title">
       <h2 class="toc-section__title" id="toc-pathways-title"><span class="toc-section__num" aria-hidden="true">3</span>How the change happens</h2>
