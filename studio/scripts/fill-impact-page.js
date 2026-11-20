@@ -10,8 +10,8 @@
 // Figures that could not be found in any project text are left unlinked on purpose.
 //
 // Not set here: the photos. Add them in the Studio (the five files are in originals/impact/, with
-// alt text and captions in docs/impact/photo-details.csv). The credits are still unknown, and the
-// Studio will not publish a photo without one.
+// alt text and captions in docs/impact/photo-details.csv). The credits are still unknown; the
+// credit field is optional, so leave it empty until they are found.
 //
 // It never overwrites: if the document already exists it stops. It only prints what it would do
 // unless you start it with WRITE=1. It uses your own Sanity login (--with-user-token), so no token

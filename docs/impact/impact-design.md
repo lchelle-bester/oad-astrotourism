@@ -48,7 +48,7 @@ L'chelle supplied five photos on 20 Nov 2026 and confirmed that all of them can 
 | 04-skills-langkawi-telescope.jpg | Chapter 3 | 900 x 1200 (portrait) | A child is shown; L'chelle confirmed it can be shown |
 | 05-places-phyang-monastery.jpg | Chapter 4 | 1600 x 1200 | Soft if stretched across 1440 wide on a sharp screen |
 
-Photo credits are still unknown ("TO CONFIRM" in the notes). The mock-up credits the hero to Dr Matipon Tangmatitham, but that was the mock-up's group photo, not this one, so it is not used. Sanity will require a credit once a photo is added, so each credit has to be found first (ask Joy).
+Photo credits are still unknown ("TO CONFIRM" in the notes). The mock-up credits the hero to Dr Matipon Tangmatitham, but that was the mock-up's group photo, not this one, so it is not used. Credits are optional in Sanity (made optional 20 Nov 2026), so a photo can go in before its credit is found; ask Joy for them.
 
 ## Open decisions
 

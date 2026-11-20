@@ -8,8 +8,10 @@ import {sourceFields} from './impactFigure'
 // from the project list ("20 astrotourism projects funded since 2016. Choose a country to see
 // its projects.").
 
-// A photo with alt text and a credit. Optional, but once a photo is added it needs both, as with
-// the pillar photos. The page puts "Photo:" in front of the credit.
+// A photo with alt text, an optional caption and an optional credit. The photo is optional, but
+// once it is added it needs alt text. The page puts "Photo:" in front of the credit, and shows no
+// credit when it is empty (credit made optional 20 Nov 2026, L'chelle: the photographers are not
+// all known yet).
 const photoField = (name, title, description) =>
   defineField({
     name,
@@ -36,9 +38,7 @@ const photoField = (name, title, description) =>
         name: 'credit',
         title: 'Credit',
         type: 'string',
-        description: 'Who took the photo, for example "Dr Jane Doe". The page adds "Photo:" in front.',
-        validation: (Rule) =>
-          Rule.custom((value, context) => (context.parent?.asset && !value ? 'Add a credit for the photo.' : true)),
+        description: 'Optional. Who took the photo, for example "Dr Jane Doe". The page adds "Photo:" in front. Leave empty if the photographer is not known: nothing is shown.',
       }),
     ],
   })
