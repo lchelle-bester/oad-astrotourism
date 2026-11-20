@@ -9,7 +9,6 @@ export const sitePages = [
   {title: 'Resources: Online course', value: '/resources/online-course/'},
   {title: 'Resources: Community', value: '/resources/community/'},
   {title: 'Projects and impact: Impact', value: '/projects/impact/'},
-  {title: 'Projects and impact: Interactive map', value: '/projects/map/'},
   {title: 'Projects and impact: Project directory', value: '/projects/directory/'},
   {title: 'Projects and impact: Case studies', value: '/projects/case-studies/'},
   {title: 'Projects and impact: Theory of Change', value: '/projects/theory-of-change/'},

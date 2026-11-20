@@ -25,7 +25,6 @@ module.exports = [
     overview: 'Projects and impact overview',
     pages: [
       {title: 'Impact', href: '/projects/impact/'},
-      {title: 'Interactive map', href: '/projects/map/'},
       {title: 'Project directory', href: '/projects/directory/'},
       {title: 'Theory of Change', href: '/projects/theory-of-change/'},
       {title: 'Global Survey Report', href: '/projects/survey-report/'},
