@@ -59,9 +59,10 @@ function groupProjects(projects) {
 }
 
 // Dot size, as a plain number of pixels at the full desktop size (the map is 854px wide in the
-// mock-up): 12 for one project, 4 more for each further one. The CSS shrinks it on a narrower map
-// (section 22b), because the whole world on a phone is small and the dots would pile on each other.
-const dotSize = (count) => 12 + (Math.min(count, 4) - 1) * 4
+// mock-up): 12 for one project, 16 for two, and 20 for three or more (a cap, L'chelle 21 Nov 2026:
+// three or more projects all get the same dot). The CSS shrinks it on a narrower map (section 22b),
+// because the whole world on a phone is small and the dots would pile on each other.
+const dotSize = (count) => 12 + (Math.min(count, 3) - 1) * 4
 
 function renderImpactMap({eyebrow, heading}, projects, h) {
   const groups = groupProjects(projects)

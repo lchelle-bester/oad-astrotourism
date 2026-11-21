@@ -7344,7 +7344,10 @@ a.news-pager__link:focus-visible {
      The map is a size container so the dots can shrink with it (cqw below). */
   aspect-ratio: 2000 / 1115;
   container-type: inline-size;
-  border-radius: 0.5rem;
+  /* On a phone the map runs edge to edge (the side margin taken back), so it is as big as the
+     screen allows (21 Nov 2026, L'chelle: bigger to ease the crowding); square corners then */
+  margin-inline: calc(var(--gutter) * -1);
+  border-radius: 0;
   background: #b4c0b7 url("/assets/images/map/world.svg") center / 100% 100% no-repeat;
 }
 
@@ -7539,10 +7542,13 @@ a.news-pager__link:focus-visible {
   }
 
   .impact-map__layout {
-    grid-template-columns: 854fr 425fr;
-    align-items: start;
     gap: 2rem;
     margin-top: 2.5rem;
+  }
+
+  .impact-map__map {
+    margin-inline: 0;
+    border-radius: 0.5rem;
   }
 
   .impact-map__panel {
@@ -7557,6 +7563,17 @@ a.news-pager__link:focus-visible {
     width: 2.25rem;
     height: 2.25rem;
     font-size: 1.0625rem;
+  }
+}
+
+/* The map beside the panel only from 1100px (68.75em), like the project directory: between 920 and
+   1100px the map is full width above the panel, so it stays big (21 Nov 2026, L'chelle: a bit bigger
+   to ease the crowding). The map takes the rest of the row and the panel a narrower fixed width (the
+   mock-up had 854 to 425; it is 940 to 340 at 1440). */
+@media (min-width: 68.75em) {
+  .impact-map__layout {
+    grid-template-columns: minmax(0, 1fr) clamp(18rem, 26%, 21.5rem);
+    align-items: start;
   }
 }
 
