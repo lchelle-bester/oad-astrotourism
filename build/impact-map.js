@@ -6,7 +6,7 @@
 //
 // One dot per project, at its FIRST country (L'chelle's choice, 21 Nov 2026, as in the mock-up): the
 // South West Asia project covers six countries, so it has one dot, at Armenia, and its panel says
-// "Armenia and 5 more countries". Every project also appears in the plain list that is written into
+// "Armenia and other countries". Every project also appears in the plain list that is written into
 // the page, which is what visitors see without JavaScript (main.js hides all but one group and shows
 // the map and the arrows).
 
@@ -15,13 +15,11 @@ const positionsFile = require('./map-positions.json')
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 
 // A group's heading: the country, or, when its only project covers several countries, the first
-// country "and 5 more countries"
+// country "and other countries" (was "and 5 more countries" until 21 Nov 2026; L'chelle chose the
+// plainer wording, which also never needs counting)
 function groupTitle(group) {
   const only = group.projects.length === 1 ? group.projects[0] : null
-  if (only && only.countryNames.length > 1) {
-    const more = only.countryNames.length - 1
-    return `${group.name} and ${plural(more, 'more country', 'more countries')}`
-  }
+  if (only && only.countryNames.length > 1) return `${group.name} and other countries`
   return group.name
 }
 

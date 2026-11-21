@@ -6669,7 +6669,7 @@ a.news-pager__link:focus-visible {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(to bottom, rgb(15 27 43 / 0.72) 0%, rgb(15 27 43 / 0.15) 24%, rgb(15 27 43 / 0.8) 46%, rgb(15 27 43 / 0.94) 100%);
+  background: linear-gradient(to bottom, rgb(15 27 43 / 0.72) 0%, rgb(15 27 43 / 0.15) 24%, rgb(15 27 43 / 0.6) 46%, rgb(15 27 43 / 0.82) 100%);
 }
 
 .impact-hero--no-photo::after {
@@ -6680,6 +6680,22 @@ a.news-pager__link:focus-visible {
   position: relative;
   width: 100%;
   padding: 9rem var(--impact-side) 2.5rem;
+}
+
+/* A soft dark band behind the text block, fading out at both ends, so the words stay readable
+   whatever photo an editor chooses (found 21 Nov 2026 with the real banner: at 920px the caption
+   sat over the bright horizon glow, 2.5:1). It sits under the text and over the photo. */
+.impact-hero__inner::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -1.5rem;
+  z-index: -1;
+  background: linear-gradient(to bottom, rgb(15 27 43 / 0) 0%, rgb(15 27 43 / 0.5) 30%, rgb(15 27 43 / 0.5) 80%, rgb(15 27 43 / 0) 100%);
+  pointer-events: none;
+}
+
+.impact-hero--no-photo .impact-hero__inner::before {
+  display: none;
 }
 
 .impact-crumbs ol {
@@ -6832,7 +6848,7 @@ a.news-pager__link:focus-visible {
 .impact-chapter--2 .impact-chapter__caption,
 .impact-chapter--4 .impact-chapter__caption {
   margin: 0.75rem var(--impact-side) 0;
-  color: rgb(255 255 255 / 0.7);
+  color: rgb(255 255 255 / 0.88);
 }
 
 .impact-chapter--2 .impact-chapter__figure,
