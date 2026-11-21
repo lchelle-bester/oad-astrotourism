@@ -13,9 +13,12 @@
 // ne_50m_admin_0_countries (the 50m file has the small islands, such as Saint Lucia and the US
 // Virgin Islands, that the 110m one leaves out). The files are downloaded once into .cache/.
 //
-// The map is a Mercator projection cut to a frame (below) that holds every project country and
-// matches the shape of the mock-up (about 2.19 wide to 1 high). The frame, the picture size and the
-// sea colour are repeated in the CSS (section 22b), so change them in both places.
+// The map is a Mercator projection of the whole world, cut only at the poles (frame below). It was
+// cropped to the mock-up's shape at first (lon -118 to 140, lat -42 to 58), which left 37 countries
+// off the map, such as Canada, Russia, the Nordic countries and New Zealand; on 21 Nov 2026
+// L'chelle asked for it uncropped so every country fits. Only Antarctica itself is left out. The
+// frame, the picture size and the sea colour are repeated in the CSS (section 22b), so change them
+// in both places.
 
 const fs = require('node:fs')
 const path = require('node:path')
@@ -25,7 +28,8 @@ const CACHE = path.join(ROOT, '.cache', 'world-map')
 const BASE = 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/'
 
 // The frame: west, east, south and north edges in degrees
-const FRAME = {west: -118, east: 140, south: -42, north: 58}
+// North: Greenland's label point is at 74N. South: the South Sandwich Islands are at 55.7S.
+const FRAME = {west: -180, east: 180, south: -58, north: 78}
 const WIDTH = 2000 // the drawing is 2000 units wide
 const LAND = '#ece2d3' // the mock-up's land colour
 

@@ -7293,7 +7293,8 @@ a.news-pager__link:focus-visible {
 /* 22b. THE MAP ON THE IMPACT PAGE ("Where the change happened"; mock-ups in docs/impact/). A flat
    map drawn by build/make-world-map.js (land from Natural Earth, public domain) as a picture behind
    one button per country with a dot. The sea is the mock-up's sage grey (#b4c0b7); the picture is
-   2000 by 914, so the box keeps that shape (change both together if the frame changes). A dot is
+   2000 by 1115 (the whole world, 1.79 to 1), so the box keeps that shape (change both together if
+   the frame changes). A dot is
    terracotta with a white ring, the chosen one navy with a terracotta ring. Dots are 24px or more
    to press (WCAG 2.2 target size). Without JavaScript the map is not shown and every country's
    projects are listed one after the other; main.js shows the map, the arrows and one country at a
@@ -7338,8 +7339,11 @@ a.news-pager__link:focus-visible {
 
 .impact-map__map {
   position: relative;
-  aspect-ratio: 2000 / 914;
-  overflow: hidden;
+  /* the whole world (not cropped since 21 Nov 2026): 2000 by 1115 (build/make-world-map.js). No
+     overflow: hidden, so a dot at the very edge (Fiji, Tonga) is not cut off, nor its focus ring.
+     The map is a size container so the dots can shrink with it (cqw below). */
+  aspect-ratio: 2000 / 1115;
+  container-type: inline-size;
   border-radius: 0.5rem;
   background: #b4c0b7 url("/assets/images/map/world.svg") center / 100% 100% no-repeat;
 }
@@ -7351,9 +7355,12 @@ a.news-pager__link:focus-visible {
 
 /* The button is the hit area (24px or more); the circle you see is drawn inside it */
 .impact-map__dot {
+  /* --dot is the size in pixels at the full desktop width of the map (854px); it shrinks with the
+     map down to 62% of that, so the dots of nearby countries do not pile on each other on a phone */
+  --d: clamp(calc(var(--dot) * 0.62px), calc(var(--dot) * 0.117cqw), calc(var(--dot) * 1px));
   position: absolute;
-  width: calc(var(--dot) + 12px);
-  height: calc(var(--dot) + 12px);
+  width: calc(var(--d) + 12px);
+  height: calc(var(--d) + 12px);
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -7367,8 +7374,8 @@ a.news-pager__link:focus-visible {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: var(--dot);
-  height: var(--dot);
+  width: var(--d);
+  height: var(--d);
   border-radius: 50%;
   background: var(--brand-terracotta);
   box-shadow: 0 0 0 2px rgb(255 255 255 / 0.92);
@@ -7387,8 +7394,8 @@ a.news-pager__link:focus-visible {
 }
 
 .impact-map__dot[aria-checked="true"]::before {
-  width: calc(var(--dot) + 4px);
-  height: calc(var(--dot) + 4px);
+  width: calc(var(--d) + 4px);
+  height: calc(var(--d) + 4px);
   background: var(--color-ink);
   box-shadow: 0 0 0 2px #fff, 0 0 0 4.5px var(--brand-terracotta);
 }

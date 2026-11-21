@@ -58,7 +58,9 @@ function groupProjects(projects) {
   return list.sort((a, b) => a.x - b.x || a.y - b.y)
 }
 
-// Dot size: 12px for one project, 4px more for each further one (the mock-up's India is the biggest)
+// Dot size, as a plain number of pixels at the full desktop size (the map is 854px wide in the
+// mock-up): 12 for one project, 4 more for each further one. The CSS shrinks it on a narrower map
+// (section 22b), because the whole world on a phone is small and the dots would pile on each other.
 const dotSize = (count) => 12 + (Math.min(count, 4) - 1) * 4
 
 function renderImpactMap({eyebrow, heading}, projects, h) {
@@ -70,7 +72,7 @@ function renderImpactMap({eyebrow, heading}, projects, h) {
 
   const dots = groups
     .map((g) => `
-          <button type="button" class="impact-map__dot" role="radio" aria-checked="${g === start}" tabindex="${g === start ? 0 : -1}" data-group="${g.code}" style="left: ${g.x}%; top: ${g.y}%; --dot: ${dotSize(g.projects.length)}px" aria-label="${h.escapeHtml(g.title)}, ${plural(g.projects.length, 'project', 'projects')}"></button>`)
+          <button type="button" class="impact-map__dot" role="radio" aria-checked="${g === start}" tabindex="${g === start ? 0 : -1}" data-group="${g.code}" style="left: ${g.x}%; top: ${g.y}%; --dot: ${dotSize(g.projects.length)}" aria-label="${h.escapeHtml(g.title)}, ${plural(g.projects.length, 'project', 'projects')}"></button>`)
     .join('')
 
   const panels = groups
