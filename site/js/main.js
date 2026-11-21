@@ -684,6 +684,60 @@ if (proofNumbers.length && 'IntersectionObserver' in window && 'animate' in Elem
 }
 
 
+// IMPACT PAGE: THE MAP (21 Nov 2026)
+// The HTML lists every country's projects one after the other, and the map is hidden, so without
+// JavaScript nothing is lost. Here the map, the arrows and the hint are shown, and only one country
+// is shown at a time. The dots are a radio group (one Tab stop, the arrow keys move between them,
+// Home and End jump to the first and last), as the pillars are a tab list; the arrow buttons in the
+// panel do the same for touch and mouse. The dots and the groups are in the same order (west to
+// east), so index k is the same country in both. Moving with an arrow button keeps the focus on
+// that button, because each group has its own pair and the old one is hidden. The country is
+// announced through a hidden status line.
+
+const impactMap = document.querySelector('.impact-map')
+
+if (impactMap) {
+  const mapBox = impactMap.querySelector('.impact-map__map')
+  const panel = impactMap.querySelector('.impact-map__panel')
+  const groups = [...impactMap.querySelectorAll('.impact-map__group')]
+  const dots = [...impactMap.querySelectorAll('.impact-map__dot')]
+  const status = document.getElementById('impact-map-status')
+
+  function selectCountry(index, {announce = true, focusDot = false, focusArrow = null} = {}) {
+    groups.forEach((group, k) => { group.hidden = k !== index })
+    dots.forEach((dot, k) => {
+      dot.setAttribute('aria-checked', String(k === index))
+      dot.tabIndex = k === index ? 0 : -1
+    })
+    if (focusDot) dots[index].focus()
+    if (focusArrow) groups[index].querySelector(`[data-step="${focusArrow}"]`).focus()
+    if (announce && status) status.textContent = dots[index].getAttribute('aria-label')
+  }
+
+  const currentIndex = () => dots.findIndex((dot) => dot.getAttribute('aria-checked') === 'true')
+
+  mapBox.hidden = false
+  panel.classList.add('impact-map__panel--live')
+  impactMap.querySelectorAll('.impact-map__arrows, .impact-map__hint').forEach((el) => { el.hidden = false })
+  selectCountry(Math.max(0, groups.findIndex((group) => group.hasAttribute('data-start'))), {announce: false})
+
+  dots.forEach((dot, k) => dot.addEventListener('click', () => selectCountry(k)))
+
+  dots.forEach((dot, k) => dot.addEventListener('keydown', (event) => {
+    const last = dots.length - 1
+    const target = {ArrowRight: k === last ? 0 : k + 1, ArrowDown: k === last ? 0 : k + 1, ArrowLeft: k === 0 ? last : k - 1, ArrowUp: k === 0 ? last : k - 1, Home: 0, End: last}[event.key]
+    if (target === undefined) return
+    event.preventDefault()
+    selectCountry(target, {focusDot: true})
+  }))
+
+  impactMap.querySelectorAll('.impact-map__arrow').forEach((button) => button.addEventListener('click', () => {
+    const step = Number(button.dataset.step)
+    selectCountry((currentIndex() + step + groups.length) % groups.length, {focusArrow: String(step)})
+  }))
+}
+
+
 // NEWS: PAUSE THE STAR TRAILS OFF SCREEN
 // The trails grow by CSS animation. Redrawing them costs a little work every
 // frame, so they pause while the section is out of view (saves battery on

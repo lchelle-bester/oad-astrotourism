@@ -6,6 +6,7 @@
 // "Photo:" and "Funded projects". Every piece of text from Sanity goes through escapeHtml.
 
 const {picture} = require('./news-article')
+const {renderImpactMap} = require('./impact-map')
 
 const PHOTO_FIELDS =
   '{alt, caption, credit, hotspot, crop, "url": asset->url, "assetId": asset->_id, ' +
@@ -80,8 +81,8 @@ async function loadImpact({sanityQuery}) {
     heroPhoto: photo(row.heroPhoto, 'the banner'),
     chapters,
     note: clean(row.note),
-    mapEyebrow: clean(row.mapEyebrow),
-    mapHeading: clean(row.mapHeading),
+    mapEyebrow: need(row.mapEyebrow, 'the small line above the map heading'),
+    mapHeading: need(row.mapHeading, 'the map heading'),
   }
 }
 
@@ -166,7 +167,7 @@ function renderHero(impact, image, h) {
 
 // images: {hero, chapters: [one per chapter, or null]} as downloaded by build.js
 // projectSlugs: the slugs of the published projects (a figure links only to one that has a page)
-function renderImpactPage(impact, h, {images, projectSlugs}) {
+function renderImpactPage(impact, h, {images, projectSlugs, projects = []}) {
   const headlineText = impact.headline.map((s) => s.text).join('').replace(/\s+/g, ' ').trim()
   const lastNote = impact.note
   return {
@@ -177,7 +178,7 @@ function renderImpactPage(impact, h, {images, projectSlugs}) {
       canonical: `${h.siteUrl}${PAGE_PATH}`,
       hero: renderHero(impact, images.hero, h),
       chapters: impact.chapters.map((c) => renderChapter(c, images.chapters, h, {projectSlugs, note: c.number === 4 ? lastNote : ''})).join(''),
-      map: '',
+      map: renderImpactMap({eyebrow: impact.mapEyebrow, heading: impact.mapHeading}, projects, h),
     },
   }
 }

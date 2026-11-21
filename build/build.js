@@ -900,7 +900,7 @@ async function main() {
 
   // The Impact page (Phase 10)
   if (impact) {
-    const {file, page} = renderImpactPage(impact, {escapeHtml, siteUrl: SITE_URL}, {images: impactImages, projectSlugs})
+    const {file, page} = renderImpactPage(impact, {escapeHtml, siteUrl: SITE_URL}, {images: impactImages, projectSlugs, projects})
     const impactTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'impact.html'), 'utf8'))
     const target = path.join(DIST_DIR, file)
     fs.mkdirSync(path.dirname(target), {recursive: true})

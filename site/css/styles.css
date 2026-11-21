@@ -7188,7 +7188,10 @@ a.news-pager__link:focus-visible {
     inset: 0;
     background:
       linear-gradient(to top, rgb(15 27 43 / 0.7) 0%, rgb(15 27 43 / 0) 22%),
-      linear-gradient(to right, rgb(15 27 43 / 0) 0%, rgb(15 27 43 / 0) 28%, rgb(15 27 43 / 0.9) 55%, var(--color-night) 68%);
+      /* the fade is measured from the left edge of the 35rem text column (100% minus the page margin
+         minus 35rem), so the words are on the dark part at every width: clear 15rem before the text,
+         90% dark 2rem before it, solid night 3rem into it */
+      linear-gradient(to right, rgb(15 27 43 / 0) 0, rgb(15 27 43 / 0) max(0px, calc(100% - var(--impact-side) - 50rem)), rgb(15 27 43 / 0.9) calc(100% - var(--impact-side) - 37rem), var(--color-night) calc(100% - var(--impact-side) - 32rem));
   }
 
   .impact-chapter--2 .impact-chapter__caption {
@@ -7284,5 +7287,282 @@ a.news-pager__link:focus-visible {
   .impact-chapter__note {
     margin-top: 3rem;
     font-size: 0.8125rem;
+  }
+}
+
+/* 22b. THE MAP ON THE IMPACT PAGE ("Where the change happened"; mock-ups in docs/impact/). A flat
+   map drawn by build/make-world-map.js (land from Natural Earth, public domain) as a picture behind
+   one button per country with a dot. The sea is the mock-up's sage grey (#b4c0b7); the picture is
+   2000 by 914, so the box keeps that shape (change both together if the frame changes). A dot is
+   terracotta with a white ring, the chosen one navy with a terracotta ring. Dots are 24px or more
+   to press (WCAG 2.2 target size). Without JavaScript the map is not shown and every country's
+   projects are listed one after the other; main.js shows the map, the arrows and one country at a
+   time. */
+
+.impact-map {
+  padding: 3.5rem var(--impact-side) 4.5rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.impact-map__eyebrow {
+  margin: 0;
+  color: var(--brand-teal);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.impact-map__heading {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-heading);
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.impact-map__intro {
+  margin: 1rem 0 0;
+  color: rgb(19 36 58 / 0.88);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.impact-map__layout {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+}
+
+.impact-map__map {
+  position: relative;
+  aspect-ratio: 2000 / 914;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #b4c0b7 url("/assets/images/map/world.svg") center / 100% 100% no-repeat;
+}
+
+.impact-map__dots {
+  position: absolute;
+  inset: 0;
+}
+
+/* The button is the hit area (24px or more); the circle you see is drawn inside it */
+.impact-map__dot {
+  position: absolute;
+  width: calc(var(--dot) + 12px);
+  height: calc(var(--dot) + 12px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.impact-map__dot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--dot);
+  height: var(--dot);
+  border-radius: 50%;
+  background: var(--brand-terracotta);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.92);
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+@media (hover: hover) {
+  .impact-map__dot:hover::before {
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+}
+
+.impact-map__dot[aria-checked="true"] {
+  z-index: 1;
+}
+
+.impact-map__dot[aria-checked="true"]::before {
+  width: calc(var(--dot) + 4px);
+  height: calc(var(--dot) + 4px);
+  background: var(--color-ink);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4.5px var(--brand-terracotta);
+}
+
+.impact-map__dot:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+/* The panel */
+.impact-map__panel {
+  padding: 1.25rem 1.25rem 0.5rem;
+  border: 1px solid rgb(19 36 58 / 0.1);
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+/* Without JavaScript the countries are listed one after the other */
+.impact-map__panel:not(.impact-map__panel--live) .impact-map__group + .impact-map__group {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--impact-line);
+}
+
+.impact-map__group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.impact-map__group-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.impact-map__arrows {
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
+}
+
+.impact-map__arrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid rgb(19 36 58 / 0.22);
+  border-radius: 50%;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+@media (hover: hover) {
+  .impact-map__arrow:hover {
+    background: #ece2d3;
+  }
+}
+
+.impact-map__arrow:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+.impact-map__count {
+  margin: 0.625rem 0 0;
+  color: var(--color-grey);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.impact-map__projects {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--impact-line);
+}
+
+.impact-map__projects li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--impact-line);
+}
+
+.impact-map__projects li:last-child {
+  border-bottom: 0;
+}
+
+.impact-map__project {
+  color: var(--color-ink);
+  font-size: 1rem;
+  line-height: 1.4;
+  text-decoration: underline;
+  text-decoration-color: rgb(19 36 58 / 0.35);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.2s;
+}
+
+.impact-map__project:hover {
+  text-decoration-color: currentColor;
+}
+
+.impact-map__year {
+  flex: none;
+  color: var(--color-grey);
+  font-size: 0.8125rem;
+}
+
+@media (min-width: 57.5em) {
+  .impact-map {
+    padding: 6rem var(--impact-side) 7rem;
+  }
+
+  .impact-map__eyebrow {
+    font-size: 0.8125rem;
+  }
+
+  .impact-map__heading {
+    margin-top: 0.75rem;
+    font-size: clamp(2rem, 3.07vw, 2.75rem);
+  }
+
+  .impact-map__intro {
+    margin-top: 1.125rem;
+    font-size: 1.125rem;
+  }
+
+  .impact-map__layout {
+    grid-template-columns: 854fr 425fr;
+    align-items: start;
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+
+  .impact-map__panel {
+    padding: 1.75rem 1.75rem 0.75rem;
+  }
+
+  .impact-map__group-title {
+    font-size: 1.625rem;
+  }
+
+  .impact-map__arrow {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.0625rem;
+  }
+}
+
+/* Reduced motion on the Impact page: the small colour and size changes on hover are switched off */
+@media (prefers-reduced-motion: reduce) {
+  .impact-figure__place--link,
+  .impact-map__dot::before,
+  .impact-map__arrow,
+  .impact-map__project {
+    transition: none;
+  }
+
+  .impact-map__dot:hover::before {
+    transform: translate(-50%, -50%);
   }
 }
