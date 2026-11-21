@@ -9,6 +9,7 @@ const {renderNewsListPages} = require('./news-pages')
 const {renderArticle, picture} = require('./news-article')
 const {loadProjects, renderDirectoryPage, renderProjectPage, renderSearchIndex} = require('./projects')
 const {loadTheory, renderTheoryPage} = require('./theory')
+const {loadImpact, renderImpactPage} = require('./impact')
 
 const ROOT = path.join(__dirname, '..')
 const SITE_DIR = path.join(ROOT, 'site')
@@ -236,6 +237,7 @@ function renderImpactResults(results) {
 const POST_CATEGORIES = {news: 'News', events: 'Events', 'oad-projects': 'OAD projects'}
 const NEWS_DIR = 'assets/images/news'
 const PROJECT_DIR = 'assets/images/projects'
+const IMPACT_DIR = 'assets/images/impact'
 // One shape: wide (15 by 8). The square shape for the phone rows was dropped on
 // 30 Oct 2026, when the photos of posts 2 and 3 were taken off phones.
 // feature (16 by 9, was 16 by 10 until 6 Nov 2026) is the big photo of the newest post
@@ -761,12 +763,26 @@ async function main() {
     }
   }
 
+  // The Impact page (Phase 10): the banner photo and one photo per chapter, at their own shape (the
+  // editor's crop). The CSS cuts them to fit around the hotspot, so the widest is bigger than the
+  // widest place they are shown. Left out, with a note, until the document is published.
+  const impact = await loadImpact({sanityQuery})
+  const impactFiles = []
+  const impactImages = {hero: null, chapters: []}
+  if (impact) {
+    const stand = {slug: 'impact', title: 'Impact page'}
+    if (impact.heroPhoto) impactImages.hero = await fetchArticleImage(impact.heroPhoto, stand, impactFiles, {tag: 'banner', widths: [800, 1280, 1920, 2560], dir: IMPACT_DIR})
+    for (const chapter of impact.chapters) {
+      impactImages.chapters.push(chapter.photo ? await fetchArticleImage(chapter.photo, stand, impactFiles, {tag: `chapter-${chapter.number}`, widths: [640, 1000, 1500, 2000], dir: IMPACT_DIR}) : null)
+    }
+  }
+
   const siteSettings = await fetchSiteSettings()
 
   const footer = renderFooter(siteSettings)
 
   // newsCurrent marks "News" in the header on the News section's pages
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: '', theoryCurrent: ''}}
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: '', theoryCurrent: '', impactCurrent: ''}}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
@@ -792,6 +808,12 @@ async function main() {
   fs.mkdirSync(path.join(DIST_DIR, PROJECT_DIR), {recursive: true})
   for (const file of projectFiles) {
     fs.writeFileSync(path.join(DIST_DIR, PROJECT_DIR, file.name), file.data)
+  }
+
+  // The Impact page photos downloaded from Sanity
+  if (impactFiles.length) {
+    fs.mkdirSync(path.join(DIST_DIR, IMPACT_DIR), {recursive: true})
+    for (const file of impactFiles) fs.writeFileSync(path.join(DIST_DIR, IMPACT_DIR, file.name), file.data)
   }
 
   // The partner logos downloaded from Sanity
@@ -874,6 +896,19 @@ async function main() {
     console.log(`Theory of Change page: written, ${theory.pathways.length} pathways, ${theory.goals.length} goals, ${diagramFile ? `diagram for download (${diagramFile.ext})` : 'no diagram file uploaded, so no download button'}, ${iconFiles.length ? `${iconFiles.length} SDG icon files` : 'no SDG icon files (number tiles are shown)'}`)
   } else {
     console.log('Theory of Change page: not published in Sanity yet, so the page is not written.')
+  }
+
+  // The Impact page (Phase 10)
+  if (impact) {
+    const {file, page} = renderImpactPage(impact, {escapeHtml, siteUrl: SITE_URL}, {images: impactImages, projectSlugs})
+    const impactTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'impact.html'), 'utf8'))
+    const target = path.join(DIST_DIR, file)
+    fs.mkdirSync(path.dirname(target), {recursive: true})
+    fs.writeFileSync(target, renderTemplate(impactTemplate, {...data, nav: {...data.nav, projectsCurrent: ' aria-current="true"', impactCurrent: ' aria-current="page"'}, page}))
+    const figures = impact.chapters.flatMap((c) => c.figures)
+    console.log(`Impact page: written, ${impact.chapters.length} chapters, ${figures.length} figures (${figures.filter((f) => f.project && projectSlugs.has(f.project.slug)).length} linked to a project), ${impactFiles.length} photo files, ${impactImages.hero ? 'banner photo' : 'no banner photo (plain night sky)'}`)
+  } else {
+    console.log('Impact page: not published in Sanity yet, so the page is not written.')
   }
 
   pruneCache()

@@ -541,7 +541,9 @@ if (pillarsSection) {
 //   the figure keeps its final width
 // With reduced motion nothing happens; turning it on mid-way finishes at once.
 
-const proofNumbers = [...document.querySelectorAll('.proof__headline-number')]
+// The Impact page's two big figures (the first of chapters 1 and 2) roll the same way (21 Nov 2026,
+// L'chelle: "big figures only"), so they are picked up here too and use the same .proof__char classes.
+const proofNumbers = [...document.querySelectorAll('.proof__headline-number, .impact-figure--big .impact-figure__value')]
 const reduceMotionProof = window.matchMedia('(prefers-reduced-motion: reduce)')
 
 if (proofNumbers.length && 'IntersectionObserver' in window && 'animate' in Element.prototype && !reduceMotionProof.matches) {
