@@ -1193,6 +1193,41 @@
    "name": "Tuvalu",
    "x": 115.2,
    "y": 67.93
+  },
+  "TW": {
+   "name": "Taiwan",
+   "x": 92.64,
+   "y": 39.99
+  },
+  "GF": {
+   "name": "French Guiana",
+   "x": 25.12,
+   "y": 57.38
+  },
+  "GP": {
+   "name": "Guadeloupe",
+   "x": 21.88,
+   "y": 46.72
+  },
+  "MQ": {
+   "name": "Martinique",
+   "x": 22.09,
+   "y": 48.13
+  },
+  "RE": {
+   "name": "Reunion",
+   "x": 67.25,
+   "y": 79
+  },
+  "YT": {
+   "name": "Mayotte",
+   "x": 63.24,
+   "y": 71.63
+  },
+  "GI": {
+   "name": "Gibraltar",
+   "x": 43.66,
+   "y": 27.78
   }
  }
 }

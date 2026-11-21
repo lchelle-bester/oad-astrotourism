@@ -33,6 +33,20 @@ const LAND = '#ece2d3' // the mock-up's land colour
 // in Borneo, but the mock-up puts the dot on the peninsula, where Langkawi is.
 const OVERRIDES = {MY: {lon: 101.9, lat: 4.2}}
 
+// Countries and territories in the Studio's list (studio/schemaTypes/countries.mjs) that Natural
+// Earth's country file has no ISO code for (Taiwan, the French overseas departments) or leaves out
+// (Gibraltar): a point near the middle of each, so a project there still gets a dot. A few tiny
+// territories with no one living there (Bouvet Island, and so on) are left without a position.
+const EXTRA = {
+  TW: {name: 'Taiwan', lon: 121.0, lat: 23.7},
+  GF: {name: 'French Guiana', lon: -53.2, lat: 3.9},
+  GP: {name: 'Guadeloupe', lon: -61.55, lat: 16.25},
+  MQ: {name: 'Martinique', lon: -61.0, lat: 14.65},
+  RE: {name: 'Reunion', lon: 55.5, lat: -21.1},
+  YT: {name: 'Mayotte', lon: 45.15, lat: -12.8},
+  GI: {name: 'Gibraltar', lon: -5.35, lat: 36.14},
+}
+
 const mercator = (lat) => Math.log(Math.tan(Math.PI / 4 + (Math.max(-85, Math.min(85, lat)) * Math.PI) / 360))
 const Y_NORTH = mercator(FRAME.north)
 const Y_SOUTH = mercator(FRAME.south)
@@ -100,6 +114,11 @@ async function main() {
     const at = OVERRIDES[code] || {lon: p.LABEL_X, lat: p.LABEL_Y}
     const [x, y] = project(at.lon, at.lat)
     positions[code] = {name: p.NAME_EN || p.NAME, x: Math.round((x / WIDTH) * 10000) / 100, y: Math.round((y / HEIGHT) * 10000) / 100}
+  }
+  for (const [code, at] of Object.entries(EXTRA)) {
+    if (positions[code]) continue
+    const [x, y] = project(at.lon, at.lat)
+    positions[code] = {name: at.name, x: Math.round((x / WIDTH) * 10000) / 100, y: Math.round((y / HEIGHT) * 10000) / 100}
   }
   const out = {
     note: 'Made by build/make-world-map.js from Natural Earth (public domain). x and y are percentages of the map; a dot outside 0 to 100 is outside the frame.',

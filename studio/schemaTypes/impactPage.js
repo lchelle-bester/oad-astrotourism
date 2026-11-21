@@ -95,11 +95,15 @@ export const impactPage = defineType({
       title: field.name === 'sourceText' ? 'Source of the headline figures' : field.title,
       description: field.description.replace('the number', 'the figures in the headline sentence'),
     })),
-    photoField(
-      'heroPhoto',
-      'Banner photo',
-      'Optional. The photo behind the headline, with a dark fade. A wide photo works best; click the crop icon and drag the circle onto the most important part, because the banner is a wide strip and the photo is cut to it around that point. Only add a photo OAD has agreed can be shown.',
-    ),
+    // In the "Top of the page" tab (fixed 21 Nov 2026: it had no group, so it only showed under "All fields")
+    {
+      ...photoField(
+        'heroPhoto',
+        'Banner photo',
+        'Optional. The photo behind the headline, with a dark fade. A wide photo works best; click the crop icon and drag the circle onto the most important part, because the banner is a wide strip and the photo is cut to it around that point. Only add a photo OAD has agreed can be shown.',
+      ),
+      group: 'top',
+    },
 
     // ---- The four chapters
     defineField({

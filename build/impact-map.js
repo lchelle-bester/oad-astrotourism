@@ -33,14 +33,26 @@ function groupProjects(projects) {
     if (!groups.has(code)) groups.set(code, {code, name: project.countryNames[0], projects: []})
     groups.get(code).projects.push(project)
   }
-  const list = [...groups.values()]
-  for (const group of list) {
+  // A country that cannot be drawn (no known position, or outside the frame the map is cut to) is
+  // left off the map with a warning, and the build carries on: an editor adding a project in
+  // Canada or New Zealand must never stop the site from building. The project is still in the
+  // directory and in the count; it is just not on the map until the frame is widened.
+  const list = []
+  for (const group of groups.values()) {
     const at = positionsFile.positions[group.code]
-    if (!at) throw new Error(`Impact page map: there is no map position for the country "${group.name}" (${group.code}). Run node build/make-world-map.js after adding it, or check the country code.`)
-    if (at.x < 0 || at.x > 100 || at.y < 0 || at.y > 100) throw new Error(`Impact page map: the dot for ${group.name} falls outside the map frame. Widen the frame in build/make-world-map.js and run it again.`)
+    const titles = group.projects.map((p) => `"${p.title}"`).join(', ')
+    if (!at) {
+      console.warn(`WARNING, Impact page map: no dot for ${group.name} (${group.code}): it has no map position (add one in build/make-world-map.js and run it). Not on the map: ${titles}.`)
+      continue
+    }
+    if (at.x < 0 || at.x > 100 || at.y < 0 || at.y > 100) {
+      console.warn(`WARNING, Impact page map: no dot for ${group.name} (${group.code}): it is outside the frame the map is cut to (build/make-world-map.js). Not on the map: ${titles}.`)
+      continue
+    }
     group.x = at.x
     group.y = at.y
     group.title = groupTitle(group)
+    list.push(group)
   }
   // West to east, which is the order of the arrows and of the keyboard
   return list.sort((a, b) => a.x - b.x || a.y - b.y)
