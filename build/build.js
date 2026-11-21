@@ -332,7 +332,11 @@ async function fetchNewsPhoto(post) {
 // (such as 3 / 2): cut to that shape around the hotspot. Returns the image as the page
 // needs it, and adds the files to write to `files`.
 // `dir` is the folder in dist/ the files go to (the project photos use their own, added 10 Nov 2026).
-async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null, formats = ['webp', 'jpg'], dir = NEWS_DIR}) {
+// `native`: also make the photo at its own full width when that falls between the listed widths
+// (added 21 Nov 2026 for the Impact page, after the 1200px banner was sent as an 800px file because
+// 1280 was too big for it, and was then stretched to 1920 by the browser). Still never enlarged.
+// `quality`: the compression of the WebP and the JPG, higher for a big photo that is shown large.
+async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null, formats = ['webp', 'jpg'], dir = NEWS_DIR, native = false, quality = {webp: 72, jpg: 78}}) {
   if (!photo || !photo.url || !photo.assetId) return null
   const id = photo.assetId.split('-')[1].slice(0, 10)
   let rect
@@ -349,6 +353,7 @@ async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null,
   }
   const shape = rect.w / rect.h
   const usable = widths.filter((w, i) => i === 0 || w <= rect.w)
+  if (native && usable.at(-1) < rect.w && rect.w < Math.max(...widths)) usable.push(rect.w)
   const image = {
     webp: [], jpg: [], width: usable.at(-1), height: Math.round(usable.at(-1) / shape),
     ratio: shape,
@@ -359,7 +364,7 @@ async function fetchArticleImage(photo, post, files, {tag, widths, ratio = null,
     for (const width of usable) {
       const height = Math.round(width / shape)
       const url = `${photo.url}?rect=${rect.x},${rect.y},${rect.w},${rect.h}&w=${width}` +
-        (ratio ? `&h=${height}&fit=crop` : '&fit=max') + `&fm=${format}&q=${format === 'webp' ? 72 : 78}`
+        (ratio ? `&h=${height}&fit=crop` : '&fit=max') + `&fm=${format}&q=${quality[format]}`
       const hash = crypto.createHash('sha1').update(url).digest('hex').slice(0, 8)
       const name = `${post.slug.replace(/[^a-z0-9-]/g, '')}-${id}-${tag.replace(/[^a-z0-9-]/gi, '')}-${width}-${hash}.${format}`
       files.push({name, data: await downloadCached(url, post.title, hash, format)})
@@ -771,9 +776,11 @@ async function main() {
   const impactImages = {hero: null, chapters: []}
   if (impact) {
     const stand = {slug: 'impact', title: 'Impact page'}
-    if (impact.heroPhoto) impactImages.hero = await fetchArticleImage(impact.heroPhoto, stand, impactFiles, {tag: 'banner', widths: [800, 1280, 1920, 2560], dir: IMPACT_DIR})
+    // native: the photo at its own full width too; the banner also at a higher quality (it is shown
+    // across the whole screen, and the original is only 1200px wide, so every bit of it counts)
+    if (impact.heroPhoto) impactImages.hero = await fetchArticleImage(impact.heroPhoto, stand, impactFiles, {tag: 'banner', widths: [800, 1280, 1920, 2560], dir: IMPACT_DIR, native: true, quality: {webp: 84, jpg: 88}})
     for (const chapter of impact.chapters) {
-      impactImages.chapters.push(chapter.photo ? await fetchArticleImage(chapter.photo, stand, impactFiles, {tag: `chapter-${chapter.number}`, widths: [640, 1000, 1500, 2000], dir: IMPACT_DIR}) : null)
+      impactImages.chapters.push(chapter.photo ? await fetchArticleImage(chapter.photo, stand, impactFiles, {tag: `chapter-${chapter.number}`, widths: [640, 1000, 1500, 2000], dir: IMPACT_DIR, native: true, quality: {webp: 78, jpg: 82}}) : null)
     }
   }
 
