@@ -7088,8 +7088,10 @@ a.news-pager__link:focus-visible {
     padding: 3.5rem var(--impact-side);
   }
 
+  /* Section 1 has its photo on the RIGHT and section 3 on the left (21 Nov 2026, L'chelle), so the two
+     photos alternate. In the HTML the photo comes first, as on a phone; `order` moves it. */
   .impact-chapter--1 {
-    grid-template-columns: 723fr 517fr;
+    grid-template-columns: 517fr 723fr;
   }
 
   .impact-chapter--1 .impact-chapter__figure,
@@ -7099,6 +7101,10 @@ a.news-pager__link:focus-visible {
     order: 0;
     align-self: stretch;
     margin: 0;
+  }
+
+  .impact-chapter--1 .impact-chapter__figure {
+    order: 2;
   }
 
   /* the picture fills what is left above the caption, at least 22rem tall; the photo is cut to it
@@ -7163,8 +7169,10 @@ a.news-pager__link:focus-visible {
     padding-bottom: 1.25rem;
   }
 
+  /* 78px at 1440 (104px for the 680 until 21 Nov 2026: L'chelle found it too big); the first two
+     sections share the size, so the 680 and the 30,000 rupees match */
   .impact-figure--big .impact-figure__value {
-    font-size: clamp(4rem, 7.2vw, 6.5rem);
+    font-size: clamp(3.5rem, 5.4vw, 4.875rem);
   }
 
   .impact-figure--big .impact-figure__label {
@@ -7242,10 +7250,6 @@ a.news-pager__link:focus-visible {
     width: min(35rem, 100%);
     margin-left: auto;
     padding-inline: 0;
-  }
-
-  .impact-chapter--2 .impact-figure--big .impact-figure__value {
-    font-size: clamp(4rem, 5.74vw, 5.35rem);
   }
 
   .impact-chapter--2 .impact-figure--inline .impact-figure__value {
@@ -7447,7 +7451,7 @@ a.news-pager__link:focus-visible {
 .impact-map__panel {
   padding: 1.25rem 1.25rem 0.5rem;
   border: 1px solid rgb(19 36 58 / 0.1);
-  border-radius: 0.5rem;
+  border-radius: 0.25rem; /* matches the map beside it */
   background: #fff;
 }
 
@@ -7583,7 +7587,7 @@ a.news-pager__link:focus-visible {
 
   .impact-map__map {
     margin-inline: 0;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem; /* was 0.5rem: L'chelle asked for less rounded corners (21 Nov 2026) */
   }
 
   .impact-map__panel {

@@ -2,11 +2,13 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 import {sourceFields} from './impactFigure'
 
 // The Impact page (/projects/impact/), design in docs/impact/. There is only one, so it is a
-// single document. Fixed in the page, not here: the title "Impact", the breadcrumb, the
-// "Chapter 1" numbers (they follow the order), the colours and where each photo sits (they
-// belong to the chapter's position), and the line under the map heading, which the site writes
-// from the project list ("20 astrotourism projects funded since 2016. Choose a country to see
-// its projects.").
+// single document. The four parts of the page are called "sections" in the Studio and on the page:
+// "chapter" is not OAD's word, so it was taken out of everything people see on 21 Nov 2026 (the
+// internal names `chapters` and `chapter` stay, so no content has to move). Fixed in the page, not
+// here: the title "Impact", the breadcrumb, the colours and where each photo sits (they belong to
+// the section's position), and the line under the map heading, which the site writes from the
+// project list ("20 astrotourism projects funded since 2016. Choose a country to see its
+// projects.").
 
 // A photo with alt text, an optional caption and an optional credit. The photo is optional, but
 // once it is added it needs alt text. The page puts "Photo:" in front of the credit, and shows no
@@ -49,7 +51,7 @@ export const impactPage = defineType({
   type: 'document',
   groups: [
     {name: 'top', title: 'Top of the page', default: true},
-    {name: 'chapters', title: 'The four chapters'},
+    {name: 'chapters', title: 'The four sections'}, // "chapter" was dropped from everything editors see on 21 Nov 2026 (it is not OAD's word); the internal name stays so no content has to move
     {name: 'map', title: 'The map'},
   ],
   fields: [
@@ -105,28 +107,28 @@ export const impactPage = defineType({
       group: 'top',
     },
 
-    // ---- The four chapters
+    // ---- The four sections
     defineField({
       name: 'chapters',
-      title: 'Chapters',
+      title: 'Sections',
       type: 'array',
       group: 'chapters',
       description:
-        'Exactly four, in order. The site numbers them ("Chapter 1") and sets their colours and photo positions by order. Drag to reorder.',
+        'Exactly four, in order. The site sets their colours and where their photo sits by their order. Drag to reorder.',
       of: [
         defineArrayMember({
           type: 'object',
           name: 'chapter',
-          title: 'Chapter',
+          title: 'Section',
           fields: [
             defineField({
               name: 'label',
-              title: 'Label',
+              title: 'Eyebrow',
               type: 'string',
-              description: 'The one or two words after the chapter number, for example "Tourism".',
+              description: 'The small line above the heading, one or two words, for example "Tourism". It is shown as you type it.',
               validation: (Rule) => [
-                Rule.required().error('Add the label.'),
-                Rule.max(20).warning('Keep the label short.'),
+                Rule.required().error('Add the eyebrow.'),
+                Rule.max(20).warning('Keep the eyebrow short.'),
               ],
             }),
             defineField({
@@ -159,7 +161,7 @@ export const impactPage = defineType({
               title: 'Figures',
               type: 'array',
               description:
-                'One to five. In chapters 1 and 2 the first figure is shown large, then the rest as a list; chapter 3 is a plain list; chapter 4 shows its figures in a row, so give it three. Drag to reorder.',
+                'One to five. In the first two sections the first figure is shown large, then the rest as a list; the third is a plain list; the fourth shows its figures in a row, so give it three. Drag to reorder.',
               of: [{type: 'impactStat'}],
               validation: (Rule) => [
                 Rule.required().min(1).error('Add at least one figure.'),
@@ -178,16 +180,16 @@ export const impactPage = defineType({
         }),
       ],
       validation: (Rule) => [
-        Rule.required().error('Add the four chapters.'),
-        Rule.length(4).error('The design has exactly four chapters.'),
+        Rule.required().error('Add the four sections.'),
+        Rule.length(4).error('The design has exactly four sections.'),
       ],
     }),
     defineField({
       name: 'note',
-      title: 'Note under the last chapter',
+      title: 'Note under the last section',
       type: 'string',
       group: 'chapters',
-      description: 'Optional. A small line after the last chapter, for example "All figures as reported by the funded projects to OAD."',
+      description: 'Optional. A small line after the last section, for example "All figures as reported by the funded projects to OAD."',
     }),
 
     // ---- The map

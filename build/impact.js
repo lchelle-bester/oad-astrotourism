@@ -1,9 +1,11 @@
 // The Impact page (Phase 10, 21 Nov 2026; design in docs/impact/). Loads the one published
 // "Impact page" document from Sanity, checks it, and draws the page (/projects/impact/) the way
 // theory.js and projects.js do for theirs.
-// Fixed here, not in Sanity: the h1 "Impact", the breadcrumb, the "Chapter 1" numbers, the chapter
-// layouts (by position: 1 and 2 a big figure and a list, 3 a list, 4 a row) and the words
-// "Photo:" and "Funded projects". Every piece of text from Sanity goes through escapeHtml.
+// Fixed here, not in Sanity: the h1 "Impact", the breadcrumb, the layout of each of the four
+// sections (by position: 1 and 2 a big figure and a list, 3 a list, 4 a row) and the word "Photo:".
+// The sections' eyebrows ("Tourism", "Work", ...) are the editors' own words; there is no "Chapter 1"
+// (21 Nov 2026, L'chelle: "chapter" is not OAD's word). The code and CSS still call a section a
+// chapter internally. Every piece of text from Sanity goes through escapeHtml.
 
 const {picture} = require('./news-article')
 const {renderImpactMap} = require('./impact-map')
@@ -50,14 +52,14 @@ async function loadImpact({sanityQuery}) {
     return p
   }
 
-  if (!Array.isArray(row.chapters) || row.chapters.length !== 4) fail('it needs exactly four chapters.')
+  if (!Array.isArray(row.chapters) || row.chapters.length !== 4) fail('it needs exactly four sections.')
   const chapters = row.chapters.map((c, i) => {
-    const where = `chapter ${i + 1}`
+    const where = `section ${i + 1}`
     const figures = Array.isArray(c.figures) ? c.figures : []
     if (figures.length < 1 || figures.length > 5) fail(`${where} needs one to five figures.`)
     return {
       number: i + 1,
-      label: need(c.label, `the label of ${where}`),
+      label: need(c.label, `the eyebrow of ${where}`),
       heading: need(c.heading, `the heading of ${where}`),
       intro: need(c.intro, `the introduction of ${where}`),
       photo: photo(c.photo, where),
@@ -134,7 +136,7 @@ function renderChapter(c, images, h, {projectSlugs, note}) {
     <section class="impact-chapter impact-chapter--${c.number}${image ? '' : ' impact-chapter--no-photo'}" aria-labelledby="${id}">
       ${image ? `<figure class="impact-chapter__figure">${photo}${line ? `\n        ${line}` : ''}</figure>` : ''}
       <div class="impact-chapter__text">
-        <p class="impact-chapter__eyebrow">Chapter ${c.number} &middot; ${h.escapeHtml(c.label)}</p>
+        <p class="impact-chapter__eyebrow">${h.escapeHtml(c.label)}</p>
         <h2 class="impact-chapter__heading" id="${id}">${h.escapeHtml(c.heading)}</h2>
         <p class="impact-chapter__intro">${h.escapeHtml(c.intro)}</p>
         <ul class="impact-figures">${c.figures.map((f, i) => renderFigure(f, kinds(i), h, projectSlugs)).join('')}
