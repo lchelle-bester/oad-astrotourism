@@ -6986,7 +6986,7 @@ a.news-pager__link:focus-visible {
   line-height: 1.9;
 }
 
-/* Chapter 4: three figures in a row, the numbers drawn as outlines in sand */
+/* Chapter 4: three figures in a row, the numbers solid sand (were outlines until 25 Nov 2026) */
 .impact-chapter--4 .impact-figures {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -6994,9 +6994,8 @@ a.news-pager__link:focus-visible {
 }
 
 .impact-figure--row .impact-figure__value {
-  color: transparent;
+  color: var(--color-accent-soft);
   font-size: 2.75rem;
-  -webkit-text-stroke: 1.5px var(--color-accent-soft);
 }
 
 .impact-figure--row .impact-figure__label {
@@ -7295,7 +7294,6 @@ a.news-pager__link:focus-visible {
 
   .impact-figure--row .impact-figure__value {
     font-size: clamp(3.75rem, 5.4vw, 5.25rem);
-    -webkit-text-stroke-width: 2px;
   }
 
   .impact-figure--row .impact-figure__label {
