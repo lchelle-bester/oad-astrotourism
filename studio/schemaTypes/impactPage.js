@@ -130,16 +130,6 @@ export const impactPage = defineType({
           title: 'Section',
           fields: [
             defineField({
-              name: 'label',
-              title: 'Eyebrow',
-              type: 'string',
-              description: 'The small line above the heading, one or two words, for example "Tourism". It is shown as you type it.',
-              validation: (Rule) => [
-                Rule.required().error('Add the eyebrow.'),
-                Rule.max(20).warning('Keep the eyebrow short.'),
-              ],
-            }),
-            defineField({
               name: 'heading',
               title: 'Heading',
               type: 'string',
@@ -178,10 +168,10 @@ export const impactPage = defineType({
             }),
           ],
           preview: {
-            select: {title: 'heading', subtitle: 'label', media: 'photo', figures: 'figures'},
-            prepare: ({title, subtitle, media, figures}) => ({
+            select: {title: 'heading', media: 'photo', figures: 'figures'},
+            prepare: ({title, media, figures}) => ({
               title,
-              subtitle: `${subtitle || ''} · ${(figures || []).length} figures`,
+              subtitle: `${(figures || []).length} figures`,
               media,
             }),
           },
@@ -194,14 +184,6 @@ export const impactPage = defineType({
     }),
 
     // ---- The map
-    defineField({
-      name: 'mapEyebrow',
-      title: 'Map: small line above the heading',
-      type: 'string',
-      group: 'map',
-      description: 'For example "Funded projects".',
-      validation: (Rule) => Rule.required().error('Add the small line.'),
-    }),
     defineField({
       name: 'mapHeading',
       title: 'Map: heading',

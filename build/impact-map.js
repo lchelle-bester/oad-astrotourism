@@ -62,7 +62,7 @@ function groupProjects(projects) {
 // because the whole world on a phone is small and the dots would pile on each other.
 const dotSize = (count) => 12 + (Math.min(count, 3) - 1) * 4
 
-function renderImpactMap({eyebrow, heading}, projects, h) {
+function renderImpactMap({heading}, projects, h) {
   const groups = groupProjects(projects)
   if (!groups.length) return ''
   const first = Math.min(...projects.map((p) => p.year))
@@ -96,7 +96,6 @@ function renderImpactMap({eyebrow, heading}, projects, h) {
   return `
     <section class="impact-map" aria-labelledby="impact-map-heading">
       <div class="impact-map__head">
-        <p class="impact-map__eyebrow">${h.escapeHtml(eyebrow)}</p>
         <h2 class="impact-map__heading" id="impact-map-heading">${h.escapeHtml(heading)}</h2>
         <p class="impact-map__intro">${plural(projects.length, 'astrotourism project', 'astrotourism projects')} funded since ${first}.<span class="impact-map__hint" hidden> Choose a country to see its projects.</span></p>
       </div>

@@ -3,7 +3,8 @@
 // theory.js and projects.js do for theirs.
 // Fixed here, not in Sanity: the h1 "Impact", the layout of each of the four
 // sections (by position: 1 and 2 a big figure and a list, 3 a list, 4 a row) and the word "Photo:".
-// The sections' eyebrows ("Tourism", "Work", ...) are the editors' own words; there is no "Chapter 1"
+// There are no eyebrows (the small lines above each heading: removed 25 Nov 2026, L'chelle); before that
+// they were the editors' own words ("Tourism", "Work", ...), with no "Chapter 1"
 // (21 Nov 2026, L'chelle: "chapter" is not OAD's word). The code and CSS still call a section a
 // chapter internally. Every piece of text from Sanity goes through escapeHtml.
 
@@ -16,9 +17,9 @@ const PHOTO_FIELDS =
 
 const IMPACT_QUERY =
   '*[_id == "impactPage"][0]{headline, "heroPhoto": heroPhoto' + PHOTO_FIELDS + ', ' +
-  'chapters[]{label, heading, intro, "photo": photo' + PHOTO_FIELDS + ', ' +
+  'chapters[]{heading, intro, "photo": photo' + PHOTO_FIELDS + ', ' +
   'figures[]{prefix, value, suffix, label}}, ' +
-  'mapEyebrow, mapHeading}'
+  'mapHeading}'
 
 const PAGE_FILE = 'projects/impact/index.html'
 const PAGE_PATH = '/projects/impact/'
@@ -59,7 +60,6 @@ async function loadImpact({sanityQuery}) {
     if (figures.length < 1 || figures.length > 5) fail(`${where} needs one to five figures.`)
     return {
       number: i + 1,
-      label: need(c.label, `the eyebrow of ${where}`),
       heading: need(c.heading, `the heading of ${where}`),
       intro: need(c.intro, `the introduction of ${where}`),
       photo: photo(c.photo, where),
@@ -80,7 +80,6 @@ async function loadImpact({sanityQuery}) {
     headline,
     heroPhoto: photo(row.heroPhoto, 'the banner'),
     chapters,
-    mapEyebrow: need(row.mapEyebrow, 'the small line above the map heading'),
     mapHeading: need(row.mapHeading, 'the map heading'),
   }
 }
@@ -124,7 +123,6 @@ function renderChapter(c, images, h) {
     <section class="impact-chapter impact-chapter--${c.number}${image ? '' : ' impact-chapter--no-photo'}" aria-labelledby="${id}">
       ${image ? `<figure class="impact-chapter__figure">${photo}${line ? `\n        ${line}` : ''}</figure>` : ''}
       <div class="impact-chapter__text">
-        <p class="impact-chapter__eyebrow">${h.escapeHtml(c.label)}</p>
         <h2 class="impact-chapter__heading" id="${id}">${h.escapeHtml(c.heading)}</h2>
         <p class="impact-chapter__intro">${h.escapeHtml(c.intro)}</p>
         <ul class="impact-figures">${c.figures.map((f, i) => renderFigure(f, kinds(i), h)).join('')}
@@ -162,7 +160,7 @@ function renderImpactPage(impact, h, {images, projects = []}) {
       canonical: `${h.siteUrl}${PAGE_PATH}`,
       hero: renderHero(impact, images.hero, h),
       chapters: impact.chapters.map((c) => renderChapter(c, images.chapters, h)).join(''),
-      map: renderImpactMap({eyebrow: impact.mapEyebrow, heading: impact.mapHeading}, projects, h),
+      map: renderImpactMap({heading: impact.mapHeading}, projects, h),
     },
   }
 }

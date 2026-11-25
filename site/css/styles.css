@@ -6790,18 +6790,8 @@ a.news-pager__link:focus-visible {
   padding-inline: var(--impact-side);
 }
 
-.impact-chapter__eyebrow {
-  margin: 0;
-  color: var(--brand-teal);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
 .impact-chapter__heading {
-  margin: 0.5rem 0 0;
+  margin: 0;
   font-family: var(--font-heading);
   font-size: 1.875rem;
   font-weight: 600;
@@ -6861,11 +6851,6 @@ a.news-pager__link:focus-visible {
 .impact-chapter--2 .impact-chapter__figure,
 .impact-chapter--4 .impact-chapter__figure {
   margin-bottom: 1.5rem;
-}
-
-.impact-chapter--2 .impact-chapter__eyebrow,
-.impact-chapter--4 .impact-chapter__eyebrow {
-  color: var(--color-accent-soft);
 }
 
 .impact-chapter--2 .impact-chapter__intro,
@@ -6942,8 +6927,9 @@ a.news-pager__link:focus-visible {
   letter-spacing: -0.04em;
 }
 
+/* The 680 is deep teal (terracotta until 25 Nov 2026, L'chelle) */
 .impact-chapter--1 .impact-figure--big .impact-figure__value {
-  color: var(--brand-terracotta);
+  color: var(--brand-teal);
 }
 
 .impact-chapter--2 .impact-figure--big .impact-figure__value {
@@ -7141,12 +7127,7 @@ a.news-pager__link:focus-visible {
     font-size: 0.8125rem;
   }
 
-  .impact-chapter__eyebrow {
-    font-size: 0.8125rem;
-  }
-
   .impact-chapter__heading {
-    margin-top: 0.5rem;
     font-size: clamp(2rem, 3.07vw, 2.75rem);
   }
 
@@ -7339,18 +7320,8 @@ a.news-pager__link:focus-visible {
   color: var(--color-ink);
 }
 
-.impact-map__eyebrow {
-  margin: 0;
-  color: var(--brand-teal);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
 .impact-map__heading {
-  margin: 0.5rem 0 0;
+  margin: 0;
   font-family: var(--font-heading);
   font-size: 1.875rem;
   font-weight: 600;
@@ -7560,12 +7531,7 @@ a.news-pager__link:focus-visible {
     padding: 6rem var(--impact-side) 7rem;
   }
 
-  .impact-map__eyebrow {
-    font-size: 0.8125rem;
-  }
-
   .impact-map__heading {
-    margin-top: 0.75rem;
     font-size: clamp(2rem, 3.07vw, 2.75rem);
   }
 
