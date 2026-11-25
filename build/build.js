@@ -10,6 +10,7 @@ const {renderArticle, picture} = require('./news-article')
 const {loadProjects, renderDirectoryPage, renderProjectPage, renderSearchIndex} = require('./projects')
 const {loadTheory, renderTheoryPage} = require('./theory')
 const {loadImpact, renderImpactPage} = require('./impact')
+const {loadCourse, renderCoursePage} = require('./course')
 
 const ROOT = path.join(__dirname, '..')
 const SITE_DIR = path.join(ROOT, 'site')
@@ -238,6 +239,7 @@ const POST_CATEGORIES = {news: 'News', events: 'Events', 'oad-projects': 'OAD pr
 const NEWS_DIR = 'assets/images/news'
 const PROJECT_DIR = 'assets/images/projects'
 const IMPACT_DIR = 'assets/images/impact'
+const COURSE_DIR = 'assets/images/course'
 // One shape: wide (15 by 8). The square shape for the phone rows was dropped on
 // 30 Oct 2026, when the photos of posts 2 and 3 were taken off phones.
 // feature (16 by 9, was 16 by 10 until 6 Nov 2026) is the big photo of the newest post
@@ -784,12 +786,21 @@ async function main() {
     }
   }
 
+  // The Online course page (Phase 11): its optional photo, beside the title (3 by 2, cut around the editor's
+  // hotspot). Left out, with a note, until the document is published.
+  const course = await loadCourse({sanityQuery, safeUrl, root: ROOT})
+  const courseFiles = []
+  let courseImage = null
+  if (course && course.photo) {
+    courseImage = await fetchArticleImage(course.photo, {slug: 'online-course', title: 'Online course page'}, courseFiles, {tag: 'hero', widths: [480, 960, 1400], ratio: 3 / 2, dir: COURSE_DIR, native: true, quality: {webp: 78, jpg: 82}})
+  }
+
   const siteSettings = await fetchSiteSettings()
 
   const footer = renderFooter(siteSettings)
 
   // newsCurrent marks "News" in the header on the News section's pages
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: '', theoryCurrent: '', impactCurrent: ''}}
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: '', theoryCurrent: '', impactCurrent: '', resourcesCurrent: '', courseCurrent: ''}}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
@@ -821,6 +832,12 @@ async function main() {
   if (impactFiles.length) {
     fs.mkdirSync(path.join(DIST_DIR, IMPACT_DIR), {recursive: true})
     for (const file of impactFiles) fs.writeFileSync(path.join(DIST_DIR, IMPACT_DIR, file.name), file.data)
+  }
+
+  // The Online course page photo downloaded from Sanity
+  if (courseFiles.length) {
+    fs.mkdirSync(path.join(DIST_DIR, COURSE_DIR), {recursive: true})
+    for (const file of courseFiles) fs.writeFileSync(path.join(DIST_DIR, COURSE_DIR, file.name), file.data)
   }
 
   // The partner logos downloaded from Sanity
@@ -916,6 +933,19 @@ async function main() {
     console.log(`Impact page: written, ${impact.chapters.length} chapters, ${figures.length} figures,${impactFiles.length} photo files, ${impactImages.hero ? 'banner photo' : 'no banner photo (plain night sky)'}`)
   } else {
     console.log('Impact page: not published in Sanity yet, so the page is not written.')
+  }
+
+  // The Online course page (Phase 11)
+  if (course) {
+    const {file, page} = renderCoursePage(course, {escapeHtml, siteUrl: SITE_URL}, {image: courseImage})
+    const courseTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'online-course.html'), 'utf8'))
+    const target = path.join(DIST_DIR, file)
+    fs.mkdirSync(path.dirname(target), {recursive: true})
+    fs.writeFileSync(target, renderTemplate(courseTemplate, {...data, nav: {...data.nav, resourcesCurrent: ' aria-current="true"', courseCurrent: ' aria-current="page"'}, page}))
+    const modules = course.parts.reduce((sum, p) => sum + p.modules.length, 0)
+    console.log(`Online course page: written, ${course.parts.length} parts, ${modules} modules, ${course.outcomes.length} outcomes, ${course.video ? 'preview video' : 'no preview video (block left out)'}, ${courseImage ? 'photo' : 'no photo'}`)
+  } else {
+    console.log('Online course page: not published in Sanity yet, so the page is not written.')
   }
 
   pruneCache()

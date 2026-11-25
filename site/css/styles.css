@@ -7623,3 +7623,683 @@ a.news-pager__link:focus-visible {
     transform: translate(-50%, -50%);
   }
 }
+
+
+/* 23. THE ONLINE COURSE PAGE (/resources/online-course/, 25 Nov 2026; mock-ups in docs/online-course/).
+   Phone first; the desktop rules start at 920px (57.5em), the same switch as the Impact page. Four bands:
+   the top (night), "What you will learn" (paper), "Course outline" (night) and "How it works" (paper).
+   Colours: white on night 17.3:1, sand on night 8.9:1, yellow on night 10.7:1; ink on paper 13.7:1, grey
+   6.2:1, terracotta 4.2:1 (large numbers only), navy on yellow 10.7:1, white on navy 12.5:1. */
+
+.course {
+  /* A long unbroken word or web address in any text wraps instead of widening the page */
+  overflow-wrap: anywhere;
+  --course-side: max(var(--gutter), (100% - 1312px) / 2); /* the page margin, 64px at 1440 */
+  --course-line: rgb(19 36 58 / 0.16);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.course a:focus-visible,
+.course button:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+.course-hero a:focus-visible,
+.course-outline a:focus-visible {
+  outline-color: var(--white);
+}
+
+.course-heading {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* The two buttons: a yellow one on the dark top, a navy one at the end */
+.course-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 0.25s ease-out, color 0.25s ease-out;
+}
+
+.course-button--yellow {
+  background: var(--color-accent);
+  color: var(--color-night);
+}
+
+.course-button--navy {
+  background: var(--brand-navy);
+  color: var(--white);
+}
+
+.course-button__arrow {
+  font-size: 1.125em;
+  line-height: 1;
+}
+
+@media (hover: hover) {
+  .course-button--yellow:hover {
+    background: var(--white);
+  }
+
+  .course-button--navy:hover {
+    background: var(--color-night);
+  }
+}
+
+.course-hosted {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* ---- THE TOP (night) ---- */
+.course-hero {
+  background: var(--color-night);
+  color: var(--color-text);
+  /* the header sits over the top of this band; on a phone the photo starts under it */
+  padding: 6.4rem 0 2.25rem;
+}
+
+.course-hero__inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-hero__figure {
+  order: -1;
+  margin: 0;
+}
+
+.course-hero__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+}
+
+.course-hero__credit {
+  margin: 0.5rem var(--course-side) 0;
+  color: rgb(255 255 255 / 0.75);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.course-hero__text {
+  padding: 1.5rem var(--course-side) 0;
+}
+
+.course-hero--no-photo .course-hero__text {
+  padding-top: 1.5rem;
+}
+
+.course-hero__title {
+  margin: 0 0 1rem;
+  font-family: var(--font-heading);
+  font-size: clamp(2.25rem, 9.7vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+}
+
+.course-hero__intro {
+  max-width: 34rem;
+  margin: 0 0 1.5rem;
+  color: rgb(255 255 255 / 0.8);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+.course-hero .course-hosted {
+  color: rgb(255 255 255 / 0.72);
+}
+
+.course-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  margin: 1.5rem var(--course-side) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.course-fact {
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.07);
+}
+
+.course-fact__strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.course-fact__small {
+  display: block;
+  margin-top: 0.25rem;
+  color: rgb(255 255 255 / 0.75);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+/* ---- WHAT YOU WILL LEARN (paper) ---- */
+.course-learn {
+  padding: 3rem var(--course-side);
+}
+
+.course-outcomes {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--course-line);
+  counter-reset: outcome;
+  list-style: none;
+}
+
+.course-outcome {
+  position: relative;
+  padding: 0.875rem 0 0.875rem 2.5rem;
+  border-bottom: 1px solid var(--course-line);
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  counter-increment: outcome;
+}
+
+.course-outcome::before {
+  content: counter(outcome, decimal-leading-zero);
+  position: absolute;
+  top: 0.9375rem;
+  left: 0;
+  color: var(--brand-terracotta);
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.course-video {
+  margin: 2rem 0 0;
+}
+
+.course-video__frame {
+  aspect-ratio: 16 / 9;
+  border-radius: 0.5rem;
+  background: var(--brand-navy);
+}
+
+.course-video__trigger {
+  position: relative;
+  display: block;
+  color: var(--white);
+}
+
+.course-video__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-night);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.25s ease-out;
+}
+
+.course-video__play svg {
+  width: 45%;
+  height: 45%;
+}
+
+.course-video__label {
+  position: absolute;
+  bottom: 1rem;
+  left: 1.125rem;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+@media (hover: hover) {
+  .course-video__trigger:hover .course-video__play {
+    background: var(--white);
+  }
+}
+
+.course-video__trigger:focus-visible .course-video__play {
+  background: var(--white);
+}
+
+.course-video__caption {
+  margin: 0.75rem 0 0;
+  color: var(--color-grey);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* ---- COURSE OUTLINE (night) ---- */
+.course-outline {
+  padding: 3rem var(--course-side) 3.25rem;
+  background: var(--color-night);
+  color: var(--color-text);
+}
+
+.course-eyebrow {
+  margin: 0 0 0.625rem;
+  color: var(--color-accent-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.course-parts {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* On a phone each part is a soft card */
+.course-part {
+  padding: 1.25rem 1.125rem 0.25rem;
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.course-part__label {
+  margin: 0;
+  color: var(--color-accent-soft);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.course-part__title {
+  margin: 0.375rem 0 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.course-modules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.course-module {
+  display: flex;
+  gap: 0.875rem;
+  padding: 0.875rem 0 1rem;
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+}
+
+.course-module__num {
+  flex: none;
+  width: 1.375rem;
+  padding-top: 0.1875rem;
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.course-module__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.course-topics {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.4375rem 0 0;
+  padding: 0;
+  color: rgb(255 255 255 / 0.74);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  list-style: none;
+}
+
+/* The dot goes at the END of each topic but the last, so when the list wraps a line ends with a dot
+   and never starts with one */
+.course-topics li {
+  margin-right: 0.4em;
+}
+
+.course-topics li:not(:last-child)::after {
+  content: "\00b7";
+  margin-left: 0.4em;
+}
+
+/* ---- HOW IT WORKS (paper) ---- */
+.course-how {
+  padding: 3rem var(--course-side) 3.5rem;
+}
+
+/* On a phone the steps hang off a line: a navy circle with the number, joined to the next */
+.course-steps {
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.course-step {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.course-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 2.25rem;
+  bottom: 0.25rem;
+  left: calc(1.125rem - 1px);
+  width: 2px;
+  background: var(--course-line);
+}
+
+.course-step__num {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--brand-navy);
+  color: var(--white);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.course-step__title {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.course-step__text {
+  margin: 0.375rem 0 0;
+  color: var(--color-grey);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.course-how__action {
+  margin-top: 1rem;
+}
+
+.course-how .course-hosted {
+  color: var(--color-grey);
+}
+
+/* ---- Desktop: from 920px (57.5em) ---- */
+@media (min-width: 57.5em) {
+  .course-hero {
+    padding: clamp(8rem, 10.4vw, 9.5rem) var(--course-side) 4rem;
+  }
+
+  .course-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(17rem, 36vw, 32.375rem);
+    align-items: end;
+    column-gap: clamp(2rem, 6vw, 5.5rem);
+  }
+
+  .course-hero__figure {
+    order: 0;
+  }
+
+  .course-hero__img {
+    aspect-ratio: 3 / 2;
+    border-radius: 0.375rem;
+  }
+
+  .course-hero__credit {
+    margin-inline: 0;
+    text-align: right;
+  }
+
+  .course-hero__text {
+    padding: 0;
+  }
+
+  .course-hero--no-photo .course-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .course-hero__title {
+    margin: 0 0 1.5rem;
+    font-size: clamp(3rem, 5.25vw, 5.25rem);
+    line-height: 1.02;
+  }
+
+  .course-hero__intro {
+    margin-bottom: 1.875rem;
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  }
+
+  .course-button {
+    width: fit-content;
+    min-height: 3.25rem;
+    padding-inline: 1.75rem;
+  }
+
+  .course-hosted {
+    margin-top: 0.875rem;
+  }
+
+  .course-facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 3.75rem 0 0;
+  }
+
+  .course-fact {
+    padding: 0.25rem 1rem 0.25rem 1.625rem;
+    border-radius: 0;
+    background: none;
+    box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.22);
+  }
+
+  .course-fact__strong {
+    font-size: 1.375rem;
+  }
+
+  .course-fact__small {
+    font-size: 0.875rem;
+  }
+
+  .course-heading {
+    font-size: clamp(2rem, 2.8vw, 2.5rem);
+  }
+
+  .course-learn {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    column-gap: clamp(2rem, 5.4vw, 4.875rem);
+    padding-block: 5.5rem 6rem;
+  }
+
+  .course-learn--no-video {
+    grid-template-columns: minmax(0, 52rem);
+  }
+
+  .course-learn .course-heading {
+    font-size: clamp(1.75rem, 2.4vw, 2.125rem);
+  }
+
+  .course-outcomes {
+    margin-top: 1.5rem;
+  }
+
+  .course-outcome {
+    padding-block: 0.8125rem;
+    font-size: 1.0625rem;
+  }
+
+  .course-outcome::before {
+    top: 0.875rem;
+  }
+
+  .course-video {
+    margin-top: 0.25rem;
+  }
+
+  .course-video__play {
+    width: clamp(4rem, 5.6vw, 5.1rem);
+    height: clamp(4rem, 5.6vw, 5.1rem);
+  }
+
+  .course-video__label {
+    bottom: 1.625rem;
+    left: 1.5rem;
+    font-size: 1.0625rem;
+  }
+
+  .course-outline {
+    padding-block: 5.75rem 6.25rem;
+  }
+
+  .course-eyebrow {
+    margin-bottom: 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .course-parts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    row-gap: 3rem;
+    margin-top: 2.5rem;
+  }
+
+  /* On desktop the parts are plain columns, not cards, and say only "Part 1" */
+  .course-part {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .course-part__of {
+    display: none;
+  }
+
+  .course-part__label {
+    font-size: 0.75rem;
+  }
+
+  .course-part__title {
+    min-height: 2.5em;
+    margin: 0.5rem 0 1rem;
+    font-size: 1.375rem;
+  }
+
+  .course-module {
+    padding-block: 1rem 1.125rem;
+  }
+
+  .course-module__title {
+    font-size: 1.0625rem;
+  }
+
+  .course-topics {
+    font-size: 0.8125rem;
+  }
+
+  .course-how {
+    padding-block: 5.5rem 6.5rem;
+  }
+
+  .course-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+    row-gap: 2.5rem;
+    margin-top: 2.25rem;
+  }
+
+  .course-step {
+    display: block;
+    padding: 0;
+  }
+
+  .course-step:not(:last-child)::before {
+    display: none;
+  }
+
+  .course-step__num {
+    display: block;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: none;
+    color: var(--brand-terracotta);
+    font-size: clamp(2.5rem, 3.6vw, 3.25rem);
+    line-height: 1;
+  }
+
+  .course-step__title {
+    margin-top: 1.25rem;
+    font-size: 1.25rem;
+  }
+
+  .course-step__text {
+    margin-top: 0.5rem;
+  }
+
+  .course-how__action {
+    margin-top: 3rem;
+  }
+}
+
+/* Four columns once there is room (1100px, like the project directory) */
+@media (min-width: 68.75em) {
+  .course-parts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: 0;
+  }
+
+  .course-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-button,
+  .course-video__play {
+    transition: none;
+  }
+}
