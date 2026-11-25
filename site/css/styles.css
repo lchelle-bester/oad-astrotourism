@@ -6663,6 +6663,27 @@ a.news-pager__link:focus-visible {
   object-fit: cover;
 }
 
+/* The photo drift (25 Nov 2026): the banner photo starts a little zoomed in (1.08) and settles to
+   its normal size over 9 seconds, easing out, once, when the page loads. Only the photo moves: the
+   heading, the sentence and the fades are separate elements and stay still. The banner has
+   overflow: hidden, so the enlarged photo never spills out. "backwards" holds the first frame
+   until the animation starts. Not played with reduced motion (the photo just sits at 1). */
+@media (prefers-reduced-motion: no-preference) {
+  .impact-hero__img {
+    animation: impact-hero-drift 9s ease-out backwards;
+  }
+}
+
+@keyframes impact-hero-drift {
+  from {
+    transform: scale(1.08);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
 /* The dark fade over the photo: darkest at the top (under the header) and at the bottom (under the text) */
 .impact-hero::after {
   content: "";
@@ -6698,29 +6719,8 @@ a.news-pager__link:focus-visible {
   display: none;
 }
 
-.impact-crumbs ol {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  padding: 0;
-  color: rgb(255 255 255 / 0.92);
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  list-style: none;
-}
-
-.impact-crumbs li + li::before {
-  content: "/";
-  margin: 0 0.625rem;
-  color: rgb(255 255 255 / 0.6);
-}
-
-.impact-crumbs [aria-current] {
-  color: var(--color-text);
-}
-
 .impact-hero__title {
-  margin: 0.5rem 0 0.75rem;
+  margin: 0 0 0.75rem;
   font-size: 2.5rem;
   line-height: 1.05;
 }
@@ -7056,12 +7056,8 @@ a.news-pager__link:focus-visible {
     padding-bottom: 2rem;
   }
 
-  .impact-crumbs ol {
-    font-size: 0.9375rem;
-  }
-
   .impact-hero__title {
-    margin: 0.25rem 0 1rem;
+    margin: 0 0 1rem;
     font-size: clamp(3.5rem, 5vw, 4.5rem);
   }
 

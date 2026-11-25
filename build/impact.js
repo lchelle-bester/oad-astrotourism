@@ -1,7 +1,7 @@
 // The Impact page (Phase 10, 21 Nov 2026; design in docs/impact/). Loads the one published
 // "Impact page" document from Sanity, checks it, and draws the page (/projects/impact/) the way
 // theory.js and projects.js do for theirs.
-// Fixed here, not in Sanity: the h1 "Impact", the breadcrumb, the layout of each of the four
+// Fixed here, not in Sanity: the h1 "Impact", the layout of each of the four
 // sections (by position: 1 and 2 a big figure and a list, 3 a list, 4 a row) and the word "Photo:".
 // The sections' eyebrows ("Tourism", "Work", ...) are the editors' own words; there is no "Chapter 1"
 // (21 Nov 2026, L'chelle: "chapter" is not OAD's word). The code and CSS still call a section a
@@ -155,12 +155,6 @@ function renderHero(impact, image, h) {
     <section class="impact-hero${image ? '' : ' impact-hero--no-photo'}" aria-labelledby="impact-title">
       ${photo}
       <div class="impact-hero__inner">
-        <nav class="impact-crumbs" aria-label="Breadcrumb">
-          <ol>
-            <li>Projects and impact</li>
-            <li aria-current="page">Impact</li>
-          </ol>
-        </nav>
         <h1 class="impact-hero__title" id="impact-title">Impact</h1>
         <p class="impact-hero__headline">${headline}</p>${line ? `\n        ${line}` : ''}
       </div>
