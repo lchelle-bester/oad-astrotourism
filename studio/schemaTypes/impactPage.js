@@ -192,13 +192,6 @@ export const impactPage = defineType({
         Rule.length(4).error('The design has exactly four sections.'),
       ],
     }),
-    defineField({
-      name: 'note',
-      title: 'Note under the last section',
-      type: 'string',
-      group: 'chapters',
-      description: 'Optional. A small line after the last section, for example "All figures as reported by the funded projects to OAD."',
-    }),
 
     // ---- The map
     defineField({

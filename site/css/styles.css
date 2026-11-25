@@ -6815,13 +6815,6 @@ a.news-pager__link:focus-visible {
   line-height: 1.65;
 }
 
-.impact-chapter__note {
-  margin: 2rem 0 0;
-  color: rgb(255 255 255 / 0.65);
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
-
 /* Chapter 1: the photo comes after the figures on a phone, rounded, with its caption under it */
 .impact-chapter--1 .impact-chapter__figure {
   order: 2;
@@ -6838,7 +6831,8 @@ a.news-pager__link:focus-visible {
   display: none;
 }
 
-/* Chapters 2 and 4: dark, the photo across the top on a phone with its caption under it */
+/* Chapters 2 and 4: dark, the photo across the top on a phone with its caption under it (chapter 2's
+   photo moves below its text on phones, see above) */
 .impact-chapter--2,
 .impact-chapter--4 {
   padding-top: 0;
@@ -6877,6 +6871,30 @@ a.news-pager__link:focus-visible {
 .impact-chapter--2 .impact-chapter__intro,
 .impact-chapter--4 .impact-chapter__intro {
   color: rgb(255 255 255 / 0.85);
+}
+
+/* Chapter 2 (Work), phones only: the photo comes AFTER the text, like chapter 1's, inset and rounded
+   with its caption under it (25 Nov 2026, L'chelle; it was a band across the top). In the HTML the
+   photo is still first, `order` moves it. On desktop it is the section's background (below). */
+@media not all and (min-width: 57.5em) {
+  .impact-chapter--2 {
+    padding-top: 2.5rem;
+  }
+
+  .impact-chapter--2 .impact-chapter__figure {
+    order: 2;
+    margin: 2rem var(--impact-side) 0;
+  }
+
+  .impact-chapter--2 .impact-chapter__img {
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 0.5rem;
+  }
+
+  .impact-chapter--2 .impact-chapter__caption {
+    margin: 0.75rem 0 0;
+  }
 }
 
 /* Chapter 4's photo fades into the night at the bottom (the fade starts lower since 25 Nov 2026:
@@ -7302,11 +7320,6 @@ a.news-pager__link:focus-visible {
     margin-top: 1rem;
     font-size: 1.25rem;
     line-height: 1.4;
-  }
-
-  .impact-chapter__note {
-    margin-top: 1.75rem;
-    font-size: 0.8125rem;
   }
 }
 

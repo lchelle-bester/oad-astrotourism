@@ -18,7 +18,7 @@ const IMPACT_QUERY =
   '*[_id == "impactPage"][0]{headline, "heroPhoto": heroPhoto' + PHOTO_FIELDS + ', ' +
   'chapters[]{label, heading, intro, "photo": photo' + PHOTO_FIELDS + ', ' +
   'figures[]{prefix, value, suffix, label}}, ' +
-  'note, mapEyebrow, mapHeading}'
+  'mapEyebrow, mapHeading}'
 
 const PAGE_FILE = 'projects/impact/index.html'
 const PAGE_PATH = '/projects/impact/'
@@ -80,7 +80,6 @@ async function loadImpact({sanityQuery}) {
     headline,
     heroPhoto: photo(row.heroPhoto, 'the banner'),
     chapters,
-    note: clean(row.note),
     mapEyebrow: need(row.mapEyebrow, 'the small line above the map heading'),
     mapHeading: need(row.mapHeading, 'the map heading'),
   }
@@ -108,7 +107,7 @@ function renderFigure(f, kind, h) {
           <li class="impact-figure impact-figure--${kind}">${value}<span class="impact-figure__label">${h.escapeHtml(f.label)}</span></li>`
 }
 
-function renderChapter(c, images, h, {note}) {
+function renderChapter(c, images, h) {
   const id = `impact-chapter-${c.number}`
   // The first figure is shown large in chapters 1 and 2; chapter 3 is a plain list, chapter 4 a row
   const kinds = (i) => {
@@ -129,7 +128,7 @@ function renderChapter(c, images, h, {note}) {
         <h2 class="impact-chapter__heading" id="${id}">${h.escapeHtml(c.heading)}</h2>
         <p class="impact-chapter__intro">${h.escapeHtml(c.intro)}</p>
         <ul class="impact-figures">${c.figures.map((f, i) => renderFigure(f, kinds(i), h)).join('')}
-        </ul>${note ? `\n        <p class="impact-chapter__note">${h.escapeHtml(note)}</p>` : ''}
+        </ul>
       </div>
     </section>`
 }
@@ -155,7 +154,6 @@ function renderHero(impact, image, h) {
 // projects: the published projects, for the map
 function renderImpactPage(impact, h, {images, projects = []}) {
   const headlineText = impact.headline.map((s) => s.text).join('').replace(/\s+/g, ' ').trim()
-  const lastNote = impact.note
   return {
     file: PAGE_FILE,
     page: {
@@ -163,7 +161,7 @@ function renderImpactPage(impact, h, {images, projects = []}) {
       description: headlineText,
       canonical: `${h.siteUrl}${PAGE_PATH}`,
       hero: renderHero(impact, images.hero, h),
-      chapters: impact.chapters.map((c) => renderChapter(c, images.chapters, h, {note: c.number === 4 ? lastNote : ''})).join(''),
+      chapters: impact.chapters.map((c) => renderChapter(c, images.chapters, h)).join(''),
       map: renderImpactMap({eyebrow: impact.mapEyebrow, heading: impact.mapHeading}, projects, h),
     },
   }
