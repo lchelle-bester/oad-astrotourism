@@ -6879,7 +6879,8 @@ a.news-pager__link:focus-visible {
   color: rgb(255 255 255 / 0.85);
 }
 
-/* Chapter 4's photo fades into the night at the bottom */
+/* Chapter 4's photo fades into the night at the bottom (the fade starts lower since 25 Nov 2026:
+   at 70% of the photo's height on a phone, was 55%) */
 .impact-chapter--4 .impact-chapter__figure {
   position: relative;
 }
@@ -6889,7 +6890,7 @@ a.news-pager__link:focus-visible {
   position: absolute;
   inset: 0 0 auto;
   height: 13.75rem;
-  background: linear-gradient(to bottom, rgb(15 27 43 / 0) 55%, var(--color-night) 100%);
+  background: linear-gradient(to bottom, rgb(15 27 43 / 0) 70%, var(--color-night) 100%);
   pointer-events: none;
 }
 
@@ -7260,7 +7261,8 @@ a.news-pager__link:focus-visible {
 
   .impact-chapter--4 .impact-chapter__figure::after {
     height: 100%;
-    background: linear-gradient(to bottom, rgb(15 27 43 / 0.1) 0%, rgb(15 27 43 / 0) 30%, rgb(15 27 43 / 0.7) 66%, rgb(15 27 43 / 0.9) 84%, var(--color-night) 100%);
+    /* the fade starts at 46% of the band's height (was 30%), 25 Nov 2026 */
+    background: linear-gradient(to bottom, rgb(15 27 43 / 0.1) 0%, rgb(15 27 43 / 0) 46%, rgb(15 27 43 / 0.8) 68%, rgb(15 27 43 / 0.93) 82%, var(--color-night) 100%);
   }
 
   .impact-chapter--4 .impact-chapter__img {
