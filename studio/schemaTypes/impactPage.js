@@ -14,7 +14,8 @@ import {sourceFields} from './impactFigure'
 // once it is added it needs alt text. The page puts "Photo:" in front of the credit, and shows no
 // credit when it is empty (credit made optional 20 Nov 2026, L'chelle: the photographers are not
 // all known yet).
-const photoField = (name, title, description) =>
+// The banner photo has no caption field (25 Nov 2026, L'chelle: the page no longer shows one).
+const photoField = (name, title, description, {withCaption = true} = {}) =>
   defineField({
     name,
     title,
@@ -30,12 +31,16 @@ const photoField = (name, title, description) =>
         validation: (Rule) =>
           Rule.custom((value, context) => (context.parent?.asset && !value ? 'Add alt text for the photo.' : true)),
       }),
-      defineField({
-        name: 'caption',
-        title: 'Caption',
-        type: 'string',
-        description: 'Optional. Shown under the photo, for example "An astro-homestay in Maan, in the Himalaya".',
-      }),
+      ...(withCaption
+        ? [
+            defineField({
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+              description: 'Optional. Shown under the photo, for example "An astro-homestay in Maan, in the Himalaya".',
+            }),
+          ]
+        : []),
       defineField({
         name: 'credit',
         title: 'Credit',
@@ -103,6 +108,7 @@ export const impactPage = defineType({
         'heroPhoto',
         'Banner photo',
         'Optional. The photo behind the headline, with a dark fade. A wide photo works best; click the crop icon and drag the circle onto the most important part, because the banner is a wide strip and the photo is cut to it around that point. Only add a photo OAD has agreed can be shown.',
+        {withCaption: false},
       ),
       group: 'top',
     },

@@ -150,7 +150,8 @@ function renderHero(impact, image, h) {
     .map((s) => (s.highlight ? `<span class="impact-hero__mark">${h.escapeHtml(s.text)}</span>` : h.escapeHtml(s.text)))
     .join('')
   const photo = image ? picture(image, h, {sizes: '100vw', lazy: false, className: 'impact-hero__img', style: `object-position: ${image.position}`}) : ''
-  const line = image ? photoLine(image, h, 'impact-hero__caption') : ''
+  // No caption on the banner (25 Nov 2026, L'chelle): only the credit, and only when one is entered
+  const line = image ? photoLine({...image, caption: ''}, h, 'impact-hero__caption') : ''
   return `
     <section class="impact-hero${image ? '' : ' impact-hero--no-photo'}" aria-labelledby="impact-title">
       ${photo}
