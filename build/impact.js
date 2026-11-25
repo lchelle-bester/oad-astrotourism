@@ -17,7 +17,7 @@ const PHOTO_FIELDS =
 const IMPACT_QUERY =
   '*[_id == "impactPage"][0]{headline, "heroPhoto": heroPhoto' + PHOTO_FIELDS + ', ' +
   'chapters[]{label, heading, intro, "photo": photo' + PHOTO_FIELDS + ', ' +
-  'figures[]{prefix, value, suffix, label, place, "project": project->{title, "slug": slug.current}}}, ' +
+  'figures[]{prefix, value, suffix, label}}, ' +
   'note, mapEyebrow, mapHeading}'
 
 const PAGE_FILE = 'projects/impact/index.html'
@@ -71,8 +71,6 @@ async function loadImpact({sanityQuery}) {
           value: f.value,
           suffix: clean(f.suffix),
           label: need(f.label, `the sentence of ${what}`),
-          place: need(f.place, `the place of ${what}`),
-          project: f.project && f.project.slug ? f.project : null,
         }
       }),
     }
@@ -100,26 +98,17 @@ function photoLine(image, h, className) {
 // 111000 becomes "111,000"; the prefix and suffix (for example a currency sign) stay outside it
 const formatFigure = (f) => `${f.prefix}${f.value.toLocaleString('en-US')}${f.suffix}`
 
-// The place line. With a project that is published, it links to the project's page, and says so
-// to screen readers, since "Malaysia" alone would not tell anyone where the link goes.
-function renderPlace(f, h, projectSlugs) {
-  const text = h.escapeHtml(f.place)
-  if (f.project && projectSlugs.has(f.project.slug)) {
-    return `<a class="impact-figure__place impact-figure__place--link" href="/projects/directory/${h.escapeHtml(f.project.slug)}/">${text}<span class="visually-hidden"> (project page: ${h.escapeHtml(f.project.title)})</span></a>`
-  }
-  return `<span class="impact-figure__place">${text}</span>`
-}
-
-// One figure. The number comes first in the HTML, then the sentence, then the place, so it reads
-// as one sentence to a screen reader. `kind`: "big" (the large first figure of chapters 1 and 2),
-// "inline" (chapter 2's rows, number and words on one line), "row" (chapter 4) or "list".
-function renderFigure(f, kind, h, projectSlugs) {
+// One figure: the number, then the sentence, so it reads as one sentence to a screen reader.
+// There is no place line and no link to a project (removed 25 Nov 2026, L'chelle).
+// `kind`: "big" (the large first figure of chapters 1 and 2), "inline" (chapter 2's rows, number
+// and words on one line), "row" (chapter 4) or "list".
+function renderFigure(f, kind, h) {
   const value = `<span class="impact-figure__value">${h.escapeHtml(formatFigure(f))}</span>`
   return `
-          <li class="impact-figure impact-figure--${kind}">${value}<span class="impact-figure__label">${h.escapeHtml(f.label)}</span>${renderPlace(f, h, projectSlugs)}</li>`
+          <li class="impact-figure impact-figure--${kind}">${value}<span class="impact-figure__label">${h.escapeHtml(f.label)}</span></li>`
 }
 
-function renderChapter(c, images, h, {projectSlugs, note}) {
+function renderChapter(c, images, h, {note}) {
   const id = `impact-chapter-${c.number}`
   // The first figure is shown large in chapters 1 and 2; chapter 3 is a plain list, chapter 4 a row
   const kinds = (i) => {
@@ -139,7 +128,7 @@ function renderChapter(c, images, h, {projectSlugs, note}) {
         <p class="impact-chapter__eyebrow">${h.escapeHtml(c.label)}</p>
         <h2 class="impact-chapter__heading" id="${id}">${h.escapeHtml(c.heading)}</h2>
         <p class="impact-chapter__intro">${h.escapeHtml(c.intro)}</p>
-        <ul class="impact-figures">${c.figures.map((f, i) => renderFigure(f, kinds(i), h, projectSlugs)).join('')}
+        <ul class="impact-figures">${c.figures.map((f, i) => renderFigure(f, kinds(i), h)).join('')}
         </ul>${note ? `\n        <p class="impact-chapter__note">${h.escapeHtml(note)}</p>` : ''}
       </div>
     </section>`
@@ -163,8 +152,8 @@ function renderHero(impact, image, h) {
 }
 
 // images: {hero, chapters: [one per chapter, or null]} as downloaded by build.js
-// projectSlugs: the slugs of the published projects (a figure links only to one that has a page)
-function renderImpactPage(impact, h, {images, projectSlugs, projects = []}) {
+// projects: the published projects, for the map
+function renderImpactPage(impact, h, {images, projects = []}) {
   const headlineText = impact.headline.map((s) => s.text).join('').replace(/\s+/g, ' ').trim()
   const lastNote = impact.note
   return {
@@ -174,7 +163,7 @@ function renderImpactPage(impact, h, {images, projectSlugs, projects = []}) {
       description: headlineText,
       canonical: `${h.siteUrl}${PAGE_PATH}`,
       hero: renderHero(impact, images.hero, h),
-      chapters: impact.chapters.map((c) => renderChapter(c, images.chapters, h, {projectSlugs, note: c.number === 4 ? lastNote : ''})).join(''),
+      chapters: impact.chapters.map((c) => renderChapter(c, images.chapters, h, {note: c.number === 4 ? lastNote : ''})).join(''),
       map: renderImpactMap({eyebrow: impact.mapEyebrow, heading: impact.mapHeading}, projects, h),
     },
   }

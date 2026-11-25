@@ -1,3 +1,6 @@
+// OUT OF DATE (25 Nov 2026): the figures no longer have a Place or a Project field, and this script still
+// writes both. It was a one-off and has been run; do not run it again as it is.
+//
 // One-off fill of the Impact page (20 Nov 2026), so the editors start from the wording in the
 // mock-up instead of an empty form (design in docs/impact/).
 //

@@ -79,34 +79,15 @@ const preview = {
   }),
 }
 
-// A figure in a chapter of the Impact page (/projects/impact/): a figure plus where it
-// happened, and optionally the project it came from. The place line becomes a link to the
-// project's page when a project is chosen. Added 20 Nov 2026 (design in docs/impact/).
+// A figure in a section of the Impact page (/projects/impact/). Added 20 Nov 2026 (design in
+// docs/impact/). The Place and "Project it came from" fields were removed on 25 Nov 2026
+// (L'chelle): the page shows only the number and the sentence.
 export const impactStat = defineType({
   name: 'impactStat',
   title: 'Figure',
   type: 'object',
   fields: [
     ...figureFields,
-    defineField({
-      name: 'place',
-      title: 'Place',
-      type: 'string',
-      description: 'Where, for example "India". Shown small under the sentence.',
-      validation: (Rule) => [
-        Rule.required().error('Add the place.'),
-        Rule.max(40).warning('Keep the place short.'),
-      ],
-    }),
-    defineField({
-      name: 'project',
-      title: 'Project it came from',
-      type: 'reference',
-      to: [{type: 'project'}],
-      weak: true,
-      description:
-        'Optional. If you choose a project, the place line links to that project\'s page. Leave empty if the figure comes from several projects or you are not sure.',
-    }),
     ...sourceFields,
   ],
   preview,

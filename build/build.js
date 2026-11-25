@@ -907,13 +907,13 @@ async function main() {
 
   // The Impact page (Phase 10)
   if (impact) {
-    const {file, page} = renderImpactPage(impact, {escapeHtml, siteUrl: SITE_URL}, {images: impactImages, projectSlugs, projects})
+    const {file, page} = renderImpactPage(impact, {escapeHtml, siteUrl: SITE_URL}, {images: impactImages, projects})
     const impactTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'impact.html'), 'utf8'))
     const target = path.join(DIST_DIR, file)
     fs.mkdirSync(path.dirname(target), {recursive: true})
     fs.writeFileSync(target, renderTemplate(impactTemplate, {...data, nav: {...data.nav, projectsCurrent: ' aria-current="true"', impactCurrent: ' aria-current="page"'}, page}))
     const figures = impact.chapters.flatMap((c) => c.figures)
-    console.log(`Impact page: written, ${impact.chapters.length} chapters, ${figures.length} figures (${figures.filter((f) => f.project && projectSlugs.has(f.project.slug)).length} linked to a project), ${impactFiles.length} photo files, ${impactImages.hero ? 'banner photo' : 'no banner photo (plain night sky)'}`)
+    console.log(`Impact page: written, ${impact.chapters.length} chapters, ${figures.length} figures,${impactFiles.length} photo files, ${impactImages.hero ? 'banner photo' : 'no banner photo (plain night sky)'}`)
   } else {
     console.log('Impact page: not published in Sanity yet, so the page is not written.')
   }
