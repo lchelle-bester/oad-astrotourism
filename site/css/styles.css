@@ -6693,7 +6693,7 @@ a.news-pager__link:focus-visible {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(to bottom, rgb(15 27 43 / 0.62) 0%, rgb(15 27 43 / 0.45) 18%, rgb(15 27 43 / 0.4) 44%, rgb(15 27 43 / 0) 64%, rgb(15 27 43 / 0.45) 86%, rgb(15 27 43 / 0.7) 100%);
+  background: linear-gradient(to bottom, rgb(15 27 43 / 0.62) 0%, rgb(15 27 43 / 0.48) 18%, rgb(15 27 43 / 0.46) 44%, rgb(15 27 43 / 0) 64%, rgb(15 27 43 / 0.45) 86%, rgb(15 27 43 / 0.7) 100%);
 }
 
 .impact-hero--no-photo::after {
@@ -6714,9 +6714,9 @@ a.news-pager__link:focus-visible {
   position: absolute;
   inset: 0 0 -1.5rem;
   z-index: -1;
-  background: linear-gradient(to right, rgb(15 27 43 / 0.5) 0%, rgb(15 27 43 / 0.4) 55%, rgb(15 27 43 / 0.3) 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 80%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 80%, transparent 100%);
+  background: linear-gradient(to right, rgb(15 27 43 / 0.5) 0%, rgb(15 27 43 / 0.45) 55%, rgb(15 27 43 / 0.4) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 25%, #000 90%, transparent 100%);
   pointer-events: none;
 }
 
@@ -7019,7 +7019,7 @@ a.news-pager__link:focus-visible {
   .impact-hero::after {
     background:
       linear-gradient(to right, rgb(15 27 43 / 0.4) 0%, rgb(15 27 43 / 0) 65%),
-      linear-gradient(to bottom, rgb(15 27 43 / 0.7) 0%, rgb(15 27 43 / 0.55) 9%, rgb(15 27 43 / 0.15) 20%, rgb(15 27 43 / 0) 40%, rgb(15 27 43 / 0) 74%, rgb(15 27 43 / 0.5) 100%);
+      linear-gradient(to bottom, rgb(15 27 43 / 0.72) 0%, rgb(15 27 43 / 0.6) 9%, rgb(15 27 43 / 0.15) 20%, rgb(15 27 43 / 0) 40%, rgb(15 27 43 / 0) 74%, rgb(15 27 43 / 0.5) 100%);
   }
 
   .impact-hero__inner {
