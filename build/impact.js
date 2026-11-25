@@ -139,15 +139,15 @@ function renderHero(impact, image, h) {
     .map((s) => (s.highlight ? `<span class="impact-hero__mark">${h.escapeHtml(s.text)}</span>` : h.escapeHtml(s.text)))
     .join('')
   const photo = image ? picture(image, h, {sizes: '100vw', lazy: false, className: 'impact-hero__img', style: `object-position: ${image.position}`}) : ''
-  // No caption on the banner (25 Nov 2026, L'chelle): only the credit, and only when one is entered
+  // No caption on the banner (25 Nov 2026, L'chelle, asked twice): only the credit, and only when one is entered
   const line = image ? photoLine({...image, caption: ''}, h, 'impact-hero__caption') : ''
   return `
     <section class="impact-hero${image ? '' : ' impact-hero--no-photo'}" aria-labelledby="impact-title">
       ${photo}
       <div class="impact-hero__inner">
         <h1 class="impact-hero__title" id="impact-title">Impact</h1>
-        <p class="impact-hero__headline">${headline}</p>${line ? `\n        ${line}` : ''}
-      </div>
+        <p class="impact-hero__headline">${headline}</p>
+      </div>${line ? `\n      ${line}` : ''}
     </section>`
 }
 

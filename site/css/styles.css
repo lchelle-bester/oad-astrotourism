@@ -6643,8 +6643,10 @@ a.news-pager__link:focus-visible {
   position: relative;
   isolation: isolate;
   display: flex;
-  align-items: flex-end;
-  min-height: 38.75rem;
+  align-items: flex-start;
+  /* One screen tall, with the words at the top and the photo showing below them (new banner,
+     25 Nov 2026, from L'chelle's mock-ups: 760px at 1440 x 760, 720px at 390 x 720) */
+  min-height: clamp(32rem, 100svh, 46rem);
   overflow: hidden;
   background: var(--color-night);
   color: var(--color-text);
@@ -6684,13 +6686,14 @@ a.news-pager__link:focus-visible {
   }
 }
 
-/* The dark fade over the photo: darkest at the top (under the header) and at the bottom (under the text) */
+/* The dark fade over the photo: darker at the top (under the header) and at the bottom (under the
+   caption), light in between so the photo shows (lightened on 25 Nov 2026 for the new banner) */
 .impact-hero::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(to bottom, rgb(15 27 43 / 0.72) 0%, rgb(15 27 43 / 0.15) 24%, rgb(15 27 43 / 0.6) 46%, rgb(15 27 43 / 0.82) 100%);
+  background: linear-gradient(to bottom, rgb(15 27 43 / 0.62) 0%, rgb(15 27 43 / 0.45) 18%, rgb(15 27 43 / 0.4) 44%, rgb(15 27 43 / 0) 64%, rgb(15 27 43 / 0.45) 86%, rgb(15 27 43 / 0.7) 100%);
 }
 
 .impact-hero--no-photo::after {
@@ -6700,7 +6703,7 @@ a.news-pager__link:focus-visible {
 .impact-hero__inner {
   position: relative;
   width: 100%;
-  padding: 9rem var(--impact-side) 2.5rem;
+  padding: 7.7rem var(--impact-side) 2.5rem;
 }
 
 /* A soft dark band behind the text block, fading out at both ends, so the words stay readable
@@ -6711,7 +6714,9 @@ a.news-pager__link:focus-visible {
   position: absolute;
   inset: 0 0 -1.5rem;
   z-index: -1;
-  background: linear-gradient(to bottom, rgb(15 27 43 / 0) 0%, rgb(15 27 43 / 0.5) 30%, rgb(15 27 43 / 0.5) 80%, rgb(15 27 43 / 0) 100%);
+  background: linear-gradient(to right, rgb(15 27 43 / 0.5) 0%, rgb(15 27 43 / 0.4) 55%, rgb(15 27 43 / 0.3) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 80%, transparent 100%);
   pointer-events: none;
 }
 
@@ -6720,13 +6725,15 @@ a.news-pager__link:focus-visible {
 }
 
 .impact-hero__title {
-  margin: 0 0 0.75rem;
-  font-size: 2.5rem;
-  line-height: 1.05;
+  margin: 0 0 1.25rem;
+  font-size: clamp(3.5rem, 20.5vw, 7rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
 
 .impact-hero__headline {
   max-width: 30.5em;
+  text-wrap: balance;
   margin: 0;
   font-family: var(--font-heading);
   font-size: 1.375rem;
@@ -6738,8 +6745,14 @@ a.news-pager__link:focus-visible {
   color: var(--color-accent);
 }
 
+/* The photo's caption and credit sit at the bottom edge of the banner (bottom left on a phone,
+   bottom right on desktop, as in the mock-ups). */
 .impact-hero__caption {
-  margin: 1.5rem 0 0;
+  position: absolute;
+  bottom: 1.125rem;
+  left: var(--impact-side);
+  right: var(--impact-side);
+  margin: 0;
   color: rgb(255 255 255 / 0.9);
   font-size: 0.75rem;
   line-height: 1.5;
@@ -6994,9 +7007,9 @@ a.news-pager__link:focus-visible {
 
 @media (min-width: 57.5em) {
   .impact-hero {
-    align-items: flex-start;
-    /* 576px at 1440 (860 until 21 Nov 2026: L'chelle found the banner way too long) */
-    min-height: clamp(28rem, 40vw, 36rem);
+    /* A full screen tall at 1440 x 760 (was 576px, and 860 before 21 Nov 2026: L'chelle found that
+       one way too long; the new mock-up of 25 Nov is one screen), never over 56rem */
+    min-height: clamp(34rem, 100svh, 56rem);
   }
 
   .impact-hero--no-photo {
@@ -7005,27 +7018,42 @@ a.news-pager__link:focus-visible {
 
   .impact-hero::after {
     background:
-      linear-gradient(to right, rgb(15 27 43 / 0.5) 0%, rgb(15 27 43 / 0) 70%),
-      linear-gradient(to bottom, rgb(15 27 43 / 0.78) 0%, rgb(15 27 43 / 0.68) 30%, rgb(15 27 43 / 0.56) 48%, rgb(15 27 43 / 0.3) 68%, rgb(15 27 43 / 0.5) 100%);
+      linear-gradient(to right, rgb(15 27 43 / 0.4) 0%, rgb(15 27 43 / 0) 65%),
+      linear-gradient(to bottom, rgb(15 27 43 / 0.7) 0%, rgb(15 27 43 / 0.55) 9%, rgb(15 27 43 / 0.15) 20%, rgb(15 27 43 / 0) 40%, rgb(15 27 43 / 0) 74%, rgb(15 27 43 / 0.5) 100%);
   }
 
   .impact-hero__inner {
+    padding-top: clamp(7rem, 20.3svh, 9.625rem);
     padding-bottom: 2rem;
   }
 
+  /* On desktop the band behind the words fades out to the right, where the photo stays bright */
+  .impact-hero__inner::before {
+    background: linear-gradient(to right, rgb(15 27 43 / 0.5) 0%, rgb(15 27 43 / 0.32) 55%, rgb(15 27 43 / 0) 100%);
+  }
+
+  /* The big title and the headline follow the 1440 x 760 mock-up (title cap height 117px = 11.6vw,
+     headline 43px = 3vw), and also the banner's height (the banner is one screen tall): on a
+     shorter window the type gets smaller instead of filling the banner (25 Nov 2026, L'chelle: "the
+     text is too big for the banner on desktop"). At 1440 x 760 the two rules give the same size. */
   .impact-hero__title {
-    margin: 0 0 1rem;
-    font-size: clamp(3.5rem, 5vw, 4.5rem);
+    margin: 0 0 clamp(1rem, 4.3svh, 2.05rem);
+    font-size: clamp(5rem, min(11.6vw, 22svh), 13rem);
+    letter-spacing: -0.04em;
   }
 
   .impact-hero__headline {
-    font-size: clamp(1.75rem, 2.45vw, 2.2rem);
-    line-height: 1.22;
+    max-width: 25em;
+    text-wrap: wrap;
+    font-size: clamp(1.75rem, min(3vw, 5.68svh), 3.25rem);
+    line-height: 1.18;
   }
 
   .impact-hero__caption {
-    margin-top: 1.25rem;
+    left: auto;
+    max-width: 50rem;
     font-size: 0.8125rem;
+    text-align: right;
   }
 
   /* Chapters 1 and 3: the photo on the left, the words on the right. The photo is as tall as the

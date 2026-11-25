@@ -1,5 +1,6 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {sourceFields} from './impactFigure'
+import {HighlightMark} from './components/HighlightMark'
 
 // The Impact page (/projects/impact/), design in docs/impact/. There is only one, so it is a
 // single document. The four parts of the page are called "sections" in the Studio and on the page:
@@ -14,7 +15,7 @@ import {sourceFields} from './impactFigure'
 // once it is added it needs alt text. The page puts "Photo:" in front of the credit, and shows no
 // credit when it is empty (credit made optional 20 Nov 2026, L'chelle: the photographers are not
 // all known yet).
-// The banner photo has no caption field (25 Nov 2026, L'chelle: the page no longer shows one).
+// The banner photo has no caption field (25 Nov 2026, L'chelle: the page does not show one).
 const photoField = (name, title, description, {withCaption = true} = {}) =>
   defineField({
     name,
@@ -67,13 +68,14 @@ export const impactPage = defineType({
       type: 'array',
       group: 'top',
       description:
-        'The sentence under the page title. Select the words that should show in yellow (the amount and the number of countries) and press Highlight.',
+        'The sentence under the page title. Select the words that should show in yellow (the amount and the number of countries) and press Highlight. Highlighted words appear with a yellow background here in the editor.',
       of: [
         defineArrayMember({
           type: 'block',
           styles: [{title: 'Normal', value: 'normal'}],
           lists: [],
-          marks: {decorators: [{title: 'Highlight', value: 'highlight'}], annotations: []},
+          // component: the highlighted words show as a yellow highlighter strip in the editor (25 Nov 2026)
+          marks: {decorators: [{title: 'Highlight', value: 'highlight', component: HighlightMark}], annotations: []},
         }),
       ],
       validation: (Rule) => [
