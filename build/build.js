@@ -795,6 +795,18 @@ async function main() {
     courseImage = await fetchArticleImage(course.photo, {slug: 'online-course', title: 'Online course page'}, courseFiles, {tag: 'hero', widths: [800, 1280, 1920, 2560], dir: COURSE_DIR, native: true, quality: {webp: 78, jpg: 82}})
   }
 
+  // The preview video's thumbnail, downloaded now and served from this site (same code as the news videos).
+  // Without one (a private or removed video) the card is plain navy.
+  let courseVideoStill = null
+  if (course && course.video) {
+    if (!youtubeStills.has(course.video.id)) youtubeStills.set(course.video.id, await findYoutubeStill(course.video.id))
+    const still = youtubeStills.get(course.video.id)
+    if (still) {
+      courseFiles.push({name: still.name, data: still.data})
+      courseVideoStill = {src: `/${COURSE_DIR}/${still.name}`, width: still.width, height: still.height}
+    }
+  }
+
   const siteSettings = await fetchSiteSettings()
 
   const footer = renderFooter(siteSettings)
@@ -937,13 +949,13 @@ async function main() {
 
   // The Online course page (Phase 11)
   if (course) {
-    const {file, page} = renderCoursePage(course, {escapeHtml, siteUrl: SITE_URL}, {image: courseImage})
+    const {file, page} = renderCoursePage(course, {escapeHtml, siteUrl: SITE_URL}, {image: courseImage, videoStill: courseVideoStill})
     const courseTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'online-course.html'), 'utf8'))
     const target = path.join(DIST_DIR, file)
     fs.mkdirSync(path.dirname(target), {recursive: true})
     fs.writeFileSync(target, renderTemplate(courseTemplate, {...data, nav: {...data.nav, resourcesCurrent: ' aria-current="true"', courseCurrent: ' aria-current="page"'}, page}))
     const modules = course.parts.reduce((sum, p) => sum + p.modules.length, 0)
-    console.log(`Online course page: written, ${course.parts.length} parts, ${modules} modules, ${course.outcomes.length} outcomes, ${course.video ? 'preview video' : 'no preview video (block left out)'}, ${courseImage ? 'photo' : 'no photo'}`)
+    console.log(`Online course page: written, ${course.parts.length} parts, ${modules} modules, ${course.outcomes.length} outcomes, ${course.video ? (courseVideoStill ? 'preview video with thumbnail' : 'preview video (no thumbnail found, plain card)') : 'no preview video (block left out)'}, ${courseImage ? 'photo' : 'no photo'}`)
   } else {
     console.log('Online course page: not published in Sanity yet, so the page is not written.')
   }

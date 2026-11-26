@@ -126,13 +126,18 @@ function renderHero(course, image, h) {
     </section>`
 }
 
-function renderLearn(course, h) {
-  // The preview video (if there is one) is the right-hand column; without it the list has the whole width
+function renderLearn(course, videoStill, h) {
+  // The preview video (if there is one) is the right-hand column; without it the list has the whole width.
+  // Its thumbnail (videoStill) was downloaded at build time and is served from this site, so YouTube is
+  // only contacted when someone presses play; with no thumbnail the card is plain navy.
+  const still = videoStill
+    ? `<img class="course-video__still" src="${h.escapeHtml(videoStill.src)}" width="${videoStill.width}" height="${videoStill.height}" alt="" loading="lazy" decoding="async">`
+    : ''
   const video = course.video
     ? `
-      <figure class="course-video">
+      <figure class="course-video${still ? ' course-video--still' : ''}">
         <div class="embed__frame course-video__frame" data-embed-src="https://www.youtube-nocookie.com/embed/${h.escapeHtml(course.video.id)}?autoplay=1&amp;rel=0" data-embed-title="${h.escapeHtml(course.video.title)}" data-embed-label="video" data-embed-host="YouTube">
-          <a class="embed__trigger course-video__trigger" href="https://www.youtube.com/watch?v=${h.escapeHtml(course.video.id)}"><span class="course-video__play" aria-hidden="true">${TRIANGLE}</span><span class="course-video__label">Course preview<span class="visually-hidden">: ${h.escapeHtml(course.video.title)} (opens YouTube)</span></span></a>
+          <a class="embed__trigger course-video__trigger" href="https://www.youtube.com/watch?v=${h.escapeHtml(course.video.id)}">${still}<span class="course-video__play" aria-hidden="true">${TRIANGLE}</span><span class="course-video__label">Course preview<span class="visually-hidden">: ${h.escapeHtml(course.video.title)} (opens YouTube)</span></span></a>
         </div>
         <figcaption class="course-video__caption">Course preview. The video loads from YouTube only when you press play.</figcaption>
       </figure>`
@@ -201,7 +206,8 @@ function renderHow(course, h) {
 }
 
 // image: the photo as downloaded by build.js (or null)
-function renderCoursePage(course, h, {image}) {
+// videoStill: the preview video's thumbnail as downloaded by build.js (or null)
+function renderCoursePage(course, h, {image, videoStill = null}) {
   return {
     file: PAGE_FILE,
     page: {
@@ -209,7 +215,7 @@ function renderCoursePage(course, h, {image}) {
       description: course.intro,
       canonical: `${h.siteUrl}${PAGE_PATH}`,
       hero: renderHero(course, image, h),
-      learn: renderLearn(course, h),
+      learn: renderLearn(course, videoStill, h),
       outline: renderOutline(course, h),
       how: renderHow(course, h),
     },

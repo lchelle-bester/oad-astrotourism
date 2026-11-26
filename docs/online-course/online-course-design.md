@@ -6,7 +6,7 @@ Address: `/resources/online-course/` (already in the nav, the footer and the Stu
 
 Four bands, following the mock-ups:
 1. **Top (night):** the title (no breadcrumb: removed 25 Nov 2026 at L'chelle's request), the introduction, a yellow "Start the free course" button with "Hosted by The Open University on OpenLearn Create." and four facts. The title is one line from 600px wide (two on a phone). The photo is the darkened backdrop of this band (26 Nov 2026), running on down behind the ridge of the next band.
-2. **What you will learn (paper, with the proof band's ridge and wave edges):** five outcomes, numbered, and the optional "Course preview" video card (2px corners, click to load from YouTube, as on the news pages) in the right-hand column (under the list on phones). Without a video the list has the whole width.
+2. **What you will learn (paper, with the proof band's ridge and wave edges):** five outcomes, numbered, and the optional "Course preview" video card (2px corners, click to load from YouTube, as on the news pages; it shows the video's own YouTube thumbnail, downloaded at build time and served from this site, with the yellow play circle and the label over a soft dark fade) in the right-hand column (under the list on phones). Without a video the list has the whole width.
 3. **Course outline (night):** "Ten modules, four parts" (worked out from the data), four parts with ten modules, each with topics. Plain columns on desktop (four from 1100px, two from 920px), soft cards on phones with "Part 1 of 4".
 4. **How it works (paper):** four steps (big numbers on desktop, a numbered line on phones), the navy button and the hosted line again.
 
