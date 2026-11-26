@@ -104,12 +104,14 @@ function renderButton(course, h, tone) {
   return `<a class="course-button course-button--${tone}" href="${h.escapeHtml(course.courseUrl)}">${h.escapeHtml(course.buttonLabel)}<span class="course-button__arrow" aria-hidden="true">&nearr;</span><span class="visually-hidden"> (opens another site)</span></a>`
 }
 
+// The photo is the backdrop of the top band (26 Nov 2026, L'chelle), darkened by the stylesheet; its
+// credit, if there is one, sits small at the bottom right
 function renderHero(course, image, h) {
-  const photo = image
-    ? `<figure class="course-hero__figure">${picture(image, h, {sizes: '(min-width: 920px) 40vw, 100vw', lazy: false, className: 'course-hero__img', style: `object-position: ${image.position}`})}${clean(image.credit) ? `<figcaption class="course-hero__credit">Photo: ${h.escapeHtml(clean(image.credit))}</figcaption>` : ''}</figure>`
-    : ''
+  const photo = image ? picture(image, h, {sizes: '100vw', lazy: false, className: 'course-hero__img', style: `object-position: ${image.position}`}) : ''
+  const credit = image && clean(image.credit) ? `\n      <p class="course-hero__credit">Photo: ${h.escapeHtml(clean(image.credit))}</p>` : ''
   return `
-    <section class="course-hero${image ? '' : ' course-hero--no-photo'}" aria-labelledby="course-title">
+    <section class="course-hero${image ? ' course-hero--photo' : ''}" aria-labelledby="course-title">
+      ${photo}
       <div class="course-hero__inner">
         <div class="course-hero__text">
           <h1 class="course-hero__title" id="course-title">Astrotourism online course</h1>
@@ -117,15 +119,15 @@ function renderHero(course, image, h) {
           ${renderButton(course, h, 'yellow')}
           <p class="course-hosted">${h.escapeHtml(course.hostedLine)}</p>
         </div>
-        ${photo}
       </div>
       <ul class="course-facts">${course.facts.map((f) => `
         <li class="course-fact"><strong class="course-fact__strong">${h.escapeHtml(f.strong)}</strong><span class="course-fact__small">${h.escapeHtml(f.small)}</span></li>`).join('')}
-      </ul>
+      </ul>${credit}
     </section>`
 }
 
 function renderLearn(course, h) {
+  // The preview video (if there is one) is the right-hand column; without it the list has the whole width
   const video = course.video
     ? `
       <figure class="course-video">
@@ -136,7 +138,7 @@ function renderLearn(course, h) {
       </figure>`
     : ''
   return `
-    <section class="course-learn${course.video ? '' : ' course-learn--no-video'}" aria-labelledby="course-learn-heading">
+    <section class="course-learn${video ? '' : ' course-learn--alone'}" aria-labelledby="course-learn-heading">
       <div class="course-learn__text">
         <h2 class="course-heading" id="course-learn-heading">What you will learn</h2>
         <ol class="course-outcomes" role="list">${course.outcomes.map((o) => `
@@ -198,7 +200,7 @@ function renderHow(course, h) {
     </section>`
 }
 
-// image: the hero photo as downloaded by build.js (or null)
+// image: the photo as downloaded by build.js (or null)
 function renderCoursePage(course, h, {image}) {
   return {
     file: PAGE_FILE,

@@ -786,13 +786,13 @@ async function main() {
     }
   }
 
-  // The Online course page (Phase 11): its optional photo, beside the title (3 by 2, cut around the editor's
-  // hotspot). Left out, with a note, until the document is published.
+  // The Online course page (Phase 11): its optional photo, the backdrop of the top band (at its own shape; the
+  // stylesheet cuts it around the editor's hotspot and darkens it). Left out, with a note, until the document is published.
   const course = await loadCourse({sanityQuery, safeUrl, root: ROOT})
   const courseFiles = []
   let courseImage = null
   if (course && course.photo) {
-    courseImage = await fetchArticleImage(course.photo, {slug: 'online-course', title: 'Online course page'}, courseFiles, {tag: 'hero', widths: [480, 960, 1400], ratio: 3 / 2, dir: COURSE_DIR, native: true, quality: {webp: 78, jpg: 82}})
+    courseImage = await fetchArticleImage(course.photo, {slug: 'online-course', title: 'Online course page'}, courseFiles, {tag: 'hero', widths: [800, 1280, 1920, 2560], dir: COURSE_DIR, native: true, quality: {webp: 78, jpg: 82}})
   }
 
   const siteSettings = await fetchSiteSettings()

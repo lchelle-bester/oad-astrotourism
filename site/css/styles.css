@@ -7636,6 +7636,9 @@ a.news-pager__link:focus-visible {
   overflow-wrap: anywhere;
   --course-side: max(var(--gutter), (100% - 1312px) / 2); /* the page margin, 64px at 1440 */
   --course-line: rgb(19 36 58 / 0.16);
+  /* The height of the ridge along the top of "What you will learn". The top band is pulled down behind it
+     (see .course-hero), so the photo runs on behind the ridge. Same sizes as the homepage proof band. */
+  --ridge: min(100vw * 80 / 390, 6rem);
   background: var(--color-paper);
   color: var(--color-ink);
 }
@@ -7709,45 +7712,53 @@ a.news-pager__link:focus-visible {
 
 /* ---- THE TOP (night) ---- */
 .course-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background: var(--color-night);
   color: var(--color-text);
-  /* the header sits over the top of this band; on a phone the photo starts under it */
-  padding: 6.4rem 0 2.25rem;
+  /* the header sits over the top of this band. The band continues down behind the ridge of the next
+     band (extra padding equal to the ridge, pulled back with a negative margin), so a photo is seen
+     right down to the paper */
+  padding: 7.4rem var(--course-side) calc(1rem + var(--ridge));
+  margin-bottom: calc(-1 * var(--ridge));
 }
 
-.course-hero__inner {
-  display: flex;
-  flex-direction: column;
-}
-
-.course-hero__figure {
-  order: -1;
-  margin: 0;
-}
-
+/* The photo as a backdrop, darkened (26 Nov 2026, L'chelle: "darken the photo a bit"): night at 62 to
+   82% over the band, darkest at the top (under the header) and low down (under the facts, the small
+   words that need the most help), a little more at the left (under the title) */
 .course-hero__img {
-  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: -2;
   width: 100%;
-  height: auto;
-  aspect-ratio: 2 / 1;
+  height: 100%;
   object-fit: cover;
 }
 
+.course-hero--photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to right, rgb(15 27 43 / 0.2) 0%, rgb(15 27 43 / 0) 70%),
+    linear-gradient(to bottom, rgb(15 27 43 / 0.8) 0%, rgb(15 27 43 / 0.68) 38%, rgb(15 27 43 / 0.74) 62%, rgb(15 27 43 / 0.84) 82%, rgb(15 27 43 / 0.84) 100%);
+}
+
 .course-hero__credit {
-  margin: 0.5rem var(--course-side) 0;
-  color: rgb(255 255 255 / 0.75);
+  position: absolute;
+  right: var(--course-side);
+  bottom: calc(var(--ridge) + 0.375rem);
+  z-index: 1;
+  margin: 0;
+  color: rgb(255 255 255 / 0.85);
   font-size: 0.75rem;
   line-height: 1.5;
 }
 
-.course-hero__text {
-  padding: 1.5rem var(--course-side) 0;
-}
-
-.course-hero--no-photo .course-hero__text {
-  padding-top: 1.5rem;
-}
-
+/* The title is one line from 600px wide (26 Nov 2026, L'chelle): 7vw leaves it about 5% of room; below
+   600px it is too long for one line at a readable size, so a phone keeps two */
 .course-hero__title {
   margin: 0 0 1rem;
   font-family: var(--font-heading);
@@ -7766,14 +7777,14 @@ a.news-pager__link:focus-visible {
 }
 
 .course-hero .course-hosted {
-  color: rgb(255 255 255 / 0.72);
+  color: rgb(255 255 255 / 0.85);
 }
 
 .course-facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.625rem;
-  margin: 1.5rem var(--course-side) 0;
+  margin: 1.5rem 0 0;
   padding: 0;
   list-style: none;
 }
@@ -7795,14 +7806,31 @@ a.news-pager__link:focus-visible {
 .course-fact__small {
   display: block;
   margin-top: 0.25rem;
-  color: rgb(255 255 255 / 0.75);
+  color: rgb(255 255 255 / 0.88);
   font-size: 0.8125rem;
   line-height: 1.4;
 }
 
 /* ---- WHAT YOU WILL LEARN (paper) ---- */
+/* The band has the same edges as the homepage's proof band (25 Nov 2026, L'chelle): a mountain ridge
+   along the top and a gentler wave along the bottom, the same drawings in the paper colour (CSS
+   section 9 explains the layers: top edge, bottom edge, solid paper between them overlapping each by
+   2px so no seam shows, and the night colour behind, which is what shows above the ridge and below
+   the wave). The padding is measured from the edges so the band stays thin. */
 .course-learn {
-  padding: 3rem var(--course-side);
+  position: relative;
+  z-index: 1;
+  --ridge-image: url("/assets/images/proof/ridge-paper-phone.svg");
+  --ridge-bottom: var(--proof-wave);
+  --ridge-bottom-image: url("/assets/images/proof/ridge-bottom-paper-phone.svg");
+  padding: calc(var(--ridge) * 0.7) var(--course-side) calc(var(--ridge-bottom) * 0.9);
+  background:
+    var(--ridge-image) left top / 100% var(--ridge) no-repeat,
+    var(--ridge-bottom-image) left bottom / 100% var(--ridge-bottom) no-repeat,
+    linear-gradient(var(--color-paper), var(--color-paper)) left calc(var(--ridge) - 2px) /
+      100% calc(100% - var(--ridge) - var(--ridge-bottom) + 4px) no-repeat,
+    /* night only under the bottom wave (the top band shows through above the top ridge) */
+    linear-gradient(var(--color-night), var(--color-night)) left bottom / 100% var(--ridge-bottom) no-repeat;
 }
 
 .course-outcomes {
@@ -7834,13 +7862,15 @@ a.news-pager__link:focus-visible {
   line-height: 1.6;
 }
 
+/* The right-hand column of "What you will learn": the preview video if there is one. Corners are less
+   curved (2px, was 8px, 26 Nov 2026, L'chelle). */
 .course-video {
   margin: 2rem 0 0;
 }
 
 .course-video__frame {
   aspect-ratio: 16 / 9;
-  border-radius: 0.5rem;
+  border-radius: 0.125rem;
   background: var(--brand-navy);
 }
 
@@ -7899,7 +7929,7 @@ a.news-pager__link:focus-visible {
 
 /* ---- COURSE OUTLINE (night) ---- */
 .course-outline {
-  padding: 3rem var(--course-side) 3.25rem;
+  padding: 1.5rem var(--course-side) 3.25rem; /* the wave above adds its own night space (was 3rem) */
   background: var(--color-night);
   color: var(--color-text);
 }
@@ -8001,12 +8031,12 @@ a.news-pager__link:focus-visible {
 
 /* ---- HOW IT WORKS (paper) ---- */
 .course-how {
-  padding: 3rem var(--course-side) 3.5rem;
+  padding: 2.25rem var(--course-side) 2.5rem; /* thinner on 26 Nov 2026 (was 3rem and 3.5rem) */
 }
 
 /* On a phone the steps hang off a line: a navy circle with the number, joined to the next */
 .course-steps {
-  margin: 1.75rem 0 0;
+  margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
 }
@@ -8015,7 +8045,7 @@ a.news-pager__link:focus-visible {
   position: relative;
   display: flex;
   gap: 1rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .course-step:not(:last-child)::before {
@@ -8058,46 +8088,27 @@ a.news-pager__link:focus-visible {
 }
 
 .course-how__action {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .course-how .course-hosted {
   color: var(--color-grey);
 }
 
+@media (min-width: 37.5em) {
+  .course-hero__title {
+    font-size: 7vw;
+  }
+}
+
 /* ---- Desktop: from 920px (57.5em) ---- */
 @media (min-width: 57.5em) {
+  .course {
+    --ridge: calc(min(100vw, 1920px) * 120 / 1440);
+  }
+
   .course-hero {
-    padding: clamp(8rem, 10.4vw, 9.5rem) var(--course-side) 4rem;
-  }
-
-  .course-hero__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(17rem, 36vw, 32.375rem);
-    align-items: end;
-    column-gap: clamp(2rem, 6vw, 5.5rem);
-  }
-
-  .course-hero__figure {
-    order: 0;
-  }
-
-  .course-hero__img {
-    aspect-ratio: 3 / 2;
-    border-radius: 0.375rem;
-  }
-
-  .course-hero__credit {
-    margin-inline: 0;
-    text-align: right;
-  }
-
-  .course-hero__text {
-    padding: 0;
-  }
-
-  .course-hero--no-photo .course-hero__inner {
-    grid-template-columns: minmax(0, 1fr);
+    padding: clamp(8rem, 10.4vw, 9.5rem) var(--course-side) calc(1.25rem + var(--ridge));
   }
 
   .course-hero__title {
@@ -8147,15 +8158,23 @@ a.news-pager__link:focus-visible {
   }
 
   .course-learn {
+    --ridge-image: url("/assets/images/proof/ridge-paper-desktop.svg");
+    --ridge-bottom-image: url("/assets/images/proof/ridge-bottom-paper-desktop.svg");
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* The list gets the wider column and the video a narrower one, so the video no longer sets the
+       height of the band (it was two equal columns, 347px of video at 1440; now about 300px) */
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
     align-items: start;
     column-gap: clamp(2rem, 5.4vw, 4.875rem);
-    padding-block: 5.5rem 6rem;
+    padding-block: calc(var(--ridge) * 0.7) calc(var(--ridge-bottom) * 0.9);
   }
 
-  .course-learn--no-video {
+  .course-learn--alone {
     grid-template-columns: minmax(0, 52rem);
+  }
+
+  .course-video {
+    margin-top: 0.25rem;
   }
 
   .course-learn .course-heading {
@@ -8167,16 +8186,12 @@ a.news-pager__link:focus-visible {
   }
 
   .course-outcome {
-    padding-block: 0.8125rem;
+    padding-block: 0.625rem;
     font-size: 1.0625rem;
   }
 
   .course-outcome::before {
-    top: 0.875rem;
-  }
-
-  .course-video {
-    margin-top: 0.25rem;
+    top: 0.6875rem;
   }
 
   .course-video__play {
@@ -8191,7 +8206,7 @@ a.news-pager__link:focus-visible {
   }
 
   .course-outline {
-    padding-block: 5.75rem 6.25rem;
+    padding-block: 3.5rem 6.25rem; /* the wave above adds its own night space (was 5.75rem) */
   }
 
   .course-eyebrow {
@@ -8239,16 +8254,17 @@ a.news-pager__link:focus-visible {
     font-size: 0.8125rem;
   }
 
+  /* thinner on 26 Nov 2026, L'chelle: "make how it works skinnier" (was 5.5rem and 6.5rem, big numbers, 3rem above the button) */
   .course-how {
-    padding-block: 5.5rem 6.5rem;
+    padding-block: 3.25rem 3.5rem;
   }
 
   .course-steps {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 2rem;
-    row-gap: 2.5rem;
-    margin-top: 2.25rem;
+    row-gap: 1.75rem;
+    margin-top: 1.5rem;
   }
 
   .course-step {
@@ -8267,21 +8283,21 @@ a.news-pager__link:focus-visible {
     border-radius: 0;
     background: none;
     color: var(--brand-terracotta);
-    font-size: clamp(2.5rem, 3.6vw, 3.25rem);
+    font-size: clamp(2rem, 2.8vw, 2.5rem);
     line-height: 1;
   }
 
   .course-step__title {
-    margin-top: 1.25rem;
+    margin-top: 0.625rem;
     font-size: 1.25rem;
   }
 
   .course-step__text {
-    margin-top: 0.5rem;
+    margin-top: 0.375rem;
   }
 
   .course-how__action {
-    margin-top: 3rem;
+    margin-top: 1.75rem;
   }
 }
 

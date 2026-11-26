@@ -89,7 +89,7 @@ export const onlineCoursePage = defineType({
       title: 'Photo',
       type: 'image',
       group: 'top',
-      description: 'Optional. The photo beside the title (under it on a phone). Only add a photo OAD has agreed can be shown.',
+      description: 'Optional. The photo behind the top of the page, darkened so the words stay readable. A wide photo works best; drag the hotspot onto the most important part, because the band is a wide strip and the photo is cut to it around that point. Only add a photo OAD has agreed can be shown.',
       options: {hotspot: true},
       fields: [
         defineField({
