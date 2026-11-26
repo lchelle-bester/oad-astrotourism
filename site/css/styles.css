@@ -7639,7 +7639,10 @@ a.news-pager__link:focus-visible {
   /* The height of the ridge along the top of "What you will learn". The top band is pulled down behind it
      (see .course-hero), so the photo runs on behind the ridge. Same sizes as the homepage proof band. */
   --ridge: min(100vw * 80 / 390, 6rem);
-  background: var(--color-paper);
+  /* The page behind the bands is NIGHT, not paper (26 Nov 2026): where two layers meet on a fraction of a
+     pixel, whatever is behind peeks through as a hairline, and on some phones a paper-coloured one showed
+     under the wave. Behind the dark bands it is now dark. "How it works" paints its own paper. */
+  background: var(--color-night);
   color: var(--color-ink);
 }
 
@@ -7956,8 +7959,12 @@ a.news-pager__link:focus-visible {
 }
 
 /* ---- COURSE OUTLINE (night) ---- */
+/* margin-top -1px and 1px more padding: the outline tucks 1px up under the band above, so a stray light line
+   (the page's paper colour showing through a gap of a fraction of a pixel at the seam) can never appear,
+   whatever the screen width (seen by L'chelle at 1882px wide, 26 Nov 2026) */
 .course-outline {
-  padding: 1.5rem var(--course-side) 3.25rem; /* the wave above adds its own night space (was 3rem) */
+  margin-top: -1px;
+  padding: calc(1.5rem + 1px) var(--course-side) 3.25rem; /* the wave above adds its own night space (was 3rem) */
   background: var(--color-night);
   color: var(--color-text);
 }
@@ -8059,6 +8066,7 @@ a.news-pager__link:focus-visible {
 
 /* ---- HOW IT WORKS (paper) ---- */
 .course-how {
+  background: var(--color-paper);
   padding: 2.25rem var(--course-side) 2.5rem; /* thinner on 26 Nov 2026 (was 3rem and 3.5rem) */
 }
 
@@ -8234,7 +8242,7 @@ a.news-pager__link:focus-visible {
   }
 
   .course-outline {
-    padding-block: 3.5rem 6.25rem; /* the wave above adds its own night space (was 5.75rem) */
+    padding-block: calc(3.5rem + 1px) 6.25rem; /* the wave above adds its own night space (was 5.75rem) */
   }
 
   .course-eyebrow {
