@@ -5019,17 +5019,21 @@ a.news-pager__link:focus-visible {
   background: var(--color-night);
 }
 
-/* The path back: "Projects and impact" is plain text (there is no such page), the
-   directory is a link */
+/* The path back: the directory is a link and the project's own name (the page you are on) is plain white */
 .project__crumbs ol {
-  display: flex;
-  flex-wrap: wrap;
+  /* running text, not a flex row: a long project name then continues on the same line after the slash
+     instead of the slash starting the next line */
+  display: block;
   margin: 0;
   padding: 0;
   color: rgb(255 255 255 / 0.75);
   font-size: 0.9375rem;
   line-height: 1.4;
   list-style: none;
+}
+
+.project__crumbs li {
+  display: inline;
 }
 
 .project__crumbs li + li::before {
@@ -5046,6 +5050,10 @@ a.news-pager__link:focus-visible {
 }
 
 .project__crumbs a:hover {
+  color: var(--color-text);
+}
+
+.project__crumbs [aria-current] {
   color: var(--color-text);
 }
 
