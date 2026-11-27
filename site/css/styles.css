@@ -5019,41 +5019,30 @@ a.news-pager__link:focus-visible {
   background: var(--color-night);
 }
 
-/* The path back: the directory is a link and the project's own name (the page you are on) is plain white */
-.project__crumbs ol {
-  /* running text, not a flex row: a long project name then continues on the same line after the slash
-     instead of the slash starting the next line */
-  display: block;
+/* The way back: a small link to the directory with an arrow, the same size as the old breadcrumb
+   (27 Nov 2026, L'chelle; it was Project directory / the project's name, which repeated the title) */
+.project__head-back {
   margin: 0;
-  padding: 0;
-  color: rgb(255 255 255 / 0.75);
   font-size: 0.9375rem;
   line-height: 1.4;
-  list-style: none;
 }
 
-.project__crumbs li {
-  display: inline;
-}
-
-.project__crumbs li + li::before {
-  content: "/";
-  margin: 0 0.625rem;
-  color: rgb(255 255 255 / 0.55);
-}
-
-.project__crumbs a {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+.project__head-back a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: rgb(255 255 255 / 0.75);
+  text-decoration: none;
   transition: color 0.2s;
 }
 
-.project__crumbs a:hover {
-  color: var(--color-text);
+/* only the words are underlined, not the arrow */
+.project__head-back-text {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
-.project__crumbs [aria-current] {
+.project__head-back a:hover {
   color: var(--color-text);
 }
 
@@ -7679,9 +7668,10 @@ a.news-pager__link:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
-  width: 100%;
+  width: fit-content; /* as wide as its words, on a phone too (was the full width on a phone, 27 Nov 2026) */
+  max-width: 100%;
   min-height: 3.25rem;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1.75rem;
   border-radius: 999px;
   font-size: 1.0625rem;
   font-weight: 600;

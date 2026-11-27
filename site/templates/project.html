@@ -24,16 +24,12 @@
 
   <!-- One template for every project (design in docs/projects/projects-design.md).
        build/projects.js fills it in once for each project. The wording here is fixed.
-       The breadcrumb is "Project directory / <this project's name>" (26 Nov 2026, L'chelle): it no longer
-       starts with "Projects and impact", which had no page of its own to link to. -->
+       Above the title there is only a small link back to the directory, with an arrow (27 Nov 2026,
+       L'chelle: the project's name in a breadcrumb repeated the title right under it, and "Projects and
+       impact" had no page of its own to link to). -->
   <main id="main" class="project">
     <div class="project__head">
-      <nav class="project__crumbs" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="/projects/directory/">Project directory</a></li>
-          <li aria-current="page">{{page.name}}</li>
-        </ol>
-      </nav>
+      <p class="project__head-back"><a href="/projects/directory/"><span class="project__head-back-arrow" aria-hidden="true">&larr;</span><span class="project__head-back-text">Project directory</span></a></p>
       <h1 class="project__title">{{page.name}}</h1>
     </div>
 
