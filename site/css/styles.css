@@ -7792,10 +7792,12 @@ a.news-pager__link:focus-visible {
   list-style: none;
 }
 
+/* The phone tiles are DARK (night at 58%) so they sit as darker blocks over the photo; they were a white tint
+   (7%), which lightened it (26 Nov 2026, L'chelle). Desktop has no tiles, only lines between the facts. */
 .course-fact {
   padding: 0.875rem 1rem;
   border-radius: 0.5rem;
-  background: rgb(255 255 255 / 0.07);
+  background: rgb(15 27 43 / 0.58);
 }
 
 .course-fact__strong {
