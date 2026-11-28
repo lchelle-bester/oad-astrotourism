@@ -1123,3 +1123,27 @@ if (projectFilters) {
   syncFilters()
   applyProjectFilters() // only the first few show, from the start
 }
+
+
+// THE GLOBAL SURVEY REPORT PAGE: the label on the rings
+// Hovering a slice shows its words (from data-label) at once, just above the pointer (L'chelle, 28 Nov 2026:
+// the browser's own tooltip waited about a second). Mouse only: the list beside each ring has the same facts
+// for everyone else, so the label is hidden from screen readers.
+
+document.querySelectorAll('.survey-donut').forEach((ring) => {
+  const tip = ring.querySelector('.survey-donut__tip')
+  if (!tip) return
+  ring.querySelectorAll('.survey-donut__slice').forEach((slice) => {
+    slice.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'mouse') return
+      const box = ring.getBoundingClientRect()
+      tip.textContent = slice.dataset.label
+      tip.style.left = `${event.clientX - box.left}px`
+      tip.style.top = `${event.clientY - box.top}px`
+      tip.hidden = false
+    })
+    slice.addEventListener('pointerleave', () => {
+      tip.hidden = true
+    })
+  })
+})

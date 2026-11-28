@@ -11,8 +11,8 @@
 // written when more than half of them are). The editors' own wording (notes, introduction, button) is in
 // Sanity.
 //
-// Fixed here, not in Sanity: the h1 "Global Survey Report", the five section headings and their small
-// labels, the unit words ("answers", "groups", "on the way"), and the lines that carry the counted
+// Fixed here, not in Sanity: the h1 "Global Survey Report", the five section headings,
+// the unit words ("answers", "groups", "on the way"), and the lines that carry the counted
 // sentences. Every piece of text from Sanity goes through escapeHtml.
 
 const path = require('path')
@@ -216,8 +216,10 @@ async function loadSurvey({sanityQuery, safeUrl, root}) {
 
 // A ring made of one circle per slice: a dash as long as the slice (less a small gap), moved round to where the
 // slice starts. Drawn from the top, clockwise. Decorative (aria-hidden): the legend beside it carries the numbers.
-// Each slice has a <title>, so hovering it with a mouse shows what it is, for example "Asia: 33 answers (40%)"
-// (L'chelle, 28 Nov 2026). The list beside the ring says the same for keyboards and screen readers.
+// Hovering a slice shows what it is straight away, for example "Asia: 33 answers (40%)" (L'chelle, 28 Nov 2026):
+// each slice carries its words in data-label and main.js shows them in the small label inside the ring box, next
+// to the pointer (an SVG <title> was tried first, but the browser waits about a second before showing it). The
+// list beside the ring says the same for keyboards and screen readers, and without JavaScript.
 function donut(items, centre, h, unit) {
   const R = 91
   const C = 2 * Math.PI * R
@@ -229,7 +231,7 @@ function donut(items, centre, h, unit) {
     .map((x) => {
       const len = (x.count / total) * C
       const dash = used.length === 1 ? C : Math.max(len - GAP, 0.5)
-      const circle = `<circle class="survey-donut__slice" data-s="${x.swatch}" cx="110" cy="110" r="${R}" stroke-dasharray="${dash.toFixed(2)} ${(C - dash).toFixed(2)}" stroke-dashoffset="${(-at).toFixed(2)}"><title>${h.escapeHtml(`${x.title}: ${x.count} ${x.count === 1 ? unit.replace(/s$/, '') : unit} (${x.pct}%)`)}</title></circle>`
+      const circle = `<circle class="survey-donut__slice" data-s="${x.swatch}" cx="110" cy="110" r="${R}" stroke-dasharray="${dash.toFixed(2)} ${(C - dash).toFixed(2)}" stroke-dashoffset="${(-at).toFixed(2)}" data-label="${h.escapeHtml(`${x.title}: ${x.count} ${x.count === 1 ? unit.replace(/s$/, '') : unit} (${x.pct}%)`)}"/>`
       at += len
       return circle
     })
@@ -237,6 +239,7 @@ function donut(items, centre, h, unit) {
   return `<div class="survey-donut">
           <svg class="survey-donut__ring" viewBox="0 0 220 220" aria-hidden="true" focusable="false"><g transform="rotate(-90 110 110)">${circles}</g></svg>
           <p class="survey-donut__centre"><span class="survey-donut__big">${h.escapeHtml(centre.big)}</span><span class="survey-donut__small">${h.escapeHtml(centre.small)}</span></p>
+          <p class="survey-donut__tip" aria-hidden="true" hidden></p>
         </div>`
 }
 
@@ -305,11 +308,13 @@ function renderHero(s, page, h) {
       <ul class="survey-keys" role="list" aria-label="Map colours">
         ${legend}
       </ul>
-      <div class="survey-hero__action">
-        <p class="survey-hero__status">${h.escapeHtml(page.statusLine)}</p>
+    </header>
+    <div class="survey-band">
+      <div class="survey-band__inner">
+        <p class="survey-band__status">${h.escapeHtml(page.statusLine)}</p>
         ${renderButton(page, h)}
       </div>
-    </header>`
+    </div>`
 }
 
 function renderButton(page, h) {
@@ -317,18 +322,27 @@ function renderButton(page, h) {
 }
 
 function renderResponses(s, page, h) {
-  const regionPart = s.regionCount ? ` and ${s.regionCount} ${plural(s.regionCount, 'region')}` : ''
-  const rows = s.byCountry
-    .map((c) => {
-      const swatch = s.continents.find((k) => k.value === c.continent).swatch
+  // Grouped by continent (L'chelle, 28 Nov 2026), in the same order as the list beside the ring (most answers
+  // first); inside a continent, most answers first, then A to Z
+  const groups = s.continents
+    .filter((k) => k.count > 0)
+    .map((k) => {
+      const rows = s.byCountry
+        .filter((c) => c.continent === k.value)
+        .map((c) => `
+              <li class="survey-countries__row"><span class="survey-countries__name">${h.escapeHtml(c.name)}</span><span class="survey-countries__count">${c.count}<span class="visually-hidden"> ${plural(c.count, 'answer')}</span></span></li>`)
+        .join('')
       return `
-          <li class="survey-countries__row"><span class="survey-swatch survey-swatch--dot" data-s="${swatch}" aria-hidden="true"></span><span class="survey-countries__name">${h.escapeHtml(c.name)}</span><span class="survey-countries__count">${c.count}<span class="visually-hidden"> ${plural(c.count, 'answer')}</span></span></li>`
+          <li class="survey-countries__group">
+            <h3 class="survey-countries__continent"><span class="survey-swatch survey-swatch--dot" data-s="${k.swatch}" aria-hidden="true"></span>${h.escapeHtml(k.title)}</h3>
+            <ul class="survey-countries__list" role="list">${rows}
+            </ul>
+          </li>`
     })
     .join('')
   return `
     <section class="survey-section" aria-labelledby="survey-responses-heading">
       <div class="survey-section__text">
-        <p class="survey-eyebrow">Responses</p>
         <h2 class="survey-heading" id="survey-responses-heading">Where the answers come from</h2>
         <p>${h.escapeHtml(leadContinents(s))}</p>
         ${proseBlock(page.responsesNote.map((p) => h.escapeHtml(p)))}
@@ -338,8 +352,8 @@ function renderResponses(s, page, h) {
         ${legendList(s.continents, 'answers', h)}
       </div>
       <details class="survey-fold survey-fold--wide">
-        <summary class="survey-fold__summary"><span class="survey-fold__title">See answers from all ${s.countryCount} ${plural(s.countryCount, 'country', 'countries')}${regionPart}</span><span class="survey-fold__chevron" aria-hidden="true"></span></summary>
-        <ul class="survey-countries" role="list">${rows}
+        <summary class="survey-fold__summary"><span class="survey-fold__title">See list of countries</span><span class="survey-fold__chevron" aria-hidden="true"></span></summary>
+        <ul class="survey-countries" role="list">${groups}
         </ul>
       </details>
     </section>`
@@ -350,7 +364,6 @@ function renderTypes(s, page, h) {
   return `
     <section class="survey-section" aria-labelledby="survey-types-heading">
       <div class="survey-section__text">
-        <p class="survey-eyebrow">Type of initiative</p>
         <h2 class="survey-heading" id="survey-types-heading">Who runs them</h2>
         <p>${h.escapeHtml(leadTypes(s))}</p>
         <details class="survey-fold">
@@ -377,7 +390,6 @@ function renderOffers(s, page, h) {
   return `
     <section class="survey-section" aria-labelledby="survey-offers-heading">
       <div class="survey-section__text">
-        <p class="survey-eyebrow">Experiences</p>
         <h2 class="survey-heading" id="survey-offers-heading">What they offer</h2>
         <p>${h.escapeHtml(leadOffers(s))}</p>
         ${proseBlock(page.offersNote.map((p) => h.escapeHtml(p)))}
@@ -385,7 +397,6 @@ function renderOffers(s, page, h) {
       <div class="survey-chart survey-chart--bars">
         <ul class="survey-bars" role="list">${bars}
         </ul>
-        <p class="survey-axis" aria-hidden="true"><span>0</span><span>50</span><span>100</span></p>
       </div>
     </section>`
 }
@@ -395,7 +406,6 @@ function renderSustain(s, page, h) {
   return `
     <section class="survey-section" aria-labelledby="survey-sustain-heading">
       <div class="survey-section__text">
-        <p class="survey-eyebrow">Sustainability</p>
         <h2 class="survey-heading" id="survey-sustain-heading">Can they pay their own way?</h2>
         ${proseBlock(page.sustainabilityIntro.map((p) => h.escapeHtml(p)))}
         <p>${h.escapeHtml(leadSustain(s))}${note}</p>

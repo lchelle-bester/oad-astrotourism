@@ -8456,9 +8456,10 @@ a.news-pager__link:focus-visible {
 }
 
 .survey-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2.25rem;
+  /* three equal columns on a phone, so the three numbers are evenly spaced (L'chelle, 28 Nov 2026) */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
   margin: 1.75rem 0 0;
   padding: 0;
   list-style: none;
@@ -8481,7 +8482,6 @@ a.news-pager__link:focus-visible {
 .survey-stat:nth-child(3) .survey-stat__num { color: var(--s3); }
 
 .survey-stat__label {
-  max-width: 7.5rem;
   margin-top: 0.5rem;
   color: var(--survey-text);
   font-size: 1rem;
@@ -8547,17 +8547,21 @@ a.news-pager__link:focus-visible {
   gap: 0.5rem;
 }
 
-.survey-hero__action {
+/* The survey invitation under the map is a navy band across the page (L'chelle, 28 Nov 2026).
+   White at 84% on navy 10:1, the yellow button on navy 7.7:1. */
+.survey-band {
+  padding: 1.75rem var(--survey-side);
+  background: var(--brand-navy);
+}
+
+.survey-band__inner {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.25rem;
-  margin-top: 1.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--survey-line);
 }
 
-.survey-hero__status {
+.survey-band__status {
   margin: 0;
   max-width: 52rem;
   color: var(--survey-text);
@@ -8575,7 +8579,7 @@ a.news-pager__link:focus-visible {
   border-top: 1px solid var(--survey-line);
 }
 
-.survey-hero + .survey-section {
+.survey-band + .survey-section {
   padding-top: 4rem;
   border-top: 0;
 }
@@ -8589,16 +8593,6 @@ a.news-pager__link:focus-visible {
 
 .survey-fold--wide {
   border-bottom: 0;
-}
-
-.survey .survey-eyebrow {
-  margin: 0 0 0.5rem;
-  color: var(--brand-sand);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  line-height: 1.3;
-  text-transform: uppercase;
 }
 
 .survey-heading {
@@ -8657,8 +8651,27 @@ a.news-pager__link:focus-visible {
   transition: opacity 0.15s ease-out;
 }
 
-/* Hovering a slice shows its name in a tooltip (a <title> in the SVG) and fades the others, so it is clear
-   which part the tooltip belongs to */
+/* Hovering a slice shows its label at once (main.js puts it next to the pointer) and fades the others, so it
+   is clear which part the label belongs to */
+.survey-donut__tip {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 0.25rem;
+  background: var(--white);
+  color: var(--color-night);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  translate: -50% calc(-100% - 0.75rem);
+}
+
+.survey-donut__tip[hidden] {
+  display: none;
+}
 @media (hover: hover) {
   .survey-donut__ring:hover .survey-donut__slice:not(:hover) {
     opacity: 0.4;
@@ -8764,14 +8777,6 @@ a.news-pager__link:focus-visible {
   background: var(--color-accent);
 }
 
-.survey-axis {
-  display: flex;
-  justify-content: space-between;
-  margin: 0.75rem 0 0;
-  color: var(--survey-dim);
-  font-size: 0.75rem;
-}
-
 /* The fold-open parts: the list of countries and "How we grouped the answers" */
 .survey-fold {
   border-top: 1px solid var(--survey-line);
@@ -8832,17 +8837,37 @@ a.news-pager__link:focus-visible {
   margin-bottom: 0;
 }
 
+/* Grouped by continent (L'chelle, 28 Nov 2026): each continent is a block that never splits across two
+   columns; the columns fill top to bottom, then left to right */
 .survey-countries {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
   margin: 0;
-  padding: 0 0 0.75rem;
+  padding: 0 0 1.5rem;
+  list-style: none;
+}
+
+.survey-countries__group {
+  break-inside: avoid;
+  padding-top: 0.75rem;
+}
+
+.survey-countries__continent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.survey-countries__list {
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
 .survey-countries__row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.625rem;
   padding: 0.5rem 0;
@@ -8890,7 +8915,7 @@ a.news-pager__link:focus-visible {
 
 @media (min-width: 30em) {
   .survey-countries {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    columns: 2;
     column-gap: 2rem;
   }
 }
@@ -8918,7 +8943,7 @@ a.news-pager__link:focus-visible {
   }
 
   .survey-stats {
-    flex-wrap: nowrap;
+    display: flex;
     gap: 2.75rem;
     margin: 0 0 0.25rem;
   }
@@ -8934,8 +8959,7 @@ a.news-pager__link:focus-visible {
   }
 
   .survey-map,
-  .survey-keys,
-  .survey-hero__action {
+  .survey-keys {
     grid-column: 1 / -1;
   }
 
@@ -8952,12 +8976,15 @@ a.news-pager__link:focus-visible {
     justify-content: center;
   }
 
-  .survey-hero__action {
+  .survey-band {
+    padding-block: 1.5rem;
+  }
+
+  .survey-band__inner {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    margin-top: 2.5rem;
   }
 
   .survey-section {
@@ -9008,8 +9035,8 @@ a.news-pager__link:focus-visible {
   }
 
   .survey-countries {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: 2rem;
+    columns: 4;
+    column-gap: 2.5rem;
   }
 
   .survey-bar {
@@ -9028,9 +9055,6 @@ a.news-pager__link:focus-visible {
     font-size: 1.25rem;
   }
 
-  .survey-axis {
-    display: none;
-  }
 
   .survey-cta {
     padding: 3.5rem var(--survey-side);
