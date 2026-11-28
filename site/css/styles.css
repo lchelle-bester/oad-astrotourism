@@ -5579,33 +5579,11 @@ a.news-pager__link:focus-visible {
   background: var(--color-night);
 }
 
-.toc-crumbs ol {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  padding: 0;
-  color: rgb(255 255 255 / 0.75);
-  font-size: 0.9375rem;
-  line-height: 1.4;
-  list-style: none;
-}
-
-.toc-crumbs li + li::before {
-  content: "/";
-  margin: 0 0.625rem;
-  color: rgb(255 255 255 / 0.55);
-}
-
-.toc-crumbs [aria-current] {
-  color: var(--color-text);
-}
-
 .toc-band__row {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.75rem;
-  margin-top: 0.75rem;
 }
 
 .toc-band__title {
