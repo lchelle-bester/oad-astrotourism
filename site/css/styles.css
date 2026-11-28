@@ -8355,3 +8355,738 @@ a.news-pager__link:focus-visible {
     transition: none;
   }
 }
+
+
+/* 24. THE GLOBAL SURVEY REPORT PAGE (/projects/survey-report/, Phase 12, 28 Nov 2026; mock-ups in docs/survey-report/).
+   Phone first; the desktop rules start at 920px (57.5em), the same switch as the Impact and Online course pages.
+   The whole page is night. Every number, chart and dot is counted from the survey responses by build/survey.js.
+   Colours on night (#0f1b2b): white 17.3:1, sand 8.9:1, yellow 10.7:1. The six chart colours are the brand palette
+   plus two tints from the mock-up; each is at least 3:1 against night (graphics need 3:1), and no chart relies on
+   colour alone: every slice, bar and dot has its name and number in the text beside it. */
+
+.survey {
+  --survey-side: max(var(--gutter), (100% - 1312px) / 2); /* the page margin, 64px at 1440 */
+  --survey-line: rgb(255 255 255 / 0.14);
+  --survey-text: rgb(255 255 255 / 0.84);
+  --survey-dim: rgb(255 255 255 / 0.72);
+  --s1: var(--brand-yellow);
+  --s2: var(--brand-terracotta);
+  --s3: #8fa8a0;
+  --s4: #566a8c;
+  --s5: var(--brand-sand);
+  --s6: var(--brand-sage);
+  /* A long unbroken word in any text wraps instead of widening the page */
+  overflow-wrap: anywhere;
+  background: var(--color-night);
+  color: var(--color-text);
+}
+
+.survey [data-s="1"] { --c: var(--s1); }
+.survey [data-s="2"] { --c: var(--s2); }
+.survey [data-s="3"] { --c: var(--s3); }
+.survey [data-s="4"] { --c: var(--s4); }
+.survey [data-s="5"] { --c: var(--s5); }
+.survey [data-s="6"] { --c: var(--s6); }
+
+/* ---- The button (yellow, as wide as its words on a phone too) ---- */
+.survey-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 3.25rem;
+  padding: 0.5rem 1.75rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-night);
+  font-family: var(--font-heading);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 0.25s ease-out;
+}
+
+.survey-button__arrow {
+  font-size: 1.125em;
+  line-height: 1;
+}
+
+@media (hover: hover) {
+  .survey-button:hover {
+    background: var(--white);
+  }
+}
+
+/* A small coloured square (in the lists) or circle (on the map key and the country rows) */
+.survey-swatch {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 0.1875rem;
+  background: var(--c);
+}
+
+.survey-swatch--dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+/* ---- THE TOP: title, introduction, three numbers, the map, its key, the survey button ---- */
+.survey-hero {
+  padding: 7.4rem var(--survey-side) 3rem;
+}
+
+.survey-hero__title {
+  margin: 0 0 1rem;
+  font-size: 2.75rem;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.survey-hero__intro {
+  margin: 0;
+  max-width: 36rem;
+  color: var(--survey-text);
+  font-size: 1.25rem;
+  line-height: 1.45;
+}
+
+.survey-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.25rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.survey-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.survey-stat__num {
+  font-family: var(--font-heading);
+  font-size: 2.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.survey-stat:nth-child(1) .survey-stat__num { color: var(--s1); }
+.survey-stat:nth-child(2) .survey-stat__num { color: var(--s5); }
+.survey-stat:nth-child(3) .survey-stat__num { color: var(--s3); }
+
+.survey-stat__label {
+  max-width: 7.5rem;
+  margin-top: 0.5rem;
+  color: var(--survey-text);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* The map: the world drawn by build/make-world-map.js (a navy mask), cut a little at the top, with a dot for each country that answered */
+.survey-map {
+  container-type: inline-size;
+  margin: 2rem 0 0;
+}
+
+.survey-map__frame {
+  position: relative;
+  aspect-ratio: var(--aspect);
+}
+
+.survey-map__land {
+  position: absolute;
+  inset: 0;
+  background-color: var(--brand-navy);
+  -webkit-mask: url("/assets/images/map/world.svg") 0 100% / 100% auto no-repeat;
+  mask: url("/assets/images/map/world.svg") 0 100% / 100% auto no-repeat;
+}
+
+.survey-map__dot {
+  --k: 0.5; /* how much of the desktop size: the whole world on a phone is small */
+  position: absolute;
+  width: calc(var(--d) * 1px * var(--k));
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--c);
+  outline: 1.5px solid var(--color-night);
+}
+
+@container (min-width: 480px) {
+  .survey-map__dot { --k: 0.62; }
+}
+
+@container (min-width: 700px) {
+  .survey-map__dot { --k: 0.8; }
+}
+
+@container (min-width: 880px) {
+  .survey-map__dot { --k: 1; }
+}
+
+.survey-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  color: var(--survey-text);
+  font-size: 0.9375rem;
+  list-style: none;
+}
+
+.survey-key {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.survey-hero__action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--survey-line);
+}
+
+.survey-hero__status {
+  margin: 0;
+  max-width: 52rem;
+  color: var(--survey-text);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+/* ---- THE SECTIONS: a line above each, words on the left, the chart on the right ---- */
+.survey-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.75rem;
+  margin: 0 var(--survey-side);
+  padding: 3rem 0;
+  border-top: 1px solid var(--survey-line);
+}
+
+.survey-hero + .survey-section {
+  padding-top: 4rem;
+  border-top: 0;
+}
+
+/* Spacing tidied (28 Nov 2026, L'chelle: the lines between sections felt awkward). The list of countries
+   is the last thing in its section, so the section ends right under it and the next section's line is the
+   line under the fold: one line, not two lines with a gap between them. */
+.survey-section:has(> .survey-fold--wide) {
+  padding-bottom: 0;
+}
+
+.survey-fold--wide {
+  border-bottom: 0;
+}
+
+.survey .survey-eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--brand-sand);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.survey-heading {
+  margin: 0 0 1rem;
+  font-size: 1.875rem;
+  line-height: 1.1;
+}
+
+.survey-heading--small {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.survey-section__text p {
+  margin: 0 0 1rem;
+  color: var(--survey-text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.survey-section__text > :last-child,
+.survey-partners > :last-child {
+  margin-bottom: 0;
+}
+
+.survey-partners p {
+  margin: 0 0 1rem;
+  color: var(--survey-text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+/* A chart: a ring and its list, or the bars */
+.survey-chart {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.survey-donut {
+  position: relative;
+  width: 11.5rem;
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+.survey-donut__ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.survey-donut__slice {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 32;
+  transition: opacity 0.15s ease-out;
+}
+
+/* Hovering a slice shows its name in a tooltip (a <title> in the SVG) and fades the others, so it is clear
+   which part the tooltip belongs to */
+@media (hover: hover) {
+  .survey-donut__ring:hover .survey-donut__slice:not(:hover) {
+    opacity: 0.4;
+  }
+}
+
+.survey-donut__centre {
+  pointer-events: none; /* lies over the ring, so it must not catch the mouse */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.survey-donut__big {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 600;
+}
+
+.survey-donut__small {
+  margin-top: 0.25rem;
+  color: var(--survey-text);
+  font-size: 0.8125rem;
+}
+
+.survey-legend-list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--survey-line);
+  list-style: none;
+}
+
+.survey-legend-list__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto 3rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--survey-line);
+}
+
+.survey-legend-list__count {
+  font-family: var(--font-heading);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.survey-legend-list__pct {
+  color: var(--survey-dim);
+  font-size: 0.9375rem;
+  text-align: right;
+}
+
+/* The bars (what they offer): the name, the share, and a bar to scale (0 to 100) */
+.survey-bars {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.survey-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "label value" "track track";
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 0;
+}
+
+.survey-bar__label {
+  grid-area: label;
+  line-height: 1.3;
+}
+
+.survey-bar__value {
+  grid-area: value;
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.survey-bar__track {
+  grid-area: track;
+  display: block;
+  height: 0.625rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.12);
+  overflow: hidden;
+}
+
+.survey-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+
+.survey-axis {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.75rem 0 0;
+  color: var(--survey-dim);
+  font-size: 0.75rem;
+}
+
+/* The fold-open parts: the list of countries and "How we grouped the answers" */
+.survey-fold {
+  border-top: 1px solid var(--survey-line);
+  border-bottom: 1px solid var(--survey-line);
+}
+
+.survey-section__text .survey-fold {
+  margin-top: 0.5rem;
+}
+
+.survey-fold__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 0;
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  list-style: none;
+  cursor: pointer;
+}
+
+.survey-fold__summary::-webkit-details-marker {
+  display: none;
+}
+
+.survey-fold__chevron {
+  flex: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  margin-right: 0.25rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  rotate: 45deg;
+  translate: 0 -2px;
+  transition: rotate 0.2s ease-out, translate 0.2s ease-out;
+}
+
+.survey-fold[open] > .survey-fold__summary .survey-fold__chevron {
+  rotate: -135deg;
+  translate: 0 2px;
+}
+
+.survey-fold__body {
+  padding-bottom: 1.25rem;
+}
+
+.survey-fold__body p {
+  margin: 0 0 1rem;
+  color: var(--survey-text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.survey-fold__body p:last-child {
+  margin-bottom: 0;
+}
+
+.survey-countries {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0 0 0.75rem;
+  list-style: none;
+}
+
+.survey-countries__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--survey-line);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.survey-countries__count {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Who they work with: only words, no chart */
+.survey-section--plain {
+  align-items: start;
+}
+
+/* ---- THE LAST SECTION: a teal band with the survey button ---- */
+.survey-cta {
+  padding: 3rem var(--survey-side);
+  background: var(--panel-teal);
+}
+
+.survey-cta__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.survey-cta__heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.875rem;
+  line-height: 1.1;
+}
+
+.survey-cta__sentence {
+  margin: 0;
+  max-width: 40rem;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 30em) {
+  .survey-countries {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+}
+
+/* Desktop: from 920px */
+@media (min-width: 57.5em) {
+  .survey-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    padding: clamp(8rem, 10.4vw, 9.25rem) var(--survey-side) 3rem;
+  }
+
+  .survey-hero__head {
+    max-width: 41rem;
+  }
+
+  .survey-hero__title {
+    margin-bottom: 1.5rem;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+  }
+
+  .survey-hero__intro {
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  }
+
+  .survey-stats {
+    flex-wrap: nowrap;
+    gap: 2.75rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .survey-stat__num {
+    font-size: clamp(2.75rem, 4.4vw, 4rem);
+  }
+
+  .survey-stat__label {
+    max-width: none;
+    font-size: 1.0625rem;
+    white-space: nowrap;
+  }
+
+  .survey-map,
+  .survey-keys,
+  .survey-hero__action {
+    grid-column: 1 / -1;
+  }
+
+  /* Smaller than the full width (28 Nov 2026, L'chelle: "the map is too big on desktop"): at most 58rem
+     (928px) wide, so about 460px tall like the mock-up, centred */
+  .survey-map {
+    width: 100%;
+    max-width: 58rem;
+    margin: 3rem auto 0;
+  }
+
+  /* the colour key sits centred under the centred map */
+  .survey-keys {
+    justify-content: center;
+  }
+
+  .survey-hero__action {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+
+  .survey-section {
+    grid-template-columns: minmax(0, 0.715fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: clamp(2.5rem, 5.5vw, 5rem);
+    row-gap: 2.5rem;
+    padding: 4rem 0;
+  }
+
+  .survey-hero + .survey-section {
+    padding-top: 4rem;
+  }
+
+  .survey-heading {
+    font-size: clamp(1.875rem, 2.8vw, 2.5rem);
+  }
+
+  .survey-heading--small {
+    font-size: 1.5rem;
+  }
+
+  .survey-section__text p,
+  .survey-partners p {
+    font-size: 1.125rem;
+  }
+
+  .survey-chart {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: 2rem;
+  }
+
+  .survey-chart--bars {
+    display: block;
+  }
+
+  .survey-donut {
+    width: 100%;
+  }
+
+  .survey-donut__big {
+    font-size: 2.75rem;
+  }
+
+  .survey-fold--wide {
+    grid-column: 1 / -1;
+  }
+
+  .survey-countries {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+
+  .survey-bar {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) 3.5rem;
+    grid-template-areas: "label track value";
+    align-items: center;
+    gap: 1rem 1.25rem;
+    padding: 0.55rem 0;
+  }
+
+  .survey-bar__track {
+    height: 0.75rem;
+  }
+
+  .survey-bar__value {
+    font-size: 1.25rem;
+  }
+
+  .survey-axis {
+    display: none;
+  }
+
+  .survey-cta {
+    padding: 3.5rem var(--survey-side);
+  }
+
+  .survey-cta__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .survey-cta__heading {
+    font-size: clamp(1.875rem, 2.8vw, 2.5rem);
+  }
+
+  .survey-cta__sentence {
+    font-size: 1.25rem;
+  }
+}
+
+/* A wide screen has room for a bigger ring beside its list */
+@media (min-width: 68.75em) {
+  .survey-chart {
+    grid-template-columns: 13.75rem minmax(0, 1fr);
+    column-gap: 2.5rem;
+  }
+}
+
+/* High-contrast (forced colours) mode: keep what carries meaning */
+@media (forced-colors: active) {
+  .survey-map__land {
+    forced-color-adjust: none;
+    background-color: GrayText;
+  }
+
+  .survey-map__dot {
+    forced-color-adjust: none;
+    background: Highlight;
+    outline-color: Canvas;
+  }
+
+  .survey-swatch,
+  .survey-bar__fill {
+    forced-color-adjust: none;
+  }
+
+  .survey-donut__slice {
+    stroke: CanvasText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .survey-button,
+  .survey-fold__chevron,
+  .survey-donut__slice {
+    transition: none;
+  }
+}

@@ -32,7 +32,7 @@ Page: `/resources/online-course/`. Full run on 27 Nov 2026 by Claude in headless
 
 **Whole project**: secrets scan of every file git would include: no tokens, keys or passwords, and no `.env`.
 
-**Clean build**: see the end of this file for the result of building a clean copy with an empty cache, as Netlify does.
+**Clean build** (a copy of every file git would include, built with an empty cache, as Netlify does): it succeeds with exit code 0 and writes the same 1248 files as the working build; the course page is identical to the working build apart from the file name hashes, and the photo (8 files) and the video thumbnail are downloaded. **It took 21 minutes 37 seconds**, because a cold build downloads every news photo again (61 posts). Netlify stops a build that runs too long (30 minutes at the time this was written: check Netlify's current limit), so this is close to the edge and grows with every news post. It is the open item about Netlify having no photo cache (see the decisions log, 6 Nov 2026); a cache plugin, or fetching fewer sizes of each photo, would fix it. Do not push until this is decided.
 
 ## B. Not run, so not counted
 

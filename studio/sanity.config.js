@@ -4,7 +4,7 @@ import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 
 // Content types that only ever have one document
-const singletonTypes = new Set(['hero', 'caseSection', 'pillarsSection', 'impactSection', 'impactPage', 'onlineCoursePage', 'siteSettings', 'theoryOfChange'])
+const singletonTypes = new Set(['hero', 'caseSection', 'pillarsSection', 'impactSection', 'impactPage', 'onlineCoursePage', 'surveyReportPage', 'siteSettings', 'theoryOfChange'])
 // The only actions an editor gets on those documents (no delete, no duplicate)
 const singletonActions = new Set(['publish', 'discardChanges', 'restore'])
 
@@ -68,6 +68,10 @@ export default defineConfig({
                       .title('Online course page')
                       .id('onlineCoursePage')
                       .child(S.document().schemaType('onlineCoursePage').documentId('onlineCoursePage')),
+                    S.listItem()
+                      .title('Global Survey Report page')
+                      .id('surveyReportPage')
+                      .child(S.document().schemaType('surveyReportPage').documentId('surveyReportPage')),
                   ]),
               ),
             S.divider(),
@@ -88,6 +92,15 @@ export default defineConfig({
                     {field: 'publishedAt', direction: 'desc'},
                     {field: '_createdAt', direction: 'desc'},
                   ]),
+              ),
+            // Every validated survey response (anonymous: country and answers only), A to Z by country
+            S.listItem()
+              .title('Survey responses')
+              .id('surveyResponses')
+              .child(
+                S.documentTypeList('surveyResponse')
+                  .title('Survey responses')
+                  .defaultOrdering([{field: 'country', direction: 'asc'}]),
               ),
             // Every project in the directory, newest year first, then A to Z
             S.listItem()

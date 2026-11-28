@@ -34,8 +34,10 @@ const WIDTH = 2000 // the drawing is 2000 units wide
 const LAND = '#ece2d3' // the mock-up's land colour
 
 // Dots that Natural Earth's label point puts in the wrong place for us: Malaysia's label point is
-// in Borneo, but the mock-up puts the dot on the peninsula, where Langkawi is.
-const OVERRIDES = {MY: {lon: 101.9, lat: 4.2}}
+// in Borneo, but the mock-up puts the dot on the peninsula, where Langkawi is. Australia's label point is
+// the Ashmore and Cartier Islands off its north-west coast (they share the code), so its dot is put on the
+// mainland (27 Nov 2026, found when the survey page drew one in the sea).
+const OVERRIDES = {MY: {lon: 101.9, lat: 4.2}, AU: {lon: 134, lat: -25}}
 
 // Countries and territories in the Studio's list (studio/schemaTypes/countries.mjs) that Natural
 // Earth's country file has no ISO code for (Taiwan, the French overseas departments) or leaves out

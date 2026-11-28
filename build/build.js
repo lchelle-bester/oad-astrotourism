@@ -11,6 +11,7 @@ const {loadProjects, renderDirectoryPage, renderProjectPage, renderSearchIndex} 
 const {loadTheory, renderTheoryPage} = require('./theory')
 const {loadImpact, renderImpactPage} = require('./impact')
 const {loadCourse, renderCoursePage} = require('./course')
+const {loadSurvey, renderSurveyPage} = require('./survey')
 
 const ROOT = path.join(__dirname, '..')
 const SITE_DIR = path.join(ROOT, 'site')
@@ -812,7 +813,7 @@ async function main() {
   const footer = renderFooter(siteSettings)
 
   // newsCurrent marks "News" in the header on the News section's pages
-  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: '', theoryCurrent: '', impactCurrent: '', resourcesCurrent: '', courseCurrent: ''}}
+  const data = {hero, caseSection, pillarsSection, impactSection, newsSection, siteSettings, footer, nav: {newsCurrent: '', projectsCurrent: '', directoryCurrent: '', theoryCurrent: '', impactCurrent: '', resourcesCurrent: '', courseCurrent: '', surveyCurrent: ''}}
 
   // Start from a clean dist/ and copy everything from site/ into it,
   // apart from the partials, which only exist to be inserted into pages.
@@ -958,6 +959,23 @@ async function main() {
     console.log(`Online course page: written, ${course.parts.length} parts, ${modules} modules, ${course.outcomes.length} outcomes, ${course.video ? (courseVideoStill ? 'preview video with thumbnail' : 'preview video (no thumbnail found, plain card)') : 'no preview video (block left out)'}, ${courseImage ? 'photo' : 'no photo'}`)
   } else {
     console.log('Online course page: not published in Sanity yet, so the page is not written.')
+  }
+
+  // The Global Survey Report page (Phase 12): counted from the survey response documents. Left out, with a note,
+  // until the page document is published and there is at least one response.
+  const survey = await loadSurvey({sanityQuery, safeUrl, root: ROOT})
+  if (survey && survey.stats) {
+    const {file, page} = renderSurveyPage(survey, {escapeHtml, siteUrl: SITE_URL})
+    const surveyTemplate = insertPartials(fs.readFileSync(path.join(SITE_DIR, 'templates', 'survey-report.html'), 'utf8'))
+    const target = path.join(DIST_DIR, file)
+    fs.mkdirSync(path.dirname(target), {recursive: true})
+    fs.writeFileSync(target, renderTemplate(surveyTemplate, {...data, nav: {...data.nav, projectsCurrent: ' aria-current="true"', surveyCurrent: ' aria-current="page"'}, page}))
+    const s = survey.stats
+    console.log(`Global Survey Report page: written, ${s.n} responses, ${s.countryCount} countries${s.regionCount ? ` and ${s.regionCount} region` : ''}, ${s.continents.filter((c) => c.count > 0).length} continents`)
+  } else if (survey) {
+    console.log('Global Survey Report page: published, but there are no survey responses in Sanity yet, so the page is not written.')
+  } else {
+    console.log('Global Survey Report page: not published in Sanity yet, so the page is not written.')
   }
 
   pruneCache()
