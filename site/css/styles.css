@@ -6039,6 +6039,11 @@ a.news-pager__link:focus-visible {
   border-bottom: 1px solid var(--toc-line);
 }
 
+/* Set by main.js: the whole row opens and closes when it is clicked (28 Nov 2026, L'chelle) */
+.toc-pathway--clickable {
+  cursor: pointer;
+}
+
 .toc-pathway--2 {
   --c: var(--brand-terracotta);
   --c-ink: var(--white);

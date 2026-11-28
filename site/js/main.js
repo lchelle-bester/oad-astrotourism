@@ -842,6 +842,21 @@ if (theoryPage) {
     setTheoryFold(button, false)
   })
 
+  // A click or tap anywhere on a pathway row opens and closes it, not only on its button (28 Nov 2026,
+  // L'chelle). The button stays the control for the keyboard and screen readers, so this adds nothing
+  // new to Tab. Clicks on the button itself are left to the button (or it would toggle twice), and a click
+  // that ends a text selection is ignored, so the words can still be selected and copied.
+  theoryPage.querySelectorAll('.toc-pathway').forEach((row) => {
+    const button = row.querySelector('.toc-fold--row')
+    if (!button) return
+    row.classList.add('toc-pathway--clickable')
+    row.addEventListener('click', (event) => {
+      if (button.contains(event.target) || event.target.closest('a')) return
+      if (String(window.getSelection()).length) return
+      setTheoryFold(button, button.getAttribute('aria-expanded') !== 'true')
+    })
+  })
+
   // The two lists start closed on a phone and open (with no button) on a wider screen
   const theoryGroups = theoryPage.querySelectorAll('.toc-fold--group')
   const theoryIsPhone = window.matchMedia('not all and (min-width: 57.5em)')
